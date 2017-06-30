@@ -1,0 +1,212 @@
+#capsella_map{
+  height:600px;
+}
+
+#map_label{
+  z-index: 10000;
+  background-color: rgba(255, 255, 255, 0.7);
+  position: absolute;
+  bottom: 2px;
+  left: 3px;
+  padding: 3px;
+}
+
+#capsella_tools button{
+  margin:5px;
+}
+
+
+.btn_selected{
+  color: black !important;
+  font-weight: bolder;
+
+}
+
+#capsella_info select{
+width:8em;
+}
+
+.soil_layer{
+  border: 1px solid #CCC;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.soil_sq_1{
+  background-color:#b2cefe;
+}
+.soil_sq_1{
+  background-color:#baed91;
+}
+.soil_sq_2{
+  background-color:#faf884;
+}
+.soil_sq_3{
+  background-color:#f8b88b;
+}
+.soil_sq_4{
+  background-color:#fea3aa;
+}
+.soil_sq_5{
+  background-color:#f2a2e8;
+}
+
+#spade_test_insert{
+ margin-bottom: 20px;
+}
+
+#spade_test_insert ul{
+  list-style-type: none;
+}
+
+#spade_test_insert input[type=checkbox],  #spade_test_insert input[type='radio']{
+  transform: scale(1.5);
+  margin-right: 15px;
+}
+
+#spade_test_insert label{
+  /*font-size:16px;*/
+}
+
+#spade_test_insert h3{
+  text-align: center;
+}
+
+#spade_test_insert h4{
+  text-align: center;
+  border-top: 1px solid #CCC;
+  margin-top: 30px;
+  padding-top: 10px;
+}
+
+#spade_before{
+  float:left;
+}
+
+#spade_next{
+  float:right;
+}
+
+.spade_tile_answer{
+  height: 200px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-top: 10px;
+}
+
+ .spade_input{
+  position: absolute;
+  left: -9999px;
+}
+
+.answer_box{
+  border: 4px solid transparent;
+  padding:5px;
+  min-height:50px;
+  border-radius: 6px;
+  text-align:center;
+  margin:5px;
+  background-color:#DDD;
+
+}
+
+.answer_box_selected{
+  border: 4px solid #449d44;
+}
+
+/*
+#spade_test_insert input[type='radio'],
+#spade_test_insert input[type='checkbox'] {
+ position: absolute;
+ clip: rect(1px, 1px, 1px, 1px);
+}
+
+#spade_test_insert input[type='radio'] + label,
+#spade_test_insert input[type='checkbox'] + label {
+ margin: 0;
+ padding: 2px 0 0px 24px;
+ cursor: pointer;
+ content: "\e006";
+}
+
+#spade_test_insert input[type='radio']:checked + label {
+ background-image: url('radiobutton.png');
+}
+
+#spade_test_insert input[type='checkbox']:checked + label {
+ background-image: url('checkbox.png');
+}*/
+
+
+
+.sh_box{
+    text-align:center;
+    width: 100%;
+    margin: 25px 0;
+    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.14);
+    border-radius: 3px;
+    color: rgba(0,0,0, 0.87);
+    background: #eee;
+    padding:10px;
+    min-height: 150px;
+}
+
+/* hack */
+body{
+  font-family: "Open Sans", Arial, sans-serif;
+}
+.navbar-fixed-top{
+  background-color: #FFF;
+  border-bottom: 1px solid #CCC;
+}
+
+.navbar-brand, .navbar-nav>li>a{
+  color: #0e7d35 !important;
+}
+
+.navbar-inverse .navbar-nav>.active>a{
+  background-color: #FFF;
+  text-decoration:underline;
+}
+
+
+.navbar-inverse .icon-bar{
+  background-color: #0e7d35 !important;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+
+.footer {
+  /*position: absolute;
+  bottom: 0;*/
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  /*height: 60px;*/
+  /*line-height: 60px; /* Vertically center the text there */*/
+  background-color: #EEE;
+  padding-top: 20px;
+}
+
+.footer_images{
+    text-align:center;
+}
+.imgs_footer{
+  display:inline-block;
+  height: 80px;
+
+}
+
+h1.dbmng_page_title {
+  display:none;
+}
