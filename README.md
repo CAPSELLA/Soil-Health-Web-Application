@@ -6,10 +6,10 @@ Installation and Test
 ---------------
 
 Requiremennts
-	Postgres/Postgis: https://www.postgresql.org/download/
-	Apache2: https://httpd.apache.org/
-	PHP:
-	Composer: https://getcomposer.org/download/
+	* Postgres/Postgis: https://www.postgresql.org/download/
+	* Apache2: https://httpd.apache.org/
+	* PHP:
+	* Composer: https://getcomposer.org/download/
 
 First install composer
 
