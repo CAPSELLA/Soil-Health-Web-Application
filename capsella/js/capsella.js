@@ -29,6 +29,8 @@ var map, marker;
 
 function init_capsella(type, topic){
 
+  global_opt.ofline=true;
+
   var settings=jQuery.jStorage.get('capsella_settings');
   if(settings==null){
     settings={'user_id': Guid.newGuid(),'email':''};
@@ -556,17 +558,27 @@ function caps_save(data, fun, move){
   // global_opt.spade_step++;
   // fun(data);
 
-  jQuery.ajax({
-    'url':global_opt.base_path+'/api/spade_test/',
-    'method': 'POST',
-    'data': JSON.stringify(data),
-    'dataType': 'JSON',
-    'success': function(d){
-      console.log(d);
-        global_opt.spade_step=global_opt.spade_step+move;
-        fun(data, move);
-     }
-  });
+  if(global_opt.offline===true){
+    var my_data=jQuery.jStorage.get('my_data');
+    if(my_data===null){
+      my_data={};
+    }
+    my_data[data.guid]=data;
+    jQuery.jStorage.set('my_data', my_data);
+  }
+  else{
+    jQuery.ajax({
+      'url':global_opt.base_path+'/api/spade_test/',
+      'method': 'POST',
+      'data': JSON.stringify(data),
+      'dataType': 'JSON',
+      'success': function(d){
+        console.log(d);
+          global_opt.spade_step=global_opt.spade_step+move;
+          fun(data, move);
+       }
+    });
+  }
 }
 
 //create a spade test

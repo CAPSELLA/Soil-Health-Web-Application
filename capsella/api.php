@@ -73,6 +73,7 @@
             $ins="update caps_spade set date_mon=:date_mon, lat=:lat, lon=:lon, json=:json, user_id=:user_id, email=:email WHERE guid=:guid;";
             $ret=$db->update($ins,$array);
           }
+
       }
       else{
         $ret['message']="Missing GUID variable";
