@@ -16,9 +16,12 @@
       $script.="<script>jQuery(function(){init_capsella('".$type."');});</script>";
     }
 
-    $script.='<link rel="stylesheet" href="//unpkg.com/leaflet@1.0.1/dist/leaflet.css" />';
-    $script.='<script src="//unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>';
-    $script.='<script src="//cdnjs.cloudflare.com/ajax/libs/jStorage/0.4.12/jstorage.min.js"></script>';
+    // $script.='<link rel="stylesheet" href="//unpkg.com/leaflet@1.0.1/dist/leaflet.css" />';
+    $script.="<link href='".$bp."/js/external/leaflet.css' rel='stylesheet' />";
+    $script.="<script src='".$bp."/js/external/leaflet.js'></script>";
+    $script.="<script src='".$bp."/js/external/jstorage.min.js'></script>";
+    // $script.='<script src="//unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>';
+    // $script.='<script src="//cdnjs.cloudflare.com/ajax/libs/jStorage/0.4.12/jstorage.min.js"></script>';
 
     $aPage['content'].=$html;
     $aPage['script'].=$script;
