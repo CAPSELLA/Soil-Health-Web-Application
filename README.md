@@ -19,7 +19,7 @@ First install composer
 Clone the repository from github
 
 	$ git clone https://github.com/CAPSELLA/Soil-Health-Web-Application
-	$ cd Soil-Health-Web-Application
+	$ cd Soil-Health-Web-Application/capsella
 
 Install the dependencies using composer
 
