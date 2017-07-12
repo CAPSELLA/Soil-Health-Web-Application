@@ -5,3 +5,4 @@ settings.php
 bin/
 vendor/
 *.zip
+.htaccess

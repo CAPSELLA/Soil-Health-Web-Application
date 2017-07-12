@@ -5,6 +5,7 @@
     session_start();
     $db  = Dbmng\Db::createDb($aSetting['DB']['DB_DSN'], $aSetting['DB']['DB_USER'], $aSetting['DB']['DB_PASSWD'] );
     $app = new Dbmng\App($db, $aSetting);
+
     $db->setDebug($aSetting['DB']['DEBUG']);
     $login = new Dbmng\Login($db);
     $user = $login->auth();
