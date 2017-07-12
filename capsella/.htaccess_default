@@ -1,6 +1,6 @@
 RewriteEngine On
 
-RewriteCond %{REQUEST_URI} ^/capsella/capsella/api/(.*)$
+RewriteCond %{REQUEST_URI} ^/capsella/api/(.*)$
 RewriteRule ^(.*)$ api.php?q=$1 [L,QSA]
 
 RewriteCond %{REQUEST_URI} ^/capsella/apig/(.*)$
