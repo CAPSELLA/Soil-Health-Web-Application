@@ -48,7 +48,7 @@ function init_spade_question(){
     },
     {
       "code": "FSlo",
-      "Title": "Field slope",
+      "Title": "Field  slope",
       "question": "What is the slope of the field?",
       "data_type": "select",
       "help": "no",

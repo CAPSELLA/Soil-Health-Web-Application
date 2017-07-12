@@ -29,7 +29,7 @@ var map, marker;
 
 function init_capsella(type, topic){
 
-  global_opt.offline=true;
+  global_opt.offline=false;
 
   var settings=jQuery.jStorage.get('capsella_settings');
   if(settings==null){
