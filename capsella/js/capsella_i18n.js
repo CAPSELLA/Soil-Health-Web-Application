@@ -7,7 +7,7 @@ var i18n_glob=
     {
       //answer translation
       "fcov_bare_soil": "Bare soil",
-
+	"fslo_medium":"Medium slope (6-20%)",
 
       //INfo+Welcome translation
       "spade_test_welcome": "This application is meant for saving and visualizing data on soil health using spade-test. The application facilitates field data collection but does not substitute the need for accurate observations and for linking those with the history of the site observed. Several variables (soil texture, moisture, mechanical operations, etc.) impact on the interpretation of spade-test observations. Knowledge about the history of the site observed is, then, essential for maximum exploitation of this application potential.",

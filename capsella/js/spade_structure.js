@@ -25,12 +25,12 @@ function init_spade_question(){
           "score": 0,
         },
         {
-          "answer": "Tree crop",
+          //"answer": "Tree crop",
           "answer_code": "tree",
           "score": 0,
         },
         {
-          "answer": "Forest",
+          //"answer": "Forest",
           "answer_code": "forest",
           "score": 0,
           "image": "Easy",
@@ -75,7 +75,8 @@ function init_spade_question(){
          },
          {
            "answer": "Medium slope (6-20%)",
-           "score": 0,
+           "answer_code": "medium",
+		   "score": 0,
            "image": "graphyc_design",
            "link": "no",
            "question_code": "FSlo"
