@@ -5,6 +5,11 @@ var i18n_glob=
   {
     "en":
     {
+      //answer translation
+      "fcov_bare_soil": "Bare soil",
+
+
+      //INfo+Welcome translation
       "spade_test_welcome": "This application is meant for saving and visualizing data on soil health using spade-test. The application facilitates field data collection but does not substitute the need for accurate observations and for linking those with the history of the site observed. Several variables (soil texture, moisture, mechanical operations, etc.) impact on the interpretation of spade-test observations. Knowledge about the history of the site observed is, then, essential for maximum exploitation of this application potential.",
       "spade_test_info_start": "Do not take the soil sample yet. Observe the surface and collect useful information on the general state of the soil. You need just a spade to take the sample. Not necessary but suggested; you can use a tray where to place the sample.",
       "info_surface_question": "What do you see on the surface?",

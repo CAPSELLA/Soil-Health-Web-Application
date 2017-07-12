@@ -8,40 +8,30 @@ function init_spade_question(){
       "data_type": "select",
       "help": "spade_test_info_start",
       "how_many": "once",
-      "Importance": "medium",
-      "condition": "",
-      "order": 4,
       "answers":[
         {
-          "answer": "Bare soil",
-          "score": 0,
-          "image": "Easy",
-          "link": "no",
-          "question_code": "FCov"
+          // "answer": "Naked soil",
+          "answer_code": "bare_soil",
+          "score": 0
         },
         {
-          "answer": "Arable crop",
-          "score": 0,
-          "image": "Easy",
-          "link": "no",
-          "question_code": "FCov"
+          // "answer": "Arable crop",
+          "answer_code": "arable",
+          "score": 0
         },
         {
-          "answer": "Horticoltural crop",
+          // "answer": "Horticoltural crop",
+          "answer_code": "horticolture",
           "score": 0,
-          "image": "Easy",
-          "link": "no",
-          "question_code": "FCov"
         },
         {
           "answer": "Tree crop",
+          "answer_code": "tree",
           "score": 0,
-          "image": "Easy",
-          "link": "no",
-          "question_code": "FCov"
         },
         {
           "answer": "Forest",
+          "answer_code": "forest",
           "score": 0,
           "image": "Easy",
           "link": "no",
@@ -69,6 +59,7 @@ function init_spade_question(){
       "answers":[
         {
            "answer": "Flat",
+           "answer_code": "flat",
            "score": 0,
            "image": "graphyc_design",
            "link": "no",
@@ -76,6 +67,7 @@ function init_spade_question(){
          },
         {
            "answer": "Low slope (<5%)",
+           "answer_code": "low",
            "score": 0,
            "image": "graphyc_design",
            "link": "no",

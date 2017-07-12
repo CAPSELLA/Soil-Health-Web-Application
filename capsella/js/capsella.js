@@ -29,7 +29,7 @@ var map, marker;
 
 function init_capsella(type, topic){
 
-  global_opt.ofline=true;
+  global_opt.offline=true;
 
   var settings=jQuery.jStorage.get('capsella_settings');
   if(settings==null){
@@ -390,75 +390,96 @@ function init_spade_test(){
   var user_id=jQuery.jStorage.get('capsella_settings').user_id;
 
   reset_spade_view();
-  jQuery.ajax({
-    'url':global_opt.base_path+'/api/spade_test/?filter_user='+user_id,
-    'method': 'GET',
-    'dataType': 'JSON',
-    'success': function(d){
-        spades=d;
-
-        jQuery.each(d.data, function(k,v){
-          var data=JSON.parse(v.json);
-          var type='public';
-          // var i=base_icon;
-          var icon = new L.Icon({
-            iconUrl: global_opt.base_path+'/res/img/marker/blue_marker.png',
-            iconSize:     [25, 41],
-            iconAnchor:   [12, 41],
-          });
-          if(v.user_id===user_id){
-            jQuery("#spade_test_welcome").hide();
-            type='my';
-            icon = new L.Icon({
-              iconUrl: global_opt.base_path+'/res/img/marker/green_marker.png',
-              iconSize:     [25, 41],
-              iconAnchor:   [12, 41],
-            });
-            // i=my_icon;
-          }
-          // L.marker([51.5, -0.09], {icon: greenIcon}).addTo(map);
-
-          var marker = L.marker([v.lat, v.lon], {icon: icon}).addTo(map);
-
-            var el="<li>";
-            if(data.step_done<24){
-              el+="<button class='btn btn-sm btn-warning'>"+cap_t("Resume")+"</button>";
-            }
-            else{
-              el+="<button class='btn btn-sm btn-info'>"+cap_t("View")+"</button>";
-            }
-            el+=data.date+" "+encodeHtml(data.name)+" ";
-            //
-            el+="</li>";
-
-            var el2=jQuery(el);
-            el2.find('button').click(function(){
-              jQuery('#capsella_info').html('<button id="spade_test_back">'+cap_t("Back")+'</button><div id="spade_test_result"></div>');
-              jQuery('#spade_test_back').click(function(){
-                init_capsella('spade_test');
-              });
-              spade_test_result(data);
-              map.flyTo([data.lat,data.lon],14);
-            });
-            jQuery('#'+type+'_spade_tests').show().append(el2);
+  if(global_opt.offline===true){
+    var my_spade_tests=jQuery.jStorage.get('my_spade_tests');
+    if(my_spade_tests===null){
+      my_spade_tests={};
+    }
+    renderSpadesList(my_spade_tests);
+  }
+  else{
+    jQuery.ajax({
+      'url':global_opt.base_path+'/api/spade_test/?filter_user='+user_id,
+      'method': 'GET',
+      'dataType': 'JSON',
+      'success': function(d){
+        renderSpadesList(d.data);
+       }
+    });
+  }
+}
 
 
+function renderSpadesList(spades_list){
+  var user_id=jQuery.jStorage.get('capsella_settings').user_id;
+  jQuery.each(spades_list, function(k,v){
+    var data;
+    if(typeof v.json!=='undefined'){
+      data=JSON.parse(v.json);
+    }
+    else{
+      data=v;
+    }
+    var type='public';
+    // var i=base_icon;
+    var icon = new L.Icon({
+      iconUrl: global_opt.base_path+'/res/img/marker/blue_marker.png',
+      iconSize:     [25, 41],
+      iconAnchor:   [12, 41],
+    });
+    if(data.user_id===user_id){
+      jQuery("#spade_test_welcome").hide();
+      type='my';
+      icon = new L.Icon({
+        iconUrl: global_opt.base_path+'/res/img/marker/green_marker.png',
+        iconSize:     [25, 41],
+        iconAnchor:   [12, 41],
+      });
+      // i=my_icon;
+    }
+    // L.marker([51.5, -0.09], {icon: greenIcon}).addTo(map);
 
-          marker.on('click', function(){
-            jQuery.ajax({
-                'url':global_opt.base_path+'/api/spade_test/'+v.guid,
-                'method': 'GET',
-                'dataType': 'JSON',
-                'success': function(d2){
-                  jQuery('#capsella_info').html('<div id="spade_test_result"></div>');
-                  var data=JSON.parse(d2.data[0].json);
-                  data.flag=d2.data[0].flag;
-                  spade_test_result(data);
-                }
-            });
-          });
+    var marker = L.marker([data.lat, data.lon], {icon: icon}).addTo(map);
+
+      var el="<li>";
+      if(data.step_done<24){
+        el+="<button class='btn btn-sm btn-warning'>"+cap_t("Resume")+"</button>";
+      }
+      else{
+        el+="<button class='btn btn-sm btn-info'>"+cap_t("View")+"</button>";
+      }
+      el+=data.date+" "+encodeHtml(data.name)+" ";
+      //
+      el+="</li>";
+
+      var el2=jQuery(el);
+      el2.find('button').click(function(){
+        jQuery('#capsella_info').html('<button id="spade_test_back">'+cap_t("Back")+'</button><div id="spade_test_result"></div>');
+        jQuery('#spade_test_back').click(function(){
+          init_capsella('spade_test');
         });
-     }
+        spade_test_result(data);
+        map.flyTo([data.lat,data.lon],14);
+      });
+      jQuery('#'+type+'_spade_tests').show().append(el2);
+
+
+
+    marker.on('click', function(){
+            spade_test_result(data);
+
+      // jQuery.ajax({
+      //     'url':global_opt.base_path+'/api/spade_test/'+data.guid,
+      //     'method': 'GET',
+      //     'dataType': 'JSON',
+      //     'success': function(d2){
+      //       jQuery('#capsella_info').html('<div id="spade_test_result"></div>');
+      //       var data=JSON.parse(d2.data[0].json);
+      //       data.flag=d2.data[0].flag;
+      //       spade_test_result(data);
+      //     }
+      // });
+    });
   });
 }
 
@@ -555,16 +576,16 @@ function caps_save(data, fun, move){
     move=1;
   }
   console.log(data);
-  // global_opt.spade_step++;
-  // fun(data);
 
+  //if moving back do not save
   if(global_opt.offline===true){
-    var my_data=jQuery.jStorage.get('my_data');
-    if(my_data===null){
-      my_data={};
+    var my_spade_tests=jQuery.jStorage.get('my_spade_tests');
+    if(my_spade_tests===null){
+      my_spade_tests={};
     }
-    my_data[data.guid]=data;
-    jQuery.jStorage.set('my_data', my_data);
+    my_spade_tests[data.guid]=data;
+    jQuery.jStorage.set('my_spade_tests', my_spade_tests);
+    move_next(data,fun, move);
   }
   else{
     jQuery.ajax({
@@ -574,11 +595,17 @@ function caps_save(data, fun, move){
       'dataType': 'JSON',
       'success': function(d){
         console.log(d);
-          global_opt.spade_step=global_opt.spade_step+move;
-          fun(data, move);
+        move_next(data,fun, move);
        }
     });
   }
+}
+
+
+//move to the next question (move=1) or to the previous one (move=-1)
+function move_next(data, fun, move){
+  global_opt.spade_step=global_opt.spade_step+move;
+  fun(data, move);
 }
 
 //create a spade test
@@ -761,14 +788,25 @@ function spade_test_draw(data, move){
         html+='<div class="row spade_tile_answers">';
         jQuery.each(answers, function(k,v){
           var checked=false;
+          var answer_code=v.answer_code;
+          var answer_label=cap_t(v.answer);
+          if(typeof answer_code=='undefined'){
+            answer_code=v.answer;
+          }
+          else{
+            answer_label=cap_t(question_code+"_"+v.answer_code);
+          }
+
+
+
           if(question.data_type=='select_multi'){
 
-            if(jQuery.inArray(v.answer, value)>-1){
+            if(jQuery.inArray(answer_code, value)>-1){
               checked=true;
             }
           }
           else{
-            if(v.answer==value){
+            if(answer_code==value){
               checked=true;
             }
           }
@@ -781,7 +819,7 @@ function spade_test_draw(data, move){
           }
 
           html+="<div class='col-sm-6'>";
-          html+='<input class="spade_input" '+chk+' id="answer_'+k+'_'+n+'"  type="'+type+'" name="'+field_name+'" value="'+v.answer+'" />';
+          html+='<input class="spade_input" '+chk+' id="answer_'+k+'_'+n+'"  type="'+type+'" name="'+field_name+'" value="'+answer_code+'" />';
 
           html+="<div onclick='triggerAns("+k+","+n+")' class='answer_box "+clsckd+"' id='answer_box_"+k+"_"+n+"'>";
           if(images){
@@ -790,7 +828,7 @@ function spade_test_draw(data, move){
             html+="</div>";
           }
           html+="<div class='spade_tile_answer_sub'>"; //onclick="selectAns('+k+','+n+')"
-              html+='<div class="spade_answer_title" >'+cap_t(v.answer)+'</div>';
+              html+='<div class="spade_answer_title" >'+answer_label+'</div>';
           html+='</div></div></div>';
         });
         html+="</div>";
@@ -809,10 +847,10 @@ function spade_test_draw(data, move){
   jQuery(document).scrollTop( jQuery("#spade_question_title").offset().top-jQuery('.navbar-fixed-top').height() );
 
   jQuery("#spade_before").click(function(){
-    spade_test2(data, -1);
+    update_data(data, -1);
   });
   jQuery("#spade_next").click(function(){
-    spade_test2(data, +1);
+    update_data(data, +1);
   });
 }
 
@@ -834,13 +872,14 @@ function validateEmail(email) {
     return re.test(email);
 }
 
-function spade_test2(data, move){
+//Main function to get all the fields value, update the data object and ater checking the mandatory data save the data (caps_save)
+function update_data(data, move){
   var multi_layers=false;
   var ok=true;
   var message='';
 
-
-  if(true){
+  var do_update_data=true;
+  if(do_update_data){
     var question=spade_question[global_opt.spade_step];
     var question_code=question.code.toLocaleLowerCase();
     data.step_done=global_opt.spade_step;

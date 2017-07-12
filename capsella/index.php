@@ -143,7 +143,7 @@
       {
         // hide the password if exist!!!!
         $acc['pass'] = 'xxxxxxxxxxxxxxxxxxx';
-        $body .= 'global_opt.user=' . json_encode($acc) . ';';
+        $body .= 'global_opt.user=' . json_encode($acc) . ';';        
       }
 
     $capsella_lang="en";
