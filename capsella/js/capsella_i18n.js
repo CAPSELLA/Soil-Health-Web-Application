@@ -26,7 +26,7 @@ var i18n_glob=
 "sois_compaction":"Evidence of soil compaction",
 "sois_algae":"Growth of algae",
 "sois_cracks":"Cracks",
-"wilpla_URTICA":"URTICA  SPP.",
+"wilpla_urtica":"URTICA  SPP.",
 "wilpla_STELLARIA":"STELLARIA MEDIA",
 "wilpla_VERONICA":"VERONICA SPP.",
 "wilpla_GALINSOGA":"GALINSOGA PARVIFLORA",
@@ -388,8 +388,8 @@ var i18n_glob=
       "sq_question":"Πώς αξιολογείς ολόκληρη αυτήν την στοιβάδα ;",
       "typor_question":"Ποιό είδος από οργανικά υπολείμματα υπάρχουν;",
       "wilpla_question":"Βλέπεις πολλά από αυτά τα φυτά στο σημείο δειγματοληψίας;",
-      
-	  
+
+
 	  // answers
 "fcov_bare_soil":"Ακάλυπττο έδαφος",
 "fcov_arable":"Aροτραίες καλλιέργειες",
