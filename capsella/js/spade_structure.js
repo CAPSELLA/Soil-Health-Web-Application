@@ -226,7 +226,7 @@ function init_spade_question(){
       "answers":[
         {
           //"answer": "URTICA SPP.",
-		  "answer_code": "URTICA",
+		  "answer_code": "urtica",
           "score": 0.3,
           "image": "/WILPLA/ortica.JPG",
           "link": "link- N availability",
@@ -234,7 +234,7 @@ function init_spade_question(){
         },
         {
           //"answer": "STELLARIA MEDIA",
-		  "answer_code": "STELLARIA",
+		  "answer_code": "stellaria",
           "score": 0.3,
           "image": "/WILPLA/stellaria.JPG",
           "link": "link- Good soil structure",
@@ -242,7 +242,7 @@ function init_spade_question(){
         },
         {
           //"answer": "VERONICA SPP.",
-		  "answer_code": "VERONICA",
+		  "answer_code": "veronica",
           "score": 0.3,
           "image": "/WILPLA/veronica.JPG",
           "link": "link- Good soil structure",
@@ -250,7 +250,7 @@ function init_spade_question(){
         },
         {
           //"answer": "GALINSOGA PARVIFLORA",
-		  "answer_code": "GALINSOGA",
+		  "answer_code": "galinsoga",
           "score": 0.3,
           "image": "/WILPLA/galisoga.JPG",
           "link": "link- Good soil structure",
@@ -258,7 +258,7 @@ function init_spade_question(){
         },
         {
           //"answer": "POA ANNUA",
-		  "answer_code": "POA",
+		  "answer_code": "poa",
           "score": -0.3,
           "image": "/WILPLA/poa_annua.JPG",
           "link": "link- Superficial crust and/or soil compaction",
@@ -266,7 +266,7 @@ function init_spade_question(){
         },
         {
           //"answer": "ACALYPHA VIRGINICA",
-		  "answer_code": "ACALYPHA",
+		  "answer_code": "acalypha",
           "score": -0.3,
           "image": "/WILPLA/acalifa.JPG",
           "link": "link- Superficial crust and/or soil compaction",
@@ -274,7 +274,7 @@ function init_spade_question(){
         },
         {
           //"answer": "ECHINOCHLOA CRUS-GALLI",
-		  "answer_code": "ECHINOCHLOA",
+		  "answer_code": "echinochloa",
           "score": -0.3,
           "image": "/WILPLA/giavone.JPG",
           "link": "link- crust, compaction, water logging",
@@ -282,7 +282,7 @@ function init_spade_question(){
         },
         {
           //"answer": "POLYGONUM AVICULARE",
-		  "answer_code": "POLYGONUM",
+		  "answer_code": "polygonum",
           "score": -0.3,
           "image": "/WILPLA/polygonum_aviculare.JPG",
           "link": "link- Superficial crust and/or soil compaction",
@@ -290,7 +290,7 @@ function init_spade_question(){
         },
         {
           //"answer": "MATRICARIA CHAMOMILLA",
-		  "answer_code": "MATRICARIA",
+		  "answer_code": "matricaria",
           "score": -0.3,
           "image": "/WILPLA/camomilla.JPG",
           "link": "link- Superficial crust and/or soil compaction",
@@ -298,7 +298,7 @@ function init_spade_question(){
         },
         {
           //"answer": "CAPSELLA BURSA-PASTORIS",
-		  "answer_code": "CAPSELLA",
+		  "answer_code": "capsella",
           "score": 0.3,
           "image": "/WILPLA/capsella.JPG",
           "link": "link- N availability",
@@ -306,7 +306,7 @@ function init_spade_question(){
         },
         {
           //"answer": "PLANTAGO SPP.",
-		  "answer_code": "PLANTAGO",
+		  "answer_code": "plantago",
           "score": -0.3,
           "image": "/WILPLA/piantaggine.JPG",
           "link": "link- Soil compaction",
@@ -314,7 +314,7 @@ function init_spade_question(){
         },
         {
           //"answer": "TARAXACUM OFFICINALE",
-		  "answer_code": "TARAXACUM",
+		  "answer_code": "taraxacum",
           "score": -0.3,
           "image": "/WILPLA/tarassaco.JPG",
           "link": "link- Soil compaction",
@@ -771,7 +771,6 @@ function init_spade_question(){
          {
            //"answer": "A lot of roots",
            "answer_code": "lot_roots",
-		   "answer_code": "lightly_compacted",
 		   "score": 1,
            "image": "/ROOTP/lot.jpeg",
            "link": "link-Root growth",
