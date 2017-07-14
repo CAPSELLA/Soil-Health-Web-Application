@@ -216,7 +216,7 @@ function init_spade_question(){
       "Title": "Wild plants",
       "question": "Do you see plenty of these wildplants at the sampling point?",
       "data_type": "select_multi",
-      "help": "no",
+      "help": "wilpla_info",
       "how_many": "once",
       "images": true,
       "Importance": "low",
@@ -574,7 +574,7 @@ function init_spade_question(){
       "code": "COL",
       "Title": "Soil color",
       "question": "Looking at the soil color, do you see any of these signs?",
-      "data_type": "select",
+      "data_type": "select_multi",
       "help": "col_info",
       "how_many": "by_layer",
       "Importance": "medium",
@@ -678,8 +678,8 @@ function init_spade_question(){
       "order": 21,
       "answers":[
         {
-          "answer": "Intact material (no decomposition, you can easily recognize the original matter)",
-          //"answer_code": "intact",
+          //"answer": "Intact material (no decomposition, you can easily recognize the original matter)",
+          "answer_code": "intact",
 		  "score": -1,
           "image": "/DECOR/intact.jpg",
           "link": "link- Organic matter decomposition in the soil",
@@ -865,27 +865,34 @@ function init_spade_question(){
     {
       "code": "EARTHW",
       "Title": "presence earthworms",
-      "question": "Do you see earthworms or clues of their presence (holes, channels, casts)?",
-      "data_type": "boolean",
+      "question": "Do you see signs of earthworms presence?",
+      "data_type": "select_multi",
       "help": "earthw_info",
       "how_many": "once",
       "Importance": "medium",
+	  "mandatory": false,
+	  "images": true,
       "condition": "",
       "order": 26,
       "answers":[
         {
-          //"answer": "yes",
-          "answer_code": "yes",
+          "answer_code": "earthworm",
 		  "score": 0,
-          "image": "Todo",
+          "image": "/EARTHW/earthworm.jpg",
           "link": "no",
           "question_code": "EARTHW"
         },
         {
-         //"answer": "No",
-         "answer_code": "no",
+         "answer_code": "hole",
 		 "score": 0,
-         "image": "Todo",
+         "image": "/EARTHW/18.jpeg",
+         "link": "no",
+         "question_code": "EARTHW"
+       },
+	   {
+         "answer_code": "cast",
+		 "score": 0,
+         "image": "/EARTHW/17.jpeg",
          "link": "no",
          "question_code": "EARTHW"
        }
