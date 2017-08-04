@@ -99,6 +99,8 @@
 
         $aPage['navRight'][3]['title'] = 'Login';
         $aPage['navRight'][3]['link']  = $bp.'/?do_login=true';
+        $aPage['navRight'][4]['title'] = 'Register';
+        $aPage['navRight'][4]['link']  = $bp.'/?do_register=true';
 
 
         if(isset($_REQUEST['setLang'])){
@@ -143,7 +145,7 @@
       {
         // hide the password if exist!!!!
         $acc['pass'] = 'xxxxxxxxxxxxxxxxxxx';
-        $body .= 'global_opt.user=' . json_encode($acc) . ';';        
+        $body .= 'global_opt.user=' . json_encode($acc) . ';';
       }
 
     $capsella_lang="en";
@@ -176,7 +178,19 @@
     // $aPage['nav'][2]['title'] = 'Capsella platform';
     // $aPage['nav'][2]['link']  = '?sect=caps_plat';
 
-    if( isset($_REQUEST['sect']) )
+    if( isset($_REQUEST['do_login']) )
+      {
+        $aPage['content']=$body;
+      }
+    else if( isset($_REQUEST['do_register']) )
+      {
+        $body .= '<div class="alert alert-info">Please enter your email and a password to register to the Spade test app. You will receive an email to confirm the validity of your email address.</div><form>';
+        $body .= '<input class="form-control" name="dbmng_user_id" placeholder="Insert your email" />';
+        $body .= '<input type="password" class="form-control" name="dbmng_password" placeholder="password" />';
+        $body .= '<input class="form-control" type="submit" value="register"></form>';
+        $aPage['content']=$body;
+      }
+    else if( isset($_REQUEST['sect']) )
       {
         $sect = $_REQUEST['sect'];
         if(  $sect=="kb" || $sect=="esdb" || $sect=="som_dyn" || $sect=="caps_plat" || $sect=="spade_test")

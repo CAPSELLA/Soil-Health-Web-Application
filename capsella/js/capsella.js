@@ -1219,7 +1219,7 @@ function caps_home(){
         jQuery('#caps_datasets li').click(function(){
           var uuid=jQuery(this).attr('data-uuid');
           var ct=jQuery(this).attr('data-content-type');
-          caps_show_dataset(uuid,group,ct)
+          caps_show_dataset(uuid,group,ct);
         });
      }
   });
