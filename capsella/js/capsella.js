@@ -697,13 +697,6 @@ function spade_test_draw(data, move){
         html+="<figure><img style='height:200px;' src='"+global_opt.base_path+"/res/img/spade_test/"+img2+"'><figcaption>"+cap_t("open root nodule (red inside)")+"</figcaption></figure></div>";
 
       }
-      else if(question.help=='earthw_info'){
-        img1="EARTHW/17.jpeg";
-        img2="EARTHW/18.jpeg";
-        html+="<div style='text-align:center'><figure><img style='height:200px;' src='"+global_opt.base_path+"/res/img/spade_test/"+img1+"'/><figcaption>"+cap_t("casts")+"</figcaption></figure>";
-        html+="<figure><img style='height:200px;' src='"+global_opt.base_path+"/res/img/spade_test/"+img2+"' /><figcaption>"+cap_t("holes")+"</figcaption></figure></div>";
-
-      }
       else if(question.help=='biodivoth_info'){
         img="BIODIVOTH/19.jpeg";
         html+="<div style='text-align:center'><img style='height:200px;' src='"+global_opt.base_path+"/res/img/spade_test/"+img+"'></div>";
@@ -1226,7 +1219,7 @@ function caps_home(){
         jQuery('#caps_datasets li').click(function(){
           var uuid=jQuery(this).attr('data-uuid');
           var ct=jQuery(this).attr('data-content-type');
-          caps_show_dataset(uuid,group,ct)
+          caps_show_dataset(uuid,group,ct);
         });
      }
   });

@@ -10,7 +10,7 @@ function init_spade_question(){
       "how_many": "once",
       "answers":[
         {
-          // "answer": "Naked soil",
+          // "answer": "Bare soil",
           "answer_code": "bare_soil",
           "score": 0
         },
@@ -26,7 +26,7 @@ function init_spade_question(){
         },
         {
           //"answer": "Tree crop",
-          "answer_code": "tree",
+          "answer_code": "tree_crop",
           "score": 0,
         },
         {
@@ -38,7 +38,8 @@ function init_spade_question(){
           "question_code": "FCov"
         },
         {
-          "answer": "Grassland",
+          //"answer": "Grassland",
+		  "answer_code": "grassland",
           "score": 0,
           "image": "Easy",
           "link": "no",
@@ -58,7 +59,7 @@ function init_spade_question(){
       "order": 5,
       "answers":[
         {
-           "answer": "Flat",
+           //"answer": "Flat",
            "answer_code": "flat",
            "score": 0,
            "image": "graphyc_design",
@@ -66,7 +67,7 @@ function init_spade_question(){
            "question_code": "FSlo"
          },
         {
-           "answer": "Low slope (<5%)",
+           //"answer": "Low slope (<5%)",
            "answer_code": "low",
            "score": 0,
            "image": "graphyc_design",
@@ -74,7 +75,7 @@ function init_spade_question(){
            "question_code": "FSlo"
          },
          {
-           "answer": "Medium slope (6-20%)",
+           //"answer": "Medium slope (6-20%)",
            "answer_code": "medium",
 		   "score": 0,
            "image": "graphyc_design",
@@ -82,14 +83,16 @@ function init_spade_question(){
            "question_code": "FSlo"
          },
          {
-           "answer": "High slope (21-60%)",
+           //"answer": "High slope (21-60%)",
+		   "answer_code": "high",
            "score": 0,
            "image": "graphyc_design",
            "link": "no",
            "question_code": "FSlo"
          },
          {
-           "answer": "Very high slope (>60%)",
+           //"answer": "Very high slope (>60%)",
+		   		   "answer_code": "very_high",
            "score": 0,
            "image": "graphyc_design",
            "link": "no",
@@ -109,21 +112,24 @@ function init_spade_question(){
       "order": 6,
       "answers":[
         {
-          "answer": "Mostly the crop",
+          //"answer": "Mostly the crop",
+		  "answer_code": "crop",
           "score": 0,
           "image": "Easy",
           "link": "no",
           "question_code": "PCov"
         },
         {
-          "answer": "Mostly wild vegetation (weeds)",
+          //"answer": "Mostly wild vegetation (weeds)",
+		  "answer_code": "weeds",
           "score": 0,
           "image": "Easy",
           "link": "no",
           "question_code": "PCov"
         },
         {
-          "answer": "Mostly bare soil",
+          //"answer": "Mostly bare soil",
+		  "answer_code": "soil",
           "score": 0,
           "image": "Easy",
           "link": "no",
@@ -156,42 +162,48 @@ function init_spade_question(){
       "order": 8,
       "answers":[
         {
-          "answer": "Superficial crust",
+          //"answer": "Superficial crust",
+		  "answer_code": "crust",
           "score": 0.8,
           "image": "/SOIS/15.jpeg",
           "link": "http://soilhealth.capsella.eu/sois/superficial_crust/",
           "question_code": "SOIS"
         },
         {
-          "answer": "Evidence of water logging",
+          //"answer": "Evidence of water logging",
+		  "answer_code": "logging",
           "score": -1,
           "image": "/SOIS/16.jpeg",
           "link": "http://soilhealth.capsella.eu/sois/water_logging/",
           "question_code": "SOIS"
         },
         {
-          "answer": "Evidence of erosion",
+          //"answer": "Evidence of erosion",
+		"answer_code": "erosion",	  
           "score": -2,
           "image": "/SOIS/17.jpeg",
           "link": "http://soilhealth.capsella.eu/sois/erosion/",
           "question_code": "SOIS"
         },
         {
-          "answer": "Evidence of soil compaction",
+          //"answer": "Evidence of soil compaction",
+		  "answer_code": "compaction",
           "score": -1,
           "image": "/SOIS/18.jpeg",
           "link": "http://soilhealth.capsella.eu/sois/compaction/",
           "question_code": "SOIS"
         },
         {
-          "answer": "Growth of algae",
+          //"answer": "Growth of algae",
+		  "answer_code": "algae",
           "score": -0.5,
           "image": "/SOIS/19.jpeg",
           "link": "http://soilhealth.capsella.eu/sois/algae/",
           "question_code": "SOIS"
         },
         {
-          "answer": "Cracks",
+          //"answer": "Cracks",
+		  "answer_code": "cracks",
           "score": -1,
           "image": "/SOIS/20.jpeg",
           "link": "link- Presence of cracks on soil surface",
@@ -204,7 +216,7 @@ function init_spade_question(){
       "Title": "Wild plants",
       "question": "Do you see plenty of these wildplants at the sampling point?",
       "data_type": "select_multi",
-      "help": "no",
+      "help": "wilpla_info",
       "how_many": "once",
       "images": true,
       "Importance": "low",
@@ -213,84 +225,96 @@ function init_spade_question(){
       "order": 9,
       "answers":[
         {
-          "answer": "URTICA SPP.",
+          //"answer": "URTICA SPP.",
+		  "answer_code": "urtica",
           "score": 0.3,
           "image": "/WILPLA/ortica.JPG",
           "link": "link- N availability",
           "question_code": "WILPLA"
         },
         {
-          "answer": "STELLARIA MEDIA",
+          //"answer": "STELLARIA MEDIA",
+		  "answer_code": "stellaria",
           "score": 0.3,
           "image": "/WILPLA/stellaria.JPG",
           "link": "link- Good soil structure",
           "question_code": "WILPLA"
         },
         {
-          "answer": "VERONICA SPP.",
+          //"answer": "VERONICA SPP.",
+		  "answer_code": "veronica",
           "score": 0.3,
           "image": "/WILPLA/veronica.JPG",
           "link": "link- Good soil structure",
           "question_code": "WILPLA"
         },
         {
-          "answer": "GALINSOGA PARVIFLORA",
+          //"answer": "GALINSOGA PARVIFLORA",
+		  "answer_code": "galinsoga",
           "score": 0.3,
           "image": "/WILPLA/galisoga.JPG",
           "link": "link- Good soil structure",
           "question_code": "WILPLA"
         },
         {
-          "answer": "POA ANNUA",
+          //"answer": "POA ANNUA",
+		  "answer_code": "poa",
           "score": -0.3,
           "image": "/WILPLA/poa_annua.JPG",
           "link": "link- Superficial crust and/or soil compaction",
           "question_code": "WILPLA"
         },
         {
-          "answer": "ACALYPHA VIRGINICA",
+          //"answer": "ACALYPHA VIRGINICA",
+		  "answer_code": "acalypha",
           "score": -0.3,
           "image": "/WILPLA/acalifa.JPG",
           "link": "link- Superficial crust and/or soil compaction",
           "question_code": "WILPLA"
         },
         {
-          "answer": "ECHINOCHLOA CRUS-GALLI",
+          //"answer": "ECHINOCHLOA CRUS-GALLI",
+		  "answer_code": "echinochloa",
           "score": -0.3,
           "image": "/WILPLA/giavone.JPG",
           "link": "link- crust, compaction, water logging",
           "question_code": "WILPLA"
         },
         {
-          "answer": "POLYGONUM AVICULARE",
+          //"answer": "POLYGONUM AVICULARE",
+		  "answer_code": "polygonum",
           "score": -0.3,
           "image": "/WILPLA/polygonum_aviculare.JPG",
           "link": "link- Superficial crust and/or soil compaction",
           "question_code": "WILPLA"
         },
         {
-          "answer": "MATRICARIA CHAMOMILLA",
+          //"answer": "MATRICARIA CHAMOMILLA",
+		  "answer_code": "matricaria",
           "score": -0.3,
           "image": "/WILPLA/camomilla.JPG",
           "link": "link- Superficial crust and/or soil compaction",
           "question_code": "WILPLA"
         },
         {
-          "answer": "CAPSELLA BURSA-PASTORIS",
+          //"answer": "CAPSELLA BURSA-PASTORIS",
+		  "answer_code": "capsella",
           "score": 0.3,
           "image": "/WILPLA/capsella.JPG",
           "link": "link- N availability",
           "question_code": "WILPLA"
         },
         {
-          "answer": "PLANTAGO SPP.",
+          //"answer": "PLANTAGO SPP.",
+		  "answer_code": "plantago",
           "score": -0.3,
           "image": "/WILPLA/piantaggine.JPG",
           "link": "link- Soil compaction",
           "question_code": "WILPLA"
         },
         {
-          "answer": "TARAXACUM OFFICINALE",
+          //"answer": "TARAXACUM OFFICINALE",
+		  "answer_code": "taraxacum",
           "score": -0.3,
           "image": "/WILPLA/tarassaco.JPG",
           "link": "link- Soil compaction",
@@ -321,22 +345,25 @@ function init_spade_question(){
       "order": 11,
       "answers":[
         {
-          "answer": "Easy to cut the soil up to the spade depth",
-          "score": 1,
+          //"answer": "Easy to cut the soil up to the spade depth",
+          "answer_code": "easy",
+		  "score": 1,
           "image": "/RESSLI/low_res.jpeg",
           "link": "link- Good soil structure",
           "question_code": "RESSLI"
         },
         {
-          "answer": "Uniformely hard to cut the soil",
-          "score": -1,
+          //"answer": "Uniformely hard to cut the soil",
+          "answer_code": "hard_uniform",
+		  "score": -1,
           "image": "graphyc_design",
           "link": "link- Soil compaction",
           "question_code": "RESSLI"
         },
         {
-          "answer": "Alternation of easy and hards parts to cut",
-          "score": -1,
+          //"answer": "Alternation of easy and hards parts to cut",
+          "answer_code": "hard_alternation",
+		  "score": -1,
           "image": "graphyc_design",
           "link": "link- Soil compaction",
           "question_code": "RESSLI"
@@ -403,56 +430,64 @@ function init_spade_question(){
       "order": 16,
       "answers":[
         {
-          "answer": "Granular (rounded surfaces)",
-          "score": 2,
+          //"answer": "Granular (rounded surfaces)",
+          "answer_code": "granular",
+		  "score": 2,
           "image": "/AGSHP/Granular.jpeg",
           "link": "link- Good soil structure",
           "question_code": "AGSHP"
         },
         {
-          "answer": "Crumb (rounded surfaces but larger than granular)",
-          "score": 1,
+          //"answer": "Crumb (rounded surfaces but larger than granular)",
+          "answer_code": "crumb",
+		  "score": 1,
           "image": "/AGSHP/Crumb.jpeg",
           "link": "link- Good soil structure",
           "question_code": "AGSHP"
         },
         {
-          "answer": "Blocky Small",
+          //"answer": "Blocky Small",
+		  "answer_code": "blocky_small",
           "score": 0,
           "image": "/AGSHP/blocky_small.jpeg",
           "link": "link- Soil compaction",
           "question_code": "AGSHP"
         },
         {
-          "answer": "Blocky large",
+          //"answer": "Blocky large",
+		  "answer_code": "blocky_large",
           "score": 0,
           "image": "/AGSHP/blocky_large_ok.jpeg",
           "link": "link- Soil compaction",
           "question_code": "AGSHP"
         },
         {
-          "answer": "Subangular blocky small",
-          "score": 0.3,
+          //"answer": "Subangular blocky small",
+          "answer_code": "sub_blocky_small",
+		  "score": 0.3,
           "image": "/AGSHP/sub_blocky_small.jpeg",
           "link": "link- Soil compaction",
           "question_code": "AGSHP"
         },
         {
-          "answer": "Subangular blocky large",
+          //"answer": "Subangular blocky large",
+		  "answer_code": "sub_blocky_large",
           "score": 0.3,
           "image": "/AGSHP/sub_blocky_large.jpeg",
           "link": "link- Soil compaction",
           "question_code": "AGSHP"
         },
         {
-          "answer": "Platy",
+          //"answer": "Platy",
+		  "answer_code": "platy",
           "score": -2,
           "image": "/AGSHP/Platy.jpeg",
           "link": "link- Soil compaction",
           "question_code": "AGSHP"
         },
         {
-          "answer": "Structureless",
+          //"answer": "Structureless",
+		  "answer_code": "structureless",
           "score": -2,
           "image": "/AGSHP/Structureless.jpeg",
           "link": "link- Lack of structure",
@@ -472,22 +507,25 @@ function init_spade_question(){
       "order": 17,
       "answers":[
         {
-          "answer": "Loose",
+          //"answer": "Loose",
+		  "answer_code": "loose",
           "score": 2,
           "image": "graphyc_design",
           "link": "link- Good soil structure",
           "question_code": "COMP"
         },
         {
-          "answer": "Lightly Compacted",
+          //"answer": "Lightly Compacted",
+		  "answer_code": "lightly_compacted",
           "score": -1,
           "image": "graphyc_design",
           "link": "link- Soil compaction",
           "question_code": "COMP"
         },
         {
-          "answer": "Very compacted",
-          "score": -2,
+          //"answer": "Very compacted",
+          "answer_code": "very_compacted",
+		  "score": -2,
           "image": "graphyc_design",
           "link": "link- Soil compaction",
           "question_code": "COMP"
@@ -507,22 +545,25 @@ function init_spade_question(){
       "order": 18,
       "answers":[
         {
-          "answer": "You cannot break it because the sample is too hard",
-          "score": -1,
+          //"answer": "You cannot break it because the sample is too hard",
+          "answer_code": "dry",
+		  "score": -1,
           "image": "/MOIST/49.jpeg",
           "link": "link1- Info on soil operations (you cannot use machines on the soil); link2-Info on irrigation (you should consider the irrigation)",
           "question_code": "MOIST"
         },
         {
-          "answer": "The sample does not break because it is plastic",
-          "score": -0.5,
+          //"answer": "The sample does not break because it is plastic",
+          "answer_code": "wet",
+		  "score": -0.5,
           "image": "/MOIST/51.jpeg",
           "link": "link1 - Info on soil operations (you cannot use machines on the soil); link2- Info on irrigation (Irrigation is not needed)",
           "question_code": "MOIST"
         },
         {
-          "answer": "You can easly break the sample into its aggregates",
-          "score": 1,
+          //"answer": "You can easly break the sample into its aggregates",
+          "answer_code": "good",
+		  "score": 1,
           "image": "/MOIST/50.jpeg",
           "link": "link1 - Info on soil operations (you can  use machines on the soil); link2- Info on irrigation (Irrigation is  needed)",
           "question_code": "MOIST"
@@ -533,7 +574,7 @@ function init_spade_question(){
       "code": "COL",
       "Title": "Soil color",
       "question": "Looking at the soil color, do you see any of these signs?",
-      "data_type": "select",
+      "data_type": "select_multi",
       "help": "col_info",
       "how_many": "by_layer",
       "Importance": "medium",
@@ -543,21 +584,24 @@ function init_spade_question(){
       "order": 19,
       "answers":[
         {
-          "answer": "Ocra-Rusty-Black-White spots",
-          "score": -0.5,
+          //"answer": "Ocra-Rusty-Black-White spots",
+          "answer_code": "ocra",
+		  "score": -0.5,
           "image": "/COL/52.jpeg",
           "link": "link -  Water logging (periodic)",
           "question_code": "COL"
         },
         {
-          "answer": "Grey-Green-Blue",
+          //"answer": "Grey-Green-Blue",
+		  "answer_code": "grey",
           "score": -1,
           "image": "/COL/53.JPG",
           "link": "link -  Water logging (sign of long period of water logging)",
           "question_code": "COL"
         },
         {
-          "answer": "Layers darker than others",
+          //"answer": "Layers darker than others",
+		  "answer_code": "darker_layers",
           "score": 0,
           "image": "/COL/54.jpeg",
           "link": "link - Effects of humus content on soil color (due to different moisture or different content of humus)",
@@ -579,36 +623,41 @@ function init_spade_question(){
       "order": 20,
       "answers":[
         {
-         "answer": "No residues",
+         //"answer": "No residues",
+		 "answer_code": "no_residues",
          "score": 0,
          "image": "/TYPOR/no_or.jpg",
          "link": "no",
          "question_code": "TYPOR"
        },
         {
-         "answer": "Manure or compost",
-         "score": 0,
+         //"answer": "Manure or compost",
+         "answer_code": "manure",
+		 "score": 0,
          "image": "/TYPOR/55.JPG",
          "link": "no",
          "question_code": "TYPOR"
        },
        {
-         "answer": "Plant residues",
-         "score": 0,
+         //"answer": "Plant residues",
+         "answer_code": "residues",
+		 "score": 0,
          "image": "/TYPOR/56.JPG",
          "link": "no",
          "question_code": "TYPOR"
        },
        {
-         "answer": "Straw",
-         "score": 0,
+         //"answer": "Straw",
+         "answer_code": "straw",
+		 "score": 0,
          "image": "/TYPOR/stoppie.jpg",
          "link": "",
          "question_code": "TYPOR"
        },
        {
-         "answer": "Old roots",
-         "score": 0,
+         //"answer": "Old roots",
+         "answer_code": "roots",
+		 "score": 0,
          "image": "/TYPOR/58.JPG",
          "link": "no",
          "question_code": "TYPOR"
@@ -629,22 +678,25 @@ function init_spade_question(){
       "order": 21,
       "answers":[
         {
-          "answer": "Intact material (no decomposition, you can easily recognize the original matter)",
-          "score": -1,
+          //"answer": "Intact material (no decomposition, you can easily recognize the original matter)",
+          "answer_code": "intact",
+		  "score": -1,
           "image": "/DECOR/intact.jpg",
           "link": "link- Organic matter decomposition in the soil",
           "question_code": "DECOR"
         },
         {
-          "answer": "Medium decomposed (you can hardly recognize the original matter)",
-          "score": 0.5,
+          //"answer": "Medium decomposed (you can hardly recognize the original matter)",
+          "answer_code": "medium_decomposed",
+		  "score": 0.5,
           "image": "/DECOR/average.jpg",
           "link": "link- Organic matter decomposition in the soil",
           "question_code": "DECOR"
         },
         {
-          "answer": "Well decomposed (you cannot recognize the original matter anymore)",
-          "score": 1,
+          //"answer": "Well decomposed (you cannot recognize the original matter anymore)",
+          "answer_code": "well_decomposed",
+		  "score": 1,
           "image": "/DECOR/decomposed.jpg",
           "link": "link- Organic matter decomposition in the soil",
           "question_code": "DECOR"
@@ -663,22 +715,25 @@ function init_spade_question(){
       "order": 22,
       "answers":[
         {
-         "answer": "No smell",
-         "score": 0,
+         //"answer": "No smell",
+         "answer_code": "no_smell",
+		 "score": 0,
          "image": "NO",
          "link": "no",
          "question_code": "SMELL"
        },
        {
-         "answer": "Good (woody)",
-         "score": 1,
+         //"answer": "Good (woody)",
+         "answer_code": "good_smell",
+		 "score": 1,
          "image": "NO",
          "link": "link-Soil smell",
          "question_code": "SMELL"
        },
        {
-         "answer": "Bad (rotten)",
-         "score": -1,
+         //"answer": "Bad (rotten)",
+         "answer_code": "bad_smell",
+		 "score": -1,
          "image": "NO",
          "link": "link-Soil smell",
          "question_code": "SMELL"
@@ -698,22 +753,25 @@ function init_spade_question(){
       "order": 23,
       "answers":[
         {
-           "answer": "No roots",
-           "score": -1,
+           //"answer": "No roots",
+           "answer_code": "no_roots",
+		   "score": -1,
            "image": "Todo",
            "link": "link-Root growth",
            "question_code": "ROOTP"
          },
          {
-           "answer": "Very few roots",
-           "score": -0.5,
+           //"answer": "Very few roots",
+           "answer_code": "few_roots",
+		   "score": -0.5,
            "image": "Todo",
            "link": "link-Root growth",
            "question_code": "ROOTP"
          },
          {
-           "answer": "A lot of roots",
-           "score": 1,
+           //"answer": "A lot of roots",
+           "answer_code": "lot_roots",
+		   "score": 1,
            "image": "/ROOTP/lot.jpeg",
            "link": "link-Root growth",
            "question_code": "ROOTP"
@@ -733,22 +791,25 @@ function init_spade_question(){
       "order": 24,
       "answers":[
         {
-          "answer": "No roots",
-          "score": -1,
+          //"answer": "No roots",
+          "answer_code": "no_roots",
+		  "score": -1,
           "image": "Todo",
           "link": "link-Root growth",
           "question_code": "ROOTF"
         },
         {
-          "answer": "Very few roots",
-          "score": -0.5,
+          //"answer": "Very few roots",
+          "answer_code": "few_roots",
+		  "score": -0.5,
            "image": "/ROOTF/few.jpeg",
           "link": "link-Root growth",
           "question_code": "ROOTF"
         },
         {
-          "answer": "A lot of roots",
-          "score": 1,
+          //"answer": "A lot of roots",
+          "answer_code": "lot_roots",
+		  "score": 1,
           "image": "/ROOTF/lot.jpeg",
           "link": "link-Root growth",
           "question_code": "ROOTF"
@@ -768,29 +829,33 @@ function init_spade_question(){
       "order": 25,
       "answers":[
         {
-         "answer": "No",
+         //"answer": "No",
+		 "answer_code": "no_nodules",
          "score": -1,
          "image": "NO",
          "link": "link- Soil oxigenation",
          "question_code": "ROOTT"
        },
        {
-         "answer": "yes, a few",
-         "score": -0.5,
+         //"answer": "yes, a few",
+         "answer_code": "yes_few",
+		 "score": -0.5,
          "image": "Todo",
          "link": "link- Soil oxigenation",
          "question_code": "ROOTT"
        },
        {
-         "answer": "yes, many",
-         "score": 1,
+         //"answer": "yes, many",
+         "answer_code": "yes_many",
+		 "score": 1,
          "image": "Todo",
          "link": "link- Soil oxigenation",
          "question_code": "ROOTT"
        },
        {
-         "answer": "Yes, but not red if opened",
-         "score": 1,
+         //"answer": "Yes, but not red if opened",
+         "answer_code": "yes_not_red",
+		 "score": 1,
          "image": "Todo",
          "link": "link- N availability",
          "question_code": "ROOTT"
@@ -800,25 +865,34 @@ function init_spade_question(){
     {
       "code": "EARTHW",
       "Title": "presence earthworms",
-      "question": "Do you see earthworms or clues of their presence (holes, channels, casts)?",
-      "data_type": "boolean",
+      "question": "Do you see signs of earthworms presence?",
+      "data_type": "select_multi",
       "help": "earthw_info",
       "how_many": "once",
       "Importance": "medium",
+	  "mandatory": false,
+	  "images": true,
       "condition": "",
       "order": 26,
       "answers":[
         {
-          "answer": "yes",
-          "score": 0,
-          "image": "Todo",
+          "answer_code": "earthworm",
+		  "score": 0,
+          "image": "/EARTHW/earthworm.jpg",
           "link": "no",
           "question_code": "EARTHW"
         },
         {
-         "answer": "No",
-         "score": 0,
-         "image": "Todo",
+         "answer_code": "hole",
+		 "score": 0,
+         "image": "/EARTHW/18.jpeg",
+         "link": "no",
+         "question_code": "EARTHW"
+       },
+	   {
+         "answer_code": "cast",
+		 "score": 0,
+         "image": "/EARTHW/17.jpeg",
          "link": "no",
          "question_code": "EARTHW"
        }
@@ -847,36 +921,41 @@ function init_spade_question(){
       "order": 28,
       "answers":[
         {
-          "answer": "1 (very good)",
-          "score": 1,
+          //"answer": "1 (very good)",
+          "answer_code": "1",
+		  "score": 1,
           "image": "Todo",
           "link": "link- Info on structure quality index",
           "question_code": "SQ"
         },
         {
-          "answer": 2,
-          "score": 0.8,
+          //"answer": 2,
+          "answer_code": "2",
+		  "score": 0.8,
           "image": "Todo",
           "link": "link- Info on structure quality index",
           "question_code": "SQ"
         },
         {
-          "answer": 3,
-          "score": 0.5,
+          //"answer": 3,
+          "answer_code": "3",
+		  "score": 0.5,
           "image": "Todo",
           "link": "link- Info on structure quality index",
           "question_code": "SQ"
         },
         {
-          "answer": 4,
-          "score": -0.5,
+          //"answer": 4,
+          "answer_code": "4",
+		  "score": -0.5,
           "image": "Todo",
           "link": "link- Info on structure quality index",
           "question_code": "SQ"
         },
         {
-          "answer": "5 (very bad)",
-          "score": -1,
+          //"answer": "5 (very bad)",
+          "answer_code": "5",
+		  "score": -1,
           "image": "Todo",
           "link": "link- Info on structure quality index",
           "question_code": "SQ"
