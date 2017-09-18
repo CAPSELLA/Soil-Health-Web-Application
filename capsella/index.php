@@ -200,6 +200,8 @@
     $aPage['nav'][3]['title'] = 'Knowledge base';
     $aPage['nav'][3]['link']  = $bp.'/kb/';
 
+    $aPage['nav'][4]['title'] = 'Maps';
+    $aPage['nav'][4]['link']  = $bp.'/?sect=esdb';
     // $aPage['nav'][2]['title'] = 'Capsella platform';
     // $aPage['nav'][2]['link']  = '?sect=caps_plat';
 
