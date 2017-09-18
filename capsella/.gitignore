@@ -7,3 +7,4 @@ vendor/
 *.zip
 .htaccess
 /composer-setup.php
+js/external/
