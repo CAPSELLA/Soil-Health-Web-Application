@@ -49,10 +49,10 @@ def run(query_string, payload):
 
 
 def query_layers(path):
-  db= DB({"db_type":"postgres","host":"localhost","user":"postgres", "password":"xxx","db":"capsella"});
-  print db.query("select * from caps_themes ",[]);
+  # db= DB({"db_type":"postgres","host":"localhost","user":"postgres", "password":"xxx","db":"capsella"});
+  # print db.query("select * from caps_themes ",[]);
 
-  db=new DB({});
+  # db=new DB({});
   return {'ok':True,'ret':{'path':path}};
 
 WSGIServer(app).run()
