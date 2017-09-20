@@ -3,10 +3,10 @@ library(jsonlite)
 library("SoilR")
 
 rothc <- function(obj){
-
   opt=fromJSON(obj);
-  clay=opt$clay        #Percent clay
-  num_year=opt$num_year        #Percent clay
+
+  clay=opt$clay                #Percent clay
+  num_year=opt$num_year        #Number of Year for the simulation
   if(is.null(num_year)){
     num_year=20;
   }
