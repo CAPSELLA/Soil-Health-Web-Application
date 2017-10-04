@@ -92,8 +92,8 @@
 
 
 
-    $script="<script src='".$bp."/js/capsella.js?v=3.2'></script>";
-    $script.="<script src='".$bp."/js/capsella_i18n.js?v=3.2'></script>";
+    $script="<script src='".$bp."/js/capsella.js?v=3.3'></script>";
+    $script.="<script src='".$bp."/js/capsella_i18n.js?v=3.3'></script>";
     $script.="<script src='".$bp."/js/external/jquery.datetimepicker.full.min.js'></script>";
     $aPage['script']  = $script;
 
@@ -124,8 +124,8 @@
 
         $aPage['navRight'][3]['title'] = 'Login';
         $aPage['navRight'][3]['link']  = $bp.'/?do_login=true';
-        $aPage['navRight'][4]['title'] = 'Register';
-        $aPage['navRight'][4]['link']  = $bp.'/?do_register=true';
+        // $aPage['navRight'][4]['title'] = 'Register';
+        // $aPage['navRight'][4]['link']  = $bp.'/?do_register=true';
 
 
         if(isset($_REQUEST['setLang'])){
@@ -184,7 +184,7 @@
 
 
     $body .= '</script>';
-    $body .="<script src='".$bp."/js/spade_structure.js?v=3.2'></script>";
+    $body .="<script src='".$bp."/js/spade_structure.js?v=3.3'></script>";
 
 
 

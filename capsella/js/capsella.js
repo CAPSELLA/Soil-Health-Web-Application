@@ -1368,6 +1368,18 @@ function cap_t2(value, field){
   if(transl==field+"_"+value){
     transl=cap_t(value);
   }
+  //if the word is not translated try to find the key in the english values (to solve old item)
+  if(global_opt.lang!=='en' && transl==value){
+      var key='';
+      jQuery.each(i18n_glob.en, function(k,v){
+        if(v==value){
+          key=k;
+        }
+      });
+      if(key!==''){
+        transl=cap_t(key);
+      }
+  }
   return transl;
 }
 
@@ -1403,7 +1415,7 @@ function init_caps_plat(){
 
 function caps_home(){
   jQuery('#capsella_info').html("You have login in Capsella Platform.<h3>Datasets</h3><div id='caps_datasets'>Load datasets</div><h3>Values</h3><div id='caps_values'></div>");
-  var group='capsella';
+  var group='soil_app';
 
   jQuery.ajax({
     'url':global_opt.base_path+'/api/caps_get_group_datasets/'+group,
@@ -1416,7 +1428,7 @@ function caps_home(){
         var html='<ul>';
         jQuery.each(d, function(k,v){
           console.log(v);
-          html+='<li data-content-type="'+v.contentType+'" data-uuid="'+v.uuid+'"><a>'+v.datasetName+'</a></li>';
+          html+='<li data-content-type="'+v.contentType+'" data-uuid="'+v.uuid+'"><a>'+v.datasetName+' '+v.username+' '+v.ownerGroup+' '+new Date(v.lastUpdated)+'</a></li>';
         });
         html+='<ul>';
         jQuery('#caps_datasets').html(html);
