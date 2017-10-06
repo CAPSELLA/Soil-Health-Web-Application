@@ -473,7 +473,7 @@ function renderSpadesList(spades_list){
 }
 
 function reset_and_show(data){
-  jQuery('#capsella_info').html('<a name="start_spade_test"></a><div id="spade_test_result"></div><button style="margin-top: 10px;" class="btn btn-success" id="spade_test_back">'+cap_t("<span class='glyphicon glyphicon-menu-left'></span> Back")+'</button>');
+  jQuery('#capsella_info').html('<a name="start_spade_test"></a><div id="spade_test_result"></div><button style="margin-top: 10px;" class="btn btn-success" id="spade_test_back">'+"<span class='glyphicon glyphicon-menu-left'></span>"+cap_t("Back")+'</button>');
   jQuery('#spade_test_back').click(function(){
     init_capsella('spade_test');
   });
@@ -1157,9 +1157,10 @@ function spade_test_result(data){
           sum_sq+=parseInt(data.sq[lay].slice(0,1));
         }
         var score=Math.round(sum_sq/data.laynum);
-        //html+="<div class='col-xs-12 soil_sq_"+score+"'><p/>"+cap_t("Average SQ score")+": <b>"+(sum_sq/data.laynum).toFixed(1)+"</b></div>";
+        var sq_average= (sum_sq/data.laynum).toFixed(0);
+        html+="<div class='col-xs-12 soil_sq_"+score+"'><p/>"+cap_t("Average SQ score")+": <b>"+cap_t("evaluate_"+sq_average)+"</b></div>";
 
-        html+="<div class='caps_layers col-xs-12'><p/><div>0cm</div>";
+        html+="<div class='caps_layers col-xs-12'><p/><div>0"+cap_t("cm")+"</div>";
         var start_dep=0;
         var final_depth=0;
         for (var lay=0; lay<data.laynum; lay++){
@@ -1199,10 +1200,14 @@ function spade_test_result(data){
           shp=cap_t2(shp,'agshp');
           var shp_correct=shp.replace(/ *\([^)]*\) */g, "");
 
-          lay_des+="<div class='layer_content'><div class='agshp' title='"+shp+"'>"+shp_correct+"</div><div class='agdim'>"+cap_t("Dimension of aggregates:")+" "+agdim+"mm</div></div>";
+          lay_des+="<div class='layer_content'>";
+            lay_des+="<div class='agshp' title='"+shp+"'>"+shp_correct+"</div>";
+            lay_des+="<div class='agdim'>"+cap_t("Dimension of aggregates")+": "+agdim+cap_t("mm")+"</div>";
+            lay_des+="<div class='agdim'>"+cap_t("Evaluation")+": "+cap_t("evaluate_"+sq)+"</div>";
+          lay_des+="</div>";
 //"+cap_t2(shp,'agshp')+"
 
-          html+="<div style='height:"+hh+"px' class='soil_layer'><div class='soil_layer_depth'><span class='aglyphicon aglyphicon-resize-vertical'></span><br/>"+end_dep+"cm</div><div style='height:"+hh+"px' class='soil_layer_inner soil_sq_"+sq+"'>"+lay_des+"</div></div>";
+          html+="<div style='height:"+hh+"px' class='soil_layer'><div class='soil_layer_depth'><span class='aglyphicon aglyphicon-resize-vertical'></span><br/>"+end_dep+cap_t("cm")+"</div><div style='height:"+hh+"px' class='soil_layer_inner soil_sq_"+sq+"'>"+lay_des+"</div></div>";
           start_dep=end_dep;
         }
       }
@@ -1327,7 +1332,7 @@ function spade_test_result_old(data){
 
 
           var hh=(550/final_depth)*(end_dep-start_dep);
-          lay_des=""+start_dep+"-"+end_dep+"cm,";
+          lay_des=""+start_dep+"-"+end_dep+cap_t("cm")+",";
           lay_des+=" "+cap_t2(comp,'comp')+", "+cap_t2(shp,'agshp')+", "+cap_t("aggregates of")+" "+agdim+"mm ";
 
 
