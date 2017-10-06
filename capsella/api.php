@@ -139,23 +139,26 @@
 
 
     $router->any('/api/caps_login', function() use ($db, $user) {
-
       $username=$_REQUEST['username'];
       $password=$_REQUEST['password'];
-      $call='https://capsella-services.madgik.di.uoa.gr:8443/capsella_authentication_service-dev/authenticate?username='.$username.'&password='.$password;
+      $call='https://capsella-services.madgik.di.uoa.gr:8443/capsella_authentication_service/authenticate?username='.$username.'&password='.$password;
       echo (fetchUrl($call));
     });
 
     $router->any('/api/caps_get_group_datasets/*', function($id_group) use ($db, $user) {
       $token=$_REQUEST['token'];
-      $call='https://capsella-services.madgik.di.uoa.gr:8443/data-manager-service/datasets/getGroupDatasets';
+             https://capsella-services.madgik.di.uoa.gr:8443/data-manager-service/datasets/getPublicDatasets
+
+      //$call='https://capsella-services.madgik.di.uoa.gr:8443/data-manager-service/datasets/getGroupDatasets';
+      $call='https://capsella-services.madgik.di.uoa.gr:8443/data-manager-service/datasets/getPublicDatasets';
       echo (fetchUrl($call,'GET',array('Authorization: Bearer '.$token, 'group:'.$id_group)));
     });
 
     $router->any('/api/caps_get_dataset/*', function($uuid) use ($db, $user) {
       $token=$_REQUEST['token'];
       $id_group=$_REQUEST['group'];
-      $call='https://capsella-services.madgik.di.uoa.gr:8443/data-manager-service/datasets/'.$uuid.'/getDataset';
+           //https://capsella-services.madgik.di.uoa.gr:8443/data-manager-service/datasets/getDataset/b87e2bb8-3936-4a47-8aa8-f40a3b833133
+      $call='https://capsella-services.madgik.di.uoa.gr:8443/data-manager-service/datasets/getDataset/'.$uuid.'';
       echo (fetchUrl($call,'GET',array('Authorization: Bearer '.$token, 'group:'.$id_group)));
     });
 

@@ -29,6 +29,8 @@ var map, marker;
 
 function init_capsella(type, topic){
 
+  jQuery('footer .container').removeClass("container");
+
   global_opt.offline=false;
 
   var settings=jQuery.jStorage.get('capsella_settings');
@@ -63,6 +65,8 @@ function init_capsella(type, topic){
     html+='<div class="col-sm-6 col-sm-pull-6" id="capsella_map"><div id="map_label">Label</div></div>';
     jQuery('#capsella_container').html(html);
     //map setup
+    jQuery('#capsella_map').height(jQuery(window).height()-70);
+
     map = L.map('capsella_map').setView([44.6,10.6], 4);
     updateControlsMap();
   }
@@ -115,7 +119,7 @@ function drawFrame(title, content, fun){
   var html="<div class='col-sm-6'><div class='sh_box'>";
     html+="<div class='sh_header'><h3>"+title+"</h3></div>";
     html+="<div class='sh_frame_content'>"+content+"</div>";
-    html+="<div class='sh_frame_buttons'><a class='btn btn-info sh_frame_button'>"+cap_t('start')+"</a></div>";
+    html+="<div class='sh_frame_buttons'><a class='btn btn-success sh_frame_button'>"+cap_t('start')+"</a></div>";
   html+="</div></div>";
   var res=jQuery(html);
 
@@ -130,7 +134,7 @@ function init_kb(topic){
   var url="";
   var level=0;
   var pages=[topic];
-  if(typeof topic ==='undefined' || topic ==='kb/'){
+  if(typeof topic ==='undefined' || topic ==='kb/' ){
     level=0;
     url=base_url+level;
   }
@@ -370,16 +374,17 @@ function getWMSMapfile(mapfile, raster_theme, layer){
 
 function reset_spade_view(){
   var html="";
-  html+="<div style='display:none' id='my_spade_tests'><h3>"+cap_t("My spade tests")+"</h3></div>";
-  html+='<div id="spade_test_welcome" class="alert alert-info">'+cap_t('spade_test_welcome')+'</div><div id="spade_test_insert"><a onClick="add_spade()" class="form-control btn btn-info">'+cap_t("Enter a new spade test")+'</a></div>';
-  html+="<div style='display:none' id='public_spade_tests'><h3>"+cap_t("Public spade tests")+"</h3></div>";
-
+  html+='<div id="spade_test_welcome" class="alert alert-info">'+cap_t('spade_test_welcome')+'</div>';
   html+="<div class='alert alert-info'>";
   html+='<div>'+cap_t('spade_test_before')+'</div>';
   html+="<p/><div class='row'><div class=col-xs-4><img class='img-responsive' src='res/img/general/spade.jpg'/></div>";
   html+="<div class=col-xs-4><img class='img-responsive' src='res/img/general/knife.jpg'/></div>";
   html+="<div class=col-xs-4><img class='img-responsive' src='res/img/general/tray.jpg'/></div></div>";
   html+="</div>";
+  html+='<div id="spade_test_insert"><a onClick="add_spade()" class="new_spade_test_button form-control btn btn-success">'+cap_t("Enter a new spade test")+'</a></div>';
+  html+="<div style='display:none' id='my_spade_tests'><h3>"+cap_t("My spade tests")+"</h3></div>";
+  html+="<div style='display:none' id='public_spade_tests'><h3>"+cap_t("Public spade tests")+"</h3></div>";
+
 
   html+='<div id="spade_test_result"></div>';
   jQuery('#capsella_info').html(html);
@@ -446,7 +451,7 @@ function renderSpadesList(spades_list){
         el+="<button class='btn btn-sm btn-warning'>"+cap_t("Resume")+"</button>";
       }
       else{
-        el+="<button class='btn btn-sm btn-info'>"+cap_t("View")+"</button>";
+        el+="<button class='btn btn-sm btn-success'>"+cap_t("View")+"</button>";
       }
       el+=data.date+" "+encodeHtml(data.name)+" ";
       //
@@ -454,11 +459,7 @@ function renderSpadesList(spades_list){
 
       var el2=jQuery(el);
       el2.find('button').click(function(){
-        jQuery('#capsella_info').html('<button id="spade_test_back">'+cap_t("Back")+'</button><div id="spade_test_result"></div>');
-        jQuery('#spade_test_back').click(function(){
-          init_capsella('spade_test');
-        });
-        spade_test_result(data);
+        reset_and_show(data);
         map.flyTo([data.lat,data.lon],14);
       });
       jQuery('#'+type+'_spade_tests').show().append(el2);
@@ -466,23 +467,19 @@ function renderSpadesList(spades_list){
 
 
     marker.on('click', function(){
-            spade_test_result(data);
-
-      // jQuery.ajax({
-      //     'url':global_opt.base_path+'/api/spade_test/'+data.guid,
-      //     'method': 'GET',
-      //     'dataType': 'JSON',
-      //     'success': function(d2){
-      //       jQuery('#capsella_info').html('<div id="spade_test_result"></div>');
-      //       var data=JSON.parse(d2.data[0].json);
-      //       data.flag=d2.data[0].flag;
-      //       spade_test_result(data);
-      //     }
-      // });
+        reset_and_show(data);
     });
   });
 }
 
+function reset_and_show(data){
+  jQuery('#capsella_info').html('<a name="start_spade_test"></a><div id="spade_test_result"></div><button style="margin-top: 10px;" class="btn btn-success" id="spade_test_back">'+"<span class='glyphicon glyphicon-menu-left'></span>"+cap_t("Back")+'</button>');
+  jQuery('#spade_test_back').click(function(){
+    init_capsella('spade_test');
+  });
+  spade_test_result(data);
+  jQuery(document).scrollTop( jQuery("#spade_test_result").offset().top-(10+jQuery('.navbar-fixed-top').height()) );
+}
 //Clean the page to start a data entry (new or existing)
 function resetSpade(){
   jQuery('#capsella_container').html('<div class="col-xs-12" id="spade_test_insert"></div>');
@@ -751,7 +748,7 @@ function spade_test_draw(data, move){
       html+='<input class="form-control" placeholder="'+placeholder+'" name="'+field_name+'" type="number" value="'+value+'"/>';
     }
     else if(question.data_type=='text'){
-      html+='<textarea class="form-control" name="'+field_name+'" >'+value+'</textarea>';
+      html+='<textarea class="form-control" placeholder="'+cap_t(question.help)+'" name="'+field_name+'" >'+value+'</textarea>';
     }
     else{
       html+="";
@@ -811,7 +808,7 @@ function spade_test_draw(data, move){
             clsckd="answer_box_selected";
           }
 
-          html+="<div class='col-sm-6'>";
+          html+="<div class='col-xs-6'>";
           html+='<input class="spade_input" '+chk+' id="answer_'+k+'_'+n+'"  type="'+type+'" name="'+field_name+'" value="'+answer_code+'" />';
 
           html+="<div onclick='triggerAns("+k+","+n+")' class='answer_box "+clsckd+"' id='answer_box_"+k+"_"+n+"'>";
@@ -987,7 +984,7 @@ function update_data(data, move){
 
   if(ok){
     var ret_function=spade_test_draw;
-    if(global_opt.spade_step>=spade_question.length-1){
+    if(global_opt.spade_step>=spade_question.length-1 && move>0){
       ret_function=spade_save_email;
     }
     caps_save(data, ret_function, move);
@@ -1007,11 +1004,11 @@ function encodeHtml(rawStr){
 function spade_save_email(data){
   var settings=jQuery.jStorage.get('capsella_settings');
   var html='';
-  html+=cap_t("Thank you, you have finished the Spade test.");
+  html+="<h3>"+cap_t("Save")+"</h3><div class='alert alert-info'>"+cap_t("Thank you, you have finished the Spade test.")+"</div>";
   var saved_email=settings.email;
 
   html+='<label for="caps_email">'+cap_t("Please insert your email to see the spade test result and save the data.")+'</label><input class="form-control" id="caps_email" value="'+saved_email+'"></input>';
-  html+='<button id="save_email" class="btn btn-info">'+cap_t("Save")+'</button>';
+  html+='<button id="save_email" class="btn btn-success">'+cap_t("Save")+'</button>';
   jQuery('#spade_test_insert').html(html);
 
   jQuery("#save_email").click(function(){
@@ -1030,7 +1027,7 @@ function spade_save_email(data){
         'success': function(d){
             var html="";
             html="<div id='spade_test_result'></div>";
-            html+="<div id='back_map'><button class='btn btn-info'>"+cap_t("Go back to the map")+"</button></div>";
+            html+="<div id='back_map'><button class='btn btn-success'>"+cap_t("Go back to the map")+"</button></div>";
             jQuery('#spade_test_insert').html(html);
             spade_test_result(data);
 
@@ -1061,32 +1058,235 @@ function spade_resume(data){
 //   spade_test_draw(data);
 // }
 
+function spade_test_result_new(data){
+
+    var finished=true;
+    if(data.step_done<24){
+      finished=false;
+    }
+    else{
+    }
+    var html="<h3>"+encodeHtml(data.name)+" - "+cap_t("OBSERVATION AT GLANCE")+"</h3>";
+    html+="<svg id='spade_test_chart' viewBox='0 0 300 300' height='400' width='100%'></svg>";
+
+    jQuery("#spade_test_result").html(html);
+
+    var svg=d3.select('#spade_test_chart');
+    for (lay=0; lay<data.laynum; lay++){
+
+
+      var end_dep=data.laydep[lay];
+      var sq=parseInt(data.sq[lay].slice(0,1));
+      var shp=data.agshp[lay];
+      var comp=data.comp[lay];
+      var agdim=data.agdim[lay];
+      if(data.laynum==1){
+        end_dep=data.laydep;
+        sq=parseInt(data.sq.slice(0,1));
+        shp=data.agshp;
+        comp=data.comp;
+        agdim=data.agdim;
+      }
+
+
+      // var hh=(550/final_depth)*(end_dep-start_dep);
+      // lay_des=""+start_dep+"-"+end_dep+"cm,";
+      // lay_des+=" "+cap_t(comp)+", "+cap_t(shp)+" "+cap_t("aggregates of")+" "+agdim+"mm ";
+
+      drawTrapezio(svg,start_dep,end_dep);
+
+      html+="<div style='height:"+hh+"px' class='soil_layer soil_sq_"+sq+"'>"+lay_des+"</div>";
+      start_dep=end_dep;
+    }
+}
+
+function get_line_gen(){
+  return d3.line()
+    .x(function(d) {
+      return d.x;
+    })
+    .y(function(d) {
+      return d.y;
+    });
+}
+function drawTrapezio(svg, start, end){
+  var line = get_line_gen();
+  var left=0;
+  var w=300;
+  var slope=0.1;
+  var right=w;
+  x1_start=left+(start*slope);
+  x2_start=right-(start*slope);
+  x1_end=left+(end*slope);
+  x2_end=right-(end*slope);
+  var points = [
+    {x: x1_start, y: start},
+    {x: x2_start, y: start},
+    {x: x2_end, y: end},
+    {x: x1_end, y: end}
+  ];
+
+  // console.log(points);
+  svg.append('path')
+    .attr("d", line(points) + 'Z')
+    .style("fill", "orange")
+    .style("stroke", "black");
+
+}
+
 
 function spade_test_result(data){
+
+    var html="<h3>"+encodeHtml(data.name)+"</h3><h4>"+cap_t("Observation at a glance")+"</h4>";
+    if(typeof data.step_done =='undefined'){
+      html+="<div class='alert alert-warning'>"+cap_t("the test has just started.")+'</div>';
+
+      html+="<button id='spade_resume' class='btn btn-success'>"+cap_t("Resume the test")+"</button>";
+    }
+    else{
+
+      var chart_height=300;
+
+      if(data.step_done<24){
+        html+="<div class='alert alert-warning'>"+cap_t("the test is not concluded.")+' '+data.step_done+'/'+spade_question.length+'</div>';
+        html+="<button id='spade_resume' class='btn btn-success'>"+cap_t("Resume the test")+"</button>";
+      }
+      else{
+        var sum_sq=0;
+        for (lay=0; lay<data.laynum; lay++){
+          sum_sq+=parseInt(data.sq[lay].slice(0,1));
+        }
+        var score=Math.round(sum_sq/data.laynum);
+        var sq_average= (sum_sq/data.laynum).toFixed(0);
+        html+="<div class='col-xs-12 soil_sq_"+score+"'><p/>"+cap_t("Average SQ score")+": <b>"+cap_t("evaluate_"+sq_average)+"</b></div>";
+
+        html+="<div class='caps_layers col-xs-12'><p/><div>0"+cap_t("cm")+"</div>";
+        var start_dep=0;
+        var final_depth=0;
+        for (var lay=0; lay<data.laynum; lay++){
+          if(data.laydep[lay]===null){
+            data.laydep[lay]=10;
+          }
+          final_depth=Math.max(final_depth, data.laydep[lay]);
+        }
+
+        if(typeof data.laydep === 'number'){
+          final_depth=data.laydep;
+        }
+
+
+        for (lay=0; lay<data.laynum; lay++){
+
+
+          var end_dep=data.laydep[lay];
+          var sq=parseInt(data.sq[lay].slice(0,1));
+          var shp=data.agshp[lay];
+          var comp=data.comp[lay];
+          var agdim=data.agdim[lay];
+          if(data.laynum==1){
+            end_dep=data.laydep;
+            sq=parseInt(data.sq.slice(0,1));
+            shp=data.agshp;
+            comp=data.comp;
+            agdim=data.agdim;
+            // final_depth=data.laydep;
+          }
+
+
+          var hh=(chart_height/final_depth)*(end_dep-start_dep);
+          // debugger;
+          lay_des="";
+
+          shp=cap_t2(shp,'agshp');
+          var shp_correct=shp.replace(/ *\([^)]*\) */g, "");
+
+          lay_des+="<div class='layer_content'>";
+            lay_des+="<div class='agshp' title='"+shp+"'>"+shp_correct+"</div>";
+            lay_des+="<div class='agdim'>"+cap_t("Dimension of aggregates")+": "+agdim+cap_t("mm")+"</div>";
+            lay_des+="<div class='agdim'>"+cap_t("Evaluation")+": "+cap_t("evaluate_"+sq)+"</div>";
+          lay_des+="</div>";
+//"+cap_t2(shp,'agshp')+"
+
+          html+="<div style='height:"+hh+"px' class='soil_layer'><div class='soil_layer_depth'><span class='aglyphicon aglyphicon-resize-vertical'></span><br/>"+end_dep+cap_t("cm")+"</div><div style='height:"+hh+"px' class='soil_layer_inner soil_sq_"+sq+"'>"+lay_des+"</div></div>";
+          start_dep=end_dep;
+        }
+      }
+      html+="</div>"; //close the profiles
+      html+="<h4>"+cap_t("General Info")+"</h4>";
+      html+="<div class='col-xs-12'><span class='cap_label'>"+cap_t("Survey data")+"</span>: <span class='cap_answ'>"+data.date+"</span><br/>";
+      if(typeof data.fcov!=='undefined'){
+        html+="<span class='cap_label'>"+cap_t("Field")+"</span>: <span class='cap_answ'>"+cap_t2(data.fcov,'fcov')+"</span><br/>";
+      }
+      if(typeof data.pcov!=='undefined'){
+        html+="<span class='cap_label'>"+cap_t("Observed area")+"</span>: <span class='cap_answ'>"+cap_t2(data.pcov,'pcov')+"</span></br>";
+      }
+      if(typeof data.fslo!=='undefined'){
+        html+="<span class='cap_label'>"+cap_t("Slope")+"</span>: <span class='cap_answ'>"+cap_t2(data.fslo,'fslo')+"</span></br/>";
+      }
+      if(typeof data.sois!='undefined' && data.sois.length>0){
+        var ss=data.sois.map(function(v){return cap_t2(v,'sois');});
+        html+="<span class='cap_label'>"+cap_t("On soil surface")+"</span>: <span class='cap_answ'><b>"+ss.join("</b>, <b>")+"</b></span></br>";
+      }
+      if(typeof data.wilpla!='undefined' && data.wilpla.length>0){
+        var ww=data.wilpla.map(function(v){return cap_t2(v,'wilpla');});
+        html+="<span class='cap_label'>"+cap_t("Wildplants")+"</span>: <span class='cap_answ'><b>"+ww.join("</b>, <b>")+"</b></span></br>";
+        // html+="<p/>"+cap_t("We have seen the following plants")+":  <b>"+ww.join("</b>, <b>");
+      }
+
+      html+="</div>";
+
+    }
+    html+="</div>";
+
+      html+="<div class='col-xs-12'><p/><button data-toggle='collapse' data-target='#spade_raw_result' class='btn btn-success btn-sm'>"+cap_t("More")+"</button>";
+        if(data.flag===0){
+          html+="<button data-toggle='collapse' id='spade_edit' class='btn btn-success btn-sm'>"+cap_t("Edit")+"</button>";
+        }
+        html+="<div id='spade_raw_result' class='collapse'>";
+        html+="<h3>"+cap_t("Spade test raw data")+"</h3><pre>"+JSON.stringify(data,null,2)+"</pre>";
+        html+="</div>";
+
+        html+='<a onclick="add_spade()" class="new_spade_test_button form-control btn btn-success">'+cap_t("Enter a new spade test")+'</a>';
+
+
+        jQuery("#spade_test_result").html(html);
+        jQuery('#spade_resume').click(function(){
+          spade_resume(data);
+        });
+        jQuery('#spade_edit').click(function(){
+          console.log("Edit");
+          global_opt.spade_step=21;
+          spade_resume(data);
+        });
+    html+="</div>";
+
+}
+
+function spade_test_result_old(data){
 
     var html="<h3>"+cap_t("Spade test")+" "+encodeHtml(data.name)+"</h3>";
     if(typeof data.step_done =='undefined'){
       html+="<div class='alert alert-warning'>"+cap_t("the test has just started.")+'</div>';
 
-      html+="<button id='spade_resume' class='btn btn-info'>"+cap_t("Resume the test")+"</button>";
+      html+="<button id='spade_resume' class='btn btn-success'>"+cap_t("Resume the test")+"</button>";
     }
     else{
       html+="<div class='col-xs-12'>"+cap_t("Collected on")+" "+data.date+" ";
       if(typeof data.fcov!=='undefined'){
-        html+=" "+cap_t("on a field with")+" <b>"+cap_t(data.fcov)+"</b>";
+        html+=" "+cap_t("on a field with")+" <b>"+cap_t2(data.fcov,'fcov')+"</b>";
       }
       if(typeof data.fslo!=='undefined'){
-        html+=" - <b>"+cap_t(data.fslo)+"</b>. ";
+        html+=" - <b>"+cap_t2(data.fslo,'fslo')+"</b>. ";
       }
       if(typeof data.pcov!=='undefined'){
-        html+=" "+cap_t("On the spot there is")+" <b>"+cap_t(data.pcov)+"</b>.";
+        html+=" "+cap_t("On the spot there is")+" <b>"+cap_t2(data.pcov,'pcov')+"</b>.";
       }
       if(typeof data.sois!='undefined' && data.sois.length>0){
-        var ss=data.sois.map(function(v){return cap_t(v);});
+        var ss=data.sois.map(function(v){return cap_t2(v,'sois');});
         html+="<p/>"+cap_t("On the surface we have seen")+" <b>"+ss.join("</b>, <b>");
       }
       if(typeof data.wilpla!='undefined' && data.wilpla.length>0){
-        var ww=data.wilpla.map(function(v){return cap_t(v);});
+        var ww=data.wilpla.map(function(v){return cap_t2(v,'wilpla');});
         html+="<p/>"+cap_t("We have seen the following plants")+":  <b>"+ww.join("</b>, <b>");
       }
 
@@ -1094,7 +1294,7 @@ function spade_test_result(data){
 
       if(data.step_done<24){
         html+="<div class='alert alert-warning'>"+cap_t("the test is not concluded.")+' '+data.step_done+'/'+spade_question.length+'</div>';
-        html+="<button id='spade_resume' class='btn btn-info'>"+cap_t("Resume the test")+"</button>";
+        html+="<button id='spade_resume' class='btn btn-success'>"+cap_t("Resume the test")+"</button>";
       }
       else{
         var sum_sq=0;
@@ -1132,8 +1332,8 @@ function spade_test_result(data){
 
 
           var hh=(550/final_depth)*(end_dep-start_dep);
-          lay_des=""+start_dep+"-"+end_dep+"cm,";
-          lay_des+=" "+cap_t(comp)+", "+cap_t(shp)+" "+cap_t("aggregates of")+" "+agdim+"mm ";
+          lay_des=""+start_dep+"-"+end_dep+cap_t("cm")+",";
+          lay_des+=" "+cap_t2(comp,'comp')+", "+cap_t2(shp,'agshp')+", "+cap_t("aggregates of")+" "+agdim+"mm ";
 
 
           html+="<div style='height:"+hh+"px' class='soil_layer soil_sq_"+sq+"'>"+lay_des+"</div>";
@@ -1143,15 +1343,15 @@ function spade_test_result(data){
     }
     html+="</div>";
 
-      html+="<div class='col-xs-12'><p/><button data-toggle='collapse' data-target='#spade_raw_result' class='btn btn-info btn-sm'>"+cap_t("More")+"</button>";
+      html+="<div class='col-xs-12'><p/><button data-toggle='collapse' data-target='#spade_raw_result' class='btn btn-success btn-sm'>"+cap_t("More")+"</button>";
         if(data.flag===0){
-          html+="<button data-toggle='collapse' id='spade_edit' class='btn btn-info btn-sm'>"+cap_t("Edit")+"</button>";
+          html+="<button data-toggle='collapse' id='spade_edit' class='btn btn-success btn-sm'>"+cap_t("Edit")+"</button>";
         }
         html+="<div id='spade_raw_result' class='collapse'>";
         html+="<h3>"+cap_t("Spade test raw data")+"</h3><pre>"+JSON.stringify(data,null,2)+"</pre>";
         html+="</div>";
 
-        html+='<a onclick="add_spade()" class="form-control btn btn-info">'+cap_t("Enter a new spade test")+'</a>';
+        html+='<a onclick="add_spade()" class="new_spade_test_button form-control btn btn-success">'+cap_t("Enter a new spade test")+'</a>';
 
 
         jQuery("#spade_test_result").html(html);
@@ -1168,6 +1368,27 @@ function spade_test_result(data){
 }
 
 
+function cap_t2(value, field){
+  var transl=cap_t(field+"_"+value);
+  if(transl==field+"_"+value){
+    transl=cap_t(value);
+  }
+  //if the word is not translated try to find the key in the english values (to solve old item)
+  if(global_opt.lang!=='en' && transl==value){
+      var key='';
+      jQuery.each(i18n_glob.en, function(k,v){
+        if(v==value){
+          key=k;
+        }
+      });
+      if(key!==''){
+        transl=cap_t(key);
+      }
+  }
+  return transl;
+}
+
+
 /************************************
    CAPSELLA PLATFORM test
 ************************************/
@@ -1175,7 +1396,7 @@ function init_caps_plat(){
 
   var html="<div class='row'><label for='caps_user'>UserID</label><input class='form-control' id='caps_user' value=''/>";
   html+="<label for='caps_pswd'>Password</label><input class='form-control' type='password' id='caps_pswd' value='' />";
-  html+="<a id='caps_login' class='btn btn-info'>Login</a>";
+  html+="<a id='caps_login' class='btn btn-success'>Login</a>";
   html+="<div id='loading'></div>";
   html+="</div>";
   jQuery('#capsella_info').html(html);
@@ -1199,7 +1420,7 @@ function init_caps_plat(){
 
 function caps_home(){
   jQuery('#capsella_info').html("You have login in Capsella Platform.<h3>Datasets</h3><div id='caps_datasets'>Load datasets</div><h3>Values</h3><div id='caps_values'></div>");
-  var group='capsella';
+  var group='soil_app';
 
   jQuery.ajax({
     'url':global_opt.base_path+'/api/caps_get_group_datasets/'+group,
@@ -1212,7 +1433,7 @@ function caps_home(){
         var html='<ul>';
         jQuery.each(d, function(k,v){
           console.log(v);
-          html+='<li data-content-type="'+v.contentType+'" data-uuid="'+v.uuid+'"><a>'+v.datasetName+'</a></li>';
+          html+='<li data-content-type="'+v.contentType+'" data-uuid="'+v.uuid+'"><a>'+v.datasetName+' '+v.username+' '+v.ownerGroup+' '+new Date(v.lastUpdated)+'</a></li>';
         });
         html+='<ul>';
         jQuery('#caps_datasets').html(html);

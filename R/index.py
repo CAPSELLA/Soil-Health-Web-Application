@@ -1,10 +1,9 @@
 #!/usr/bin/env python
-from smartIPM.DB import *
+
 import cgitb
 from cgi import parse_qs, escape
 import sys, os
 from flup.server.fcgi import WSGIServer
-import json
 
 #show error
 cgitb.enable()
@@ -38,25 +37,11 @@ def run(query_string, payload):
     res = "";
     #api_obj = ApiManagerPlus();
     #api_res=api_obj.api(path, payload);
-    api_res=query_layers(path);
+    api_res={'ok': True, 'res':{'a';1}};
     if(api_res['ok']):
         res=json.dumps(api_res['ret'],sort_keys=False);
     else:
-        api_res['query_string']=query_string;
-        api_res['path']=path;
         res=json.dumps(api_res)
     return {'http_response': http_response, 'http_content_type': http_content_type, 'body': res}
 
-
-def query_layers(path):
-  # db= DB({"db_type":"postgres","host":"localhost","user":"postgres", "password":"xxx","db":"capsella"});
-  # print db.query("select * from caps_themes ",[]);
-
-  # db=new DB({});
-  return {'ok':True,'ret':{'path':path}};
-
 WSGIServer(app).run()
-
-
-#print ("Content-type: text/html\n\n")
-#print ("hello birds")

@@ -179,7 +179,7 @@ function init_spade_question(){
         },
         {
           //"answer": "Evidence of erosion",
-		"answer_code": "erosion",	  
+		"answer_code": "erosion",
           "score": -2,
           "image": "/SOIS/17.jpeg",
           "link": "http://soilhealth.capsella.eu/sois/erosion/",
@@ -753,25 +753,25 @@ function init_spade_question(){
       "order": 23,
       "answers":[
         {
-           //"answer": "No roots",
-           "answer_code": "no_roots",
-		   "score": -1,
-           "image": "Todo",
+          //"answer": "No roots",
+          "answer_code": "no_roots",
+          "score": -1,
+          "image": "/ROOTP/no_root.jpeg",
            "link": "link-Root growth",
            "question_code": "ROOTP"
          },
          {
            //"answer": "Very few roots",
            "answer_code": "few_roots",
-		   "score": -0.5,
-           "image": "Todo",
+	         "score": -0.5,
            "link": "link-Root growth",
-           "question_code": "ROOTP"
+           "question_code": "ROOTP",
+           "image": "/ROOTP/few.jpeg",
          },
          {
            //"answer": "A lot of roots",
            "answer_code": "lot_roots",
-		   "score": 1,
+           "score": 1,
            "image": "/ROOTP/lot.jpeg",
            "link": "link-Root growth",
            "question_code": "ROOTP"
@@ -793,23 +793,23 @@ function init_spade_question(){
         {
           //"answer": "No roots",
           "answer_code": "no_roots",
-		  "score": -1,
-          "image": "Todo",
+          "score": -1,
+          "image": "/ROOTP/no_root.jpeg",
           "link": "link-Root growth",
           "question_code": "ROOTF"
         },
         {
           //"answer": "Very few roots",
           "answer_code": "few_roots",
-		  "score": -0.5,
-           "image": "/ROOTF/few.jpeg",
+          "score": -0.5,
+          "image": "/ROOTF/few.jpeg",
           "link": "link-Root growth",
           "question_code": "ROOTF"
         },
         {
           //"answer": "A lot of roots",
           "answer_code": "lot_roots",
-		  "score": 1,
+          "score": 1,
           "image": "/ROOTF/lot.jpeg",
           "link": "link-Root growth",
           "question_code": "ROOTF"
@@ -830,7 +830,7 @@ function init_spade_question(){
       "answers":[
         {
          //"answer": "No",
-		 "answer_code": "no_nodules",
+         "answer_code": "no_nodules",
          "score": -1,
          "image": "NO",
          "link": "link- Soil oxigenation",
