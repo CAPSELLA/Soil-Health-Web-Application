@@ -1,3 +1,16 @@
+
+
+//An error occurred during the data savings. Please check the connection and try again later.
+//Save the spade tests
+//On the phone
+//Online
+//We are getting the coordinates...
+//Latitude
+//Longitude
+//Please select a file
+//It is not possile to get the position. Please add an address or a place name
+//Address
+
 var i18n_glob={
   "it": {
     "cm": "cm",
@@ -356,6 +369,9 @@ var i18n_glob={
     "earthw_cast": "Casts",
     "agshp_blocky_small": "Blocky Small",
     "agshp_blocky_large": "Blocky Large",
+    "sq_2": "2 (good)",
+    "sq_3": "3 (sufficient)",
+    "sq_4": "4 (bad)",
     "evaluate_2": "good",
     "evaluate_3": "sufficient",
     "evaluate_4": "bad",

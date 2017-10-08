@@ -1,11 +1,9 @@
-# Soil-Health-Web-Application
-
-
+#Soil-Health-Web-Application
 
 Installation and Test
 ---------------
 
-Requiremennts
+Requirements
 	* Postgres/Postgis: https://www.postgresql.org/download/
 	* Apache2: https://httpd.apache.org/
 	* PHP:
@@ -24,4 +22,3 @@ Clone the repository from github
 Install the dependencies using composer
 
 	$ composer update
-  

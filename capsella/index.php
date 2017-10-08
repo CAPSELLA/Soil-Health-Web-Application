@@ -180,7 +180,9 @@
 
     $body.= "jQuery('.navbar-right li:contains(".$capsella_lang.")').addClass('active');";
     $body .= 'global_opt.lang=' . json_encode($capsella_lang) . ';';
-    $body .= 'global_opt.base_path=' . json_encode($bp) . ';';
+    $bp2=$bp."/";
+    $body .= 'global_opt.base_path=' . json_encode($bp2) . ';';
+    $body .= 'global_opt.offline=false;';
 
 
     $body .= '</script>';

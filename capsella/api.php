@@ -44,6 +44,37 @@
       echo ($json_string);
     });
 
+    $router->post('/api/spade_test_batch/', function() use ($db, $user) {
+
+      $body = file_get_contents("php://input");
+      $ret=Array('ok'=>true,'data'=>Array());
+      $obj=json_decode($body);
+
+      foreach ($obj as $key => $value) {
+        $ret['data'][$key]=saveSingleSpadeTest($db, $user, $value);
+      }
+
+      // if(true){
+      // }
+      // else{
+      //   $ret['message']="Missing GUID variable";
+      // }
+      // $ret['obj']=$obj;
+
+      echo(json_encode($ret));
+    });
+
+    $router->post('/api/spade_test_image/*', function($guid) use ($db, $user) {
+
+      $body = file_get_contents("php://input");
+      $ret=Array('ok'=>true,'data'=>Array());
+      $base64=($body);
+      $ret=saveSingleSpadeImage($db, $user, $base64, $guid);
+
+      echo(json_encode($ret));
+    });
+
+
     $router->post('/api/spade_test/', function() use ($db, $user) {
 
       $body = file_get_contents("php://input");
@@ -51,30 +82,7 @@
       $obj=json_decode($body);
 
       if(true){
-          $q="select * from caps_spade WHERE guid=:guid;";
-
-          $look = $db->select($q,array(":guid"=>$obj->guid));
-
-          $array=array(
-            ":guid"=>$obj->guid,
-            ":date_mon"=>$obj->date,
-            ":lat"=>$obj->lat,
-            ":lon"=>$obj->lon,
-            ":user_id"=>$obj->user_id,
-            ":email"=>$obj->email,
-            ":json"=>json_encode($obj)
-          );
-
-          if(count($look['data'])==0){
-            $ins="insert into caps_spade (guid, date_mon, lat, lon, json, user_id, email) ";
-            $ins.="VALUES (:guid, :date_mon, :lat, :lon, :json, :user_id, :email);";
-            $ret=$db->update($ins,$array);
-          }
-          else{
-            $ins="update caps_spade set date_mon=:date_mon, lat=:lat, lon=:lon, json=:json, user_id=:user_id, email=:email WHERE guid=:guid;";
-            $ret=$db->update($ins,$array);
-          }
-
+        $ret=saveSingleSpadeTest($db, $user, $obj);
       }
       else{
         $ret['message']="Missing GUID variable";
@@ -171,6 +179,54 @@
       echo ($json_string);
     });
 
+    function saveSingleSpadeTest($db, $user, $obj){
+      $q="select * from caps_spade WHERE guid=:guid;";
+
+      $look = $db->select($q,array(":guid"=>$obj->guid));
+
+      $array=array(
+        ":guid"=>$obj->guid,
+        ":date_mon"=>$obj->date,
+        ":lat"=>$obj->lat,
+        ":lon"=>$obj->lon,
+        ":user_id"=>$obj->user_id,
+        ":email"=>$obj->email,
+        ":json"=>json_encode($obj)
+      );
+
+      if(count($look['data'])==0){
+        $ins="insert into caps_spade (guid, date_mon, lat, lon, json, user_id, email) ";
+        $ins.="VALUES (:guid, :date_mon, :lat, :lon, :json, :user_id, :email);";
+        $ret=$db->update($ins,$array);
+      }
+      else{
+        $ins="update caps_spade set date_mon=:date_mon, lat=:lat, lon=:lon, json=:json, user_id=:user_id, email=:email WHERE guid=:guid;";
+        $ret=$db->update($ins,$array);
+      }
+      return $ret;
+    }
+
+    function saveSingleSpadeImage($db, $user, $base64, $guid){
+      $q="select * from caps_image WHERE guid=:guid;";
+      $look = $db->select($q,array(":guid"=>$guid));
+
+      $array=array(
+        ":guid"=>$guid,
+        ":base64"=>$base64
+      );
+
+      if(count($look['data'])==0){
+        $ins="insert into caps_image (guid, base64) ";
+        $ins.="VALUES (:guid, :base64);";
+        $ret=$db->update($ins,$array);
+      }
+      else{
+        $ins="update caps_image set base64=:base64 WHERE guid=:guid;";
+        $ret=$db->update($ins,$array);
+      }
+      //return Array('ok'=>$ret['ok']);
+      return $ret;
+    }
 
     function fetchUrl($url, $method='POST',$h=null){
 
