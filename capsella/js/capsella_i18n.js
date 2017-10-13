@@ -2,6 +2,7 @@
 
 //An error occurred during the data savings. Please check the connection and try again later.
 //Save the spade tests
+//SΑποθήκευση
 //On the phone
 //Online
 //We are getting the coordinates...
@@ -10,6 +11,7 @@
 //Please select a file
 //It is not possile to get the position. Please add an address or a place name
 //Address
+//Soil Image
 
 var i18n_glob={
   "it": {

@@ -104,6 +104,11 @@
 
     $logged_in = $login_res['ok'];
     $isAdmin = false;
+    $interset = array_intersect(["administrator"], $login_res['user']['roles']);
+    if( count($interset) > 0 )
+      {
+        $isAdmin=true;
+      }
 
     $body    = "";
     $sidebar = "";
@@ -204,6 +209,12 @@
 
     $aPage['nav'][4]['title'] = 'Maps';
     $aPage['nav'][4]['link']  = $bp.'/?sect=esdb';
+
+    if(  $isAdmin ){
+      $aPage['nav'][5]['title'] = 'Admin';
+      $aPage['nav'][5]['link']  = $bp.'/?sect=admin';
+
+    }
     // $aPage['nav'][2]['title'] = 'Capsella platform';
     // $aPage['nav'][2]['link']  = '?sect=caps_plat';
 
@@ -222,7 +233,7 @@
     else if( isset($_REQUEST['sect']) )
       {
         $sect = $_REQUEST['sect'];
-        if(  $sect=="kb" || $sect=="esdb" || $sect=="som_dyn" || $sect=="kb"  || $sect=="caps_plat" || $sect=="spade_test")
+        if(  $sect=="kb" || $sect=="esdb" || $sect=="som_dyn" || $sect=="kb"  || $sect=="caps_plat" || $sect=="spade_test"|| $sect=="admin")
           {
             $aPage['content']=$body;
             $aPage['sidebar']=NULL;

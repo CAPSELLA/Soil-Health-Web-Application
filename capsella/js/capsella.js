@@ -111,7 +111,7 @@ function init_capsella(type, topic){
 
   //basic structure
   var html='';
-  if(type=="home" || type=="kb"){
+  if(type=="home" || type=="kb"|| type=="admin"){
     html+='<div class="col-xs-12" id="capsella_home"></div>';
     jQuery('#capsella_container').html(html);
   }
@@ -154,6 +154,9 @@ function init_capsella(type, topic){
   else if(type=="kb"){
     init_kb(topic);
   }
+  else if(type=="admin"){
+    init_admin();
+  }
   else{
     init_home();
   }
@@ -176,6 +179,100 @@ function init_home(){
   drawFrame(cap_t("SOM Dynamics"), "", function(){init_capsella('som_dyn');});
   // drawFrame(cap_t("Soil threats"), "", function(){init_capsella('esdb');});
 
+}
+
+function init_admin(){
+
+  var html="<h1>"+cap_t("Admin Capsella soil health platform")+"</h1>";
+  html+="<div id='frame_container'></div>";
+  jQuery('#capsella_home').html(html);
+
+  jQuery.ajax({
+    'url':global_opt.base_path+'api/spade_test_all',
+    'method': 'GET',
+    'dataType': 'JSON',
+    'success': function(d){
+        var res=d.data;
+        jQuery('#frame_container').html("<table class='table'><thead><tr><th>"+cap_t("Name")+"</th><th>"+cap_t("Date")+"</th><th>"+cap_t("Coords")+"</th><th>"+cap_t("Flag")+"</th><th>"+cap_t("Email")+"</th><th>"+cap_t("Status")+"</th></thead><tbody></tbody></table>");
+        jQuery.each(d.data, function(k,v){
+          v.json=JSON.parse(v.json);
+
+          //<select class='form-control'><option></option><option value='high'>"+cap_t("High")+"</option><option value='medium'>"+cap_t("Medium")+"</option><option value='low'>"+cap_t("Low")+"</option></select>
+          var varnum=Object.keys(v.json).length;
+
+          varlabel="";
+          if(varnum==34){
+            varlabel="<div class='label label-success'>"+cap_t("Complete")+"</div>";
+          }
+          else if(varnum==10){
+            varlabel="<div class='label label-danger'>"+cap_t("Empty")+"</div>";
+          }
+          else{
+            varlabel="<div class='label label-warning'>"+cap_t("incomplete")+"</div><br/>("+(34-varnum)+" missing)";
+          }
+
+            var tr="<tr id='"+v.id_caps_spade+"'><th>"+cap_t(v.json.name)+"</th><th>"+cap_t(v.date_mon)+"</th><td>"+v.lat+"<br/>"+v.lon+"</td><td>"+v.flag+"</td><td>"+v.email+"</td>";
+            tr+="<td>"+varlabel+"</td>";
+            tr+="<td><button class='edit_spade btn btn-success'>"+cap_t("Edit")+"</button></td>";
+            tr+="</tr>";
+            tr=jQuery(tr);
+            tr.find('.edit_spade').click(function(){
+              edit_spade_admin(v);
+            });
+            jQuery('#frame_container table tbody').append(tr);
+          });
+      }
+  });
+}
+
+
+function edit_spade_admin(v){
+
+  var html='';
+  html+="<button onclick='init_admin()' id='spade_admin_back' class='btn btn-block btn-default'>"+cap_t("Back")+"</button>";
+  html+='<h3>'+cap_t("View")+' - '+v.json.name+'</h3>';
+  html+='<div id="spade_test_result"></div>';
+
+
+  html+='<h3>'+cap_t("Edit")+' - '+v.json.name+'</h3>';
+  html+='<label>'+cap_t('Sample code')+'</label><input class="form-control" id="spade_name" value="'+v.json.name+'" />';
+  html+='<label>'+cap_t('Date')+'</label><input class="form-control" value="'+v.date_mon+'" type="date" id="spade_date_mon" />';
+  html+='<label>'+cap_t('Latitude')+'</label><input class="form-control" value="'+v.lat+'" type="numeric" id="spade_lat" />';
+  html+='<label>'+cap_t('Longitude')+'</label><input class="form-control" value="'+v.lon+'" type="numeric" id="spade_lon" />';
+  html+='<label>'+cap_t('Flag')+'</label><input class="form-control" value="'+v.flag+'" type="numeric" id="spade_flag" />';
+  html+="<button id='spade_admin_save' class='btn btn-block btn-success'>"+cap_t("Save")+"</button>";
+  html+="<button id='spade_admin_undo' class='btn btn-block btn-default'>"+cap_t("Undo")+"</button>";
+
+  jQuery('#frame_container').html(html);
+
+  spade_test_result(v.json);
+
+  jQuery('#spade_admin_undo').click(function(){
+    init_admin();
+  });
+  jQuery('#spade_admin_save').click(function(){
+    v.json.name=jQuery('#spade_name').val();
+    v.date_mon=jQuery('#spade_date_mon').val();
+    v.lat=jQuery('#spade_lat').val();
+    v.lon=jQuery('#spade_lon').val();
+    v.flag=jQuery('#spade_flag').val();
+    jQuery.ajax({
+      'url':global_opt.base_path+'api/spade_test_admin/'+v.id_caps_spade,
+      'method': 'POST',
+      'data': JSON.stringify(v),
+      'dataType': 'JSON',
+      'success': function(d){
+        console.log(d);
+        if(d.ok){
+          init_admin();
+        }
+        else{
+          alert(d.msg);
+        }
+       }
+    });
+//    init_admin();
+  });
 }
 
 function drawFrame(title, content, fun){
@@ -1091,6 +1188,38 @@ function save_image(data,base64){
   data.image=data.guid;
 }
 
+function get_image(guid, div){
+  if(is_cordova()){
+    var my_spade_images=jQuery.jStorage.get('my_spade_images');
+    var html='';
+    html+="<h4>"+cap_t("Soil Image")+"</h4>";
+    if(typeof my_spade_images[guid] !=='undefined'){
+      html+='<img class="img-responsive" src="'+my_spade_images[guid].base64+'"/>';
+    }
+    if(typeof div !=='undefined'){
+      jQuery(div).html(html);
+    }
+    return html;
+  }
+  else{
+    jQuery.ajax({
+      'url':global_opt.base_path+'api/get_image/'+guid,
+      'method': 'GET',
+      'success': function(d){
+        if(d.ok){
+            html+="<h4>"+cap_t("Soil Image")+"</h4>";
+            if(typeof my_spade_images[guid] !=='undefined'){
+              html+='<img class="img-responsive" src="'+d+'"/>';
+            }
+            if(typeof div !=='undefined'){
+              jQuery(div).html(html);
+            }
+          }
+       }
+    });
+  }
+}
+
 function triggerAns(k,n){
   console.log(k+" "+n);
   jQuery('input#answer_'+k+"_"+n).trigger('click');
@@ -1490,6 +1619,8 @@ function spade_test_result(data){
         // html+="<p/>"+cap_t("We have seen the following plants")+":  <b>"+ww.join("</b>, <b>");
       }
 
+      html+="<div id='spade_image_placeholder'></div>";
+
       html+="</div>";
 
     }
@@ -1500,13 +1631,18 @@ function spade_test_result(data){
           html+="<button data-toggle='collapse' id='spade_edit' class='btn btn-success btn-sm'>"+cap_t("Edit")+"</button>";
         }
         html+="<div id='spade_raw_result' class='collapse'>";
-        html+="<h3>"+cap_t("Spade test raw data")+"</h3><pre>"+JSON.stringify(data,null,2)+"</pre>";
+        html+="<h4>"+cap_t("Spade test raw data")+"</h4><pre>"+JSON.stringify(data,null,2)+"</pre>";
         html+="</div>";
 
         html+='<a onclick="add_spade()" class="new_spade_test_button form-control btn btn-success">'+cap_t("Enter a new spade test")+'</a>';
 
 
         jQuery("#spade_test_result").html(html);
+
+        if(typeof data.image!='undefined'){
+          get_image(data.image,'#spade_image_placeholder');
+        }
+
         jQuery('#spade_resume').click(function(){
           spade_resume(data);
         });
@@ -1515,8 +1651,6 @@ function spade_test_result(data){
           global_opt.spade_step=21;
           spade_resume(data);
         });
-    html+="</div>";
-
 }
 
 function spade_test_result_old(data){
@@ -1612,6 +1746,8 @@ function spade_test_result_old(data){
 
 
         jQuery("#spade_test_result").html(html);
+
+
         jQuery('#spade_resume').click(function(){
           spade_resume(data);
         });

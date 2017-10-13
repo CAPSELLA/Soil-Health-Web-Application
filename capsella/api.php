@@ -13,6 +13,18 @@
     $base_path = $aSetting['BASE_PATH'];
     $router = new \Respect\Rest\Router($base_path);
 
+    $login = new Dbmng\Login($db);
+    $login_res = $login->auth();
+    $isAdmin = false;
+
+    $interset = array_intersect(["administrator"], $login_res['user']['roles']);
+    if( count($interset) > 0 )
+      {
+        $isAdmin=true;
+      }
+    $user['isAdmin']=$isAdmin;
+
+
     /***************************************************************************/
     /* S T A R T  C U S T O M  A R E A                                          /
     /***************************************************************************/
@@ -89,6 +101,44 @@
       }
       $ret['obj']=$obj;
 
+      echo(json_encode($ret));
+    });
+
+    $router->get('/api/spade_test_all/', function() use ($db, $user) {
+      // print_r($user);
+      if($user['isAdmin']){
+        $q="select * from caps_spade";
+        $ret=$db->select($q,array());
+        $json_string=json_encode($ret);
+        echo ($json_string);
+      }
+      else{
+        return json_encode(Array('ok'=>false,'msg'=>'Unauthorize'));
+
+      }
+    });
+
+  //$router->post('/api/spade_test_image/*', function($guid)     use ($db, $user) {
+    $router->post('/api/spade_test_admin/*', function($id_caps_spade) use ($db, $user) {
+
+      if($user['isAdmin']){
+        $body = file_get_contents("php://input");
+        $ret=Array('ok'=>false);
+        $obj=json_decode($body);
+
+        $array=array(
+          ":lat"=>$obj->lat,
+          ":lon"=>$obj->lon,
+          ":flag"=>$obj->flag,
+          ":json"=>json_encode($obj->json),
+          ":id_caps_spade"=>$id_caps_spade
+        );
+        $ins="update caps_spade set lat=:lat, lon=:lon, json=:json, flag=:flag  WHERE id_caps_spade=:id_caps_spade;";
+        $ret=$db->update($ins,$array);
+      }
+      else{
+          return json_encode(Array('ok'=>false,'msg'=>'Unauthorize'));
+      }
       echo(json_encode($ret));
     });
 
