@@ -76,6 +76,15 @@
       echo(json_encode($ret));
     });
 
+    $router->get('/api/get_image/*', function($guid) use ($db, $user) {
+
+      $body = file_get_contents("php://input");
+      $q="select * from caps_image WHERE guid=:guid;";
+      $ret=$db->select($q,array(':guid'=>$guid));
+      
+      echo ($ret['data'][0]['base64']);
+    });
+
     $router->post('/api/spade_test_image/*', function($guid) use ($db, $user) {
 
       $body = file_get_contents("php://input");
