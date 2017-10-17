@@ -27,3 +27,13 @@ ALTER TABLE ONLY caps_spade
 
 ALTER TABLE ONLY caps_spade
     ADD CONSTRAINT id_caps_spade_pk PRIMARY KEY (id_caps_spade);
+
+
+CREATE TABLE caps_image
+(
+  id_caps_image serial NOT NULL,
+  guid character varying,
+  base64 text,
+  CONSTRAINT id_caps_image_pk PRIMARY KEY (id_caps_image),
+  CONSTRAINT caps_image_guid_key UNIQUE (guid)
+);

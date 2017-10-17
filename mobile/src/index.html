@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!--
+    Customize this policy to fit your own app's needs. For more guidance, see:
+        https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
+    Some notes:
+        * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
+        * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+        * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+            * Enable inline JS: add 'unsafe-inline' to default-src
+    -->
+    <meta charset="utf-8">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+    <title>Capsella Soil health</title>
+  </head>
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+         <div class="navbar-header">
+           <!-- <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar" >
+             <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+               <span class="icon-bar"></span>
+               <span class="icon-bar"></span>
+             </button> -->
+             <a onclick="init_app()" class="navbar-brand" >Soil health</a>
+          </div>
+          <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+              <!-- <li class=""><a href="/capsella/?sect=spade_test">Spade test</a></li>
+              <li class=""><a href="/capsella/?sect=som_dyn">SOM dynamics</a></li>
+              <li class=""><a href="/capsella/kb/">Knowledge base</a></li>
+              <li class=""><a href="/capsella/?sect=esdb">Maps</a></li> -->
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <!-- <li class=""><a href="/capsella/?setLang=en">EN</a></li>
+              <li class=""><a href="/capsella/?setLang=gr">GR</a></li>
+              <li class=""><a href="/capsella/?setLang=it">IT</a></li>
+              <li class=""><a href="/capsella/?do_login=true">Login</a> -->
+              </li>
+            </ul></div><!--/.nav-collapse --></div></nav>
+						<div class="container">
+
+							<div class="starter-template">
+                <h1 class="dbmng_page_title">CAPSELLA Soil Health</h1>
+                <div class='col-xs-12' id='capsella_container'></div>
+							</div>
+
+						</div><!-- /.container -->
+          <footer class="footer">
+            <div class="container">
+              <div id='footer1'>Capsella has received funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement No 688813</div><div id='footer_partner'></div><div class='footer_images'>
+                <img class='img-responsive img_eu imgs_footer' src='res/img/logo_partners_bw.png'>
+              </img><br/><a class='credits' href='?sect=credits'>Credits</a></div>
+            </div>
+          </footer>
+
+    <!--  Link alle librerie da usare nell'applicazione -->
+    <script type="text/javascript" src="lib/jquery.min.js"></script>
+    <script type="text/javascript" src="lib/jstorage.min.js"></script>
+    <script type="text/javascript" src="lib/bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="lib/bootstrap/css/bootstrap.min.css">
+    <script type="text/javascript" src="lib/leaflet/leaflet.js"></script>
+    <link rel="stylesheet" type="text/css" href="lib/leaflet/leaflet.css">
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/capsella.js"></script>
+    <script type="text/javascript" src="js/capsella_i18n.js"></script>
+    <script type="text/javascript" src="js/spade_structure.js"></script>
+
+    <!-- Il file fito_sirt.css deve essere l'ultimo css che viene caricato. -->
+    <link rel="stylesheet" type="text/css" href="css/capsella.css">
+    <style>
+    body {
+      padding-top: 55px;
+    }
+    </style>
+
+    <script type="text/javascript">
+      // base_call localhost
+      // base_call='http://localhost/fitosirt_backend/api/';
+
+      var global_opt={};
+      global_opt.lang="en";
+      global_opt.base_path="";
+      global_opt.offline=true;
+
+      global_opt.online_path="https://soilhealth.capsella.eu/";
+      // global_opt.online_path="http://localhost/capsella/";
+
+      function init_app(){
+        init_capsella('spade_test');
+      }
+
+      if ( is_cordova() ) {
+       document.addEventListener("deviceready", init_app, false);
+      }
+      else {
+       jQuery(document).ready(init_app);
+      }
+    </script>
+  </body>
+</html>

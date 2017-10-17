@@ -24,14 +24,70 @@ var map, marker;
 // });
 
 
+//go back. the block_function stops the back function; the exit_function exit the app
+function goBack(block_function, exit_function){
+    console.log("back");
+    if(jQuery('#my_spade_tests').length>=1){
+      exit_function();
+    }
+    else if(jQuery('#spade_before').length>=1){
+      block_function();
+      jQuery('#spade_before').trigger('click');
+    }
+    else{
+      block_function();
+        init_capsella('spade_test');
+    }
+}
 
+function is_cordova() {
+   return (typeof(cordova) !== 'undefined' || typeof(phonegap) !== 'undefined');
+}
 
 
 function init_capsella(type, topic){
 
-  jQuery('footer .container').removeClass("container");
 
-  global_opt.offline=false;
+  //Block back for spade test and app
+  if(type=='spade_test'){
+    if(is_cordova()){
+      document.addEventListener("backbutton", function(e){
+        goBack(function(){},function(){
+            navigator.app.exitApp();
+          });
+      }, false);
+    }
+    else {
+      history.pushState(null, null, document.URL);
+      window.addEventListener('popstate', function () {
+          goBack(function(){
+            history.pushState(null, null, document.URL);
+          },function(){});
+      });
+    }
+  }
+
+  if(typeof navigator.globalization!=='undefined'){
+    navigator.globalization.getPreferredLanguage(function(language){
+      try{
+        var l=language.value.substr(0,2);
+        if(l=='el'){
+          l='gr';
+        }
+        if(l=='it' || l=='en' || l=='gr'){
+          global_opt.lang=l;
+        }
+      }
+      catch(exc){
+        console.log(exc);
+      }
+    }, function(){});
+  }
+
+  jQuery('footer .container').removeClass("container");
+  if(typeof global_opt.offline=='undefined'){
+    global_opt.offline=false;
+  }
 
   var settings=jQuery.jStorage.get('capsella_settings');
   if(settings==null){
@@ -43,7 +99,7 @@ function init_capsella(type, topic){
   init_spade_question();
   global_opt['mapserver_path']='http://78.46.198.147/cgi-bin/mapserv?';
   //jQuery('.navbar-brand').html("Capsella - "+cap_t("Soil Health"));
-  jQuery('.navbar-brand').html('<div style="float:left; margin-right:20px;"><img style="height:30px;" src="'+global_opt.base_path+'/res/img/capsella.png"/></div>'+cap_t("Soil Health"));
+  jQuery('.navbar-brand').html('<div style="float:left; margin-right:20px;"><img style="height:30px;" src="'+global_opt.base_path+'res/img/capsella.png"/></div>'+cap_t("Soil Health"));
 
   //Translate the interface
   jQuery('.navbar-fixed-top .navbar-nav a').each(function(k,v){
@@ -55,20 +111,31 @@ function init_capsella(type, topic){
 
   //basic structure
   var html='';
-  if(type=="home" || type=="kb"){
+  if(type=="home" || type=="kb"|| type=="admin"){
     html+='<div class="col-xs-12" id="capsella_home"></div>';
     jQuery('#capsella_container').html(html);
   }
   else{
+
+    var style1='col-sm-6 col-sm-push-6';
+    var style2='col-sm-6 col-sm-pull-6';
+    if(global_opt.offline===true){
+      style1='col-sm-12';
+      style2='col-sm-12';
+    }
+
     html+='<div class="col-xs-12" id="capsella_tools"></div>';
-    html+='<div class="col-sm-6 col-sm-push-6" id="capsella_info"></div>';
-    html+='<div class="col-sm-6 col-sm-pull-6" id="capsella_map"><div id="map_label">Label</div></div>';
+    html+='<div class="'+style1+' " id="capsella_info"></div>';
+    html+='<div class="'+style2+' " id="capsella_map"><div id="map_label">Label</div></div>';
     jQuery('#capsella_container').html(html);
     //map setup
     jQuery('#capsella_map').height(jQuery(window).height()-70);
 
     map = L.map('capsella_map').setView([44.6,10.6], 4);
     updateControlsMap();
+    if(global_opt.offline){
+      jQuery('#capsella_map').hide();
+    }
   }
 
 
@@ -86,6 +153,9 @@ function init_capsella(type, topic){
   }
   else if(type=="kb"){
     init_kb(topic);
+  }
+  else if(type=="admin"){
+    init_admin();
   }
   else{
     init_home();
@@ -111,6 +181,108 @@ function init_home(){
 
 }
 
+function init_admin(){
+
+  var html="<h1>"+cap_t("Admin Capsella soil health platform")+"</h1>";
+  html+="<div id='frame_container'></div>";
+  jQuery('#capsella_home').html(html);
+
+  jQuery.ajax({
+    'url':global_opt.base_path+'api/spade_test_all',
+    'method': 'GET',
+    'dataType': 'JSON',
+    'success': function(d){
+        var res=d.data;
+        jQuery('#frame_container').html("<table class='table'><thead><tr><th>"+cap_t("Name")+"</th><th>"+cap_t("Date")+"</th><th>"+cap_t("Coords")+"</th><th>"+cap_t("Flag")+"</th><th>"+cap_t("Email")+"</th><th>"+cap_t("Status")+"</th></thead><tbody></tbody></table>");
+        jQuery.each(d.data, function(k,v){
+          try{
+            v.json=JSON.parse(v.json);
+
+
+            //<select class='form-control'><option></option><option value='high'>"+cap_t("High")+"</option><option value='medium'>"+cap_t("Medium")+"</option><option value='low'>"+cap_t("Low")+"</option></select>
+            var varnum=0;
+            try{
+              varnum=Object.keys(v.json).length;
+            }
+            catch(exc){}
+
+            varlabel="";
+            if(v.json.step_done==24 || varnum==34 ){
+              varlabel="<div class='label label-success'>"+cap_t("Complete")+"</div>";
+            }
+            else if(varnum==10){
+              varlabel="<div class='label label-danger'>"+cap_t("Empty")+"</div>";
+            }
+            else{
+              varlabel="<div class='label label-warning'>"+cap_t("incomplete")+"</div><br/>("+(34-varnum)+" missing)";
+            }
+
+              var tr="<tr id='"+v.id_caps_spade+"'><th>"+cap_t(v.json.name)+"</th><th>"+cap_t(v.date_mon)+"</th><td>"+v.lat+"<br/>"+v.lon+"</td><td>"+v.flag+"</td><td>"+v.email+"</td>";
+              tr+="<td>"+varlabel+"</td>";
+              tr+="<td><button class='edit_spade btn btn-success'>"+cap_t("Edit")+"</button></td>";
+              tr+="</tr>";
+              tr=jQuery(tr);
+              tr.find('.edit_spade').click(function(){
+                edit_spade_admin(v);
+              });
+              jQuery('#frame_container table tbody').append(tr);
+            }
+            catch(exce){}
+          });
+      }
+  });
+}
+
+
+function edit_spade_admin(v){
+
+  var html='';
+  html+="<button onclick='init_admin()' id='spade_admin_back' class='btn btn-block btn-default'>"+cap_t("Back")+"</button>";
+  html+='<h3>'+cap_t("View")+' - '+v.json.name+'</h3>';
+  html+='<div id="spade_test_result"></div>';
+
+
+  html+='<h3>'+cap_t("Edit")+' - '+v.json.name+'</h3>';
+  html+='<label>'+cap_t('Sample code')+'</label><input class="form-control" id="spade_name" value="'+v.json.name+'" />';
+  html+='<label>'+cap_t('Date')+'</label><input class="form-control" value="'+v.date_mon+'" type="date" id="spade_date_mon" />';
+  html+='<label>'+cap_t('Latitude')+'</label><input class="form-control" value="'+v.lat+'" type="numeric" id="spade_lat" />';
+  html+='<label>'+cap_t('Longitude')+'</label><input class="form-control" value="'+v.lon+'" type="numeric" id="spade_lon" />';
+  html+='<label>'+cap_t('Flag')+'</label><input class="form-control" value="'+v.flag+'" type="numeric" id="spade_flag" />';
+  html+="<button id='spade_admin_save' class='btn btn-block btn-success'>"+cap_t("Save")+"</button>";
+  html+="<button id='spade_admin_undo' class='btn btn-block btn-default'>"+cap_t("Undo")+"</button>";
+
+  jQuery('#frame_container').html(html);
+
+  spade_test_result(v.json);
+
+  jQuery('#spade_admin_undo').click(function(){
+    init_admin();
+  });
+  jQuery('#spade_admin_save').click(function(){
+    v.json.name=jQuery('#spade_name').val();
+    v.date_mon=jQuery('#spade_date_mon').val();
+    v.lat=jQuery('#spade_lat').val();
+    v.lon=jQuery('#spade_lon').val();
+    v.flag=jQuery('#spade_flag').val();
+    jQuery.ajax({
+      'url':global_opt.base_path+'api/spade_test_admin/'+v.id_caps_spade,
+      'method': 'POST',
+      'data': JSON.stringify(v),
+      'dataType': 'JSON',
+      'success': function(d){
+        console.log(d);
+        if(d.ok){
+          init_admin();
+        }
+        else{
+          alert(d.msg);
+        }
+       }
+    });
+//    init_admin();
+  });
+}
+
 function drawFrame(title, content, fun){
   if(typeof fun !=='function'){
    fun=function(){alert('aa');};
@@ -130,7 +302,7 @@ function drawFrame(title, content, fun){
 
 function init_kb(topic){
 
-  var base_url=global_opt.base_path+'/api/get_kb';
+  var base_url=global_opt.base_path+'api/get_kb';
   var url="";
   var level=0;
   var pages=[topic];
@@ -197,7 +369,7 @@ function init_kb(topic){
                 path=pages[1]+"/"+v.caps_path;
               }
 
-              html+="<div class='sh_frame_buttons'><a class='sh_frame_button' href='"+global_opt.base_path+"/kb/"+path+"'>"+cap_t('view')+"</a></div>";
+              html+="<div class='sh_frame_buttons'><a class='sh_frame_button' href='"+global_opt.base_path+"kb/"+path+"'>"+cap_t('view')+"</a></div>";
             html+="</div></div>";
 
           });
@@ -229,7 +401,7 @@ function init_esdb(){
     popup.setLatLng(e.latlng).setContent(cap_t("Selected point")).openOn(map);
 
     jQuery.ajax({
-      'url':global_opt.base_path+'/api/get_data/'+e.latlng.lat+"/"+e.latlng.lng,
+      'url':global_opt.base_path+'api/get_data/'+e.latlng.lat+"/"+e.latlng.lng,
       'method': 'GET',
       'dataType': 'JSON',
       'success': function(d){
@@ -315,7 +487,7 @@ function updateMainMap(v){
 
 function loadThemes(){
   jQuery.ajax({
-    'url':global_opt.base_path+'/api/get_themes',
+    'url':global_opt.base_path+'api/get_themes',
     'method': 'GET',
     'dataType': 'JSON',
     'success': function(d){
@@ -373,8 +545,8 @@ function getWMSMapfile(mapfile, raster_theme, layer){
 ************************************/
 
 function reset_spade_view(){
+  var tab="<table class='table'><thead></thead><tbody></tbody></table>";
   var html="";
-  html+='<div id="spade_test_welcome" class="alert alert-info">'+cap_t('spade_test_welcome')+'</div>';
   html+="<div class='alert alert-info'>";
   html+='<div>'+cap_t('spade_test_before')+'</div>';
   html+="<p/><div class='row'><div class=col-xs-4><img class='img-responsive' src='res/img/general/spade.jpg'/></div>";
@@ -382,14 +554,72 @@ function reset_spade_view(){
   html+="<div class=col-xs-4><img class='img-responsive' src='res/img/general/tray.jpg'/></div></div>";
   html+="</div>";
   html+='<div id="spade_test_insert"><a onClick="add_spade()" class="new_spade_test_button form-control btn btn-success">'+cap_t("Enter a new spade test")+'</a></div>';
-  html+="<div style='display:none' id='my_spade_tests'><h3>"+cap_t("My spade tests")+"</h3></div>";
-  html+="<div style='display:none' id='public_spade_tests'><h3>"+cap_t("Public spade tests")+"</h3></div>";
-
+  html+="<div style='display:none' id='my_spade_tests'><h3>"+cap_t("My spade tests")+"</h3>"+tab+"</div>";
+  html+="<div class='row'><div id='save_spade_test_info'></div><button  style='display:none' class='btn btn-success btn-block' id='save_spade_test_online'>"+cap_t("Save the spade tests")+"</button></div>";
+  html+="<div style='display:none' id='public_spade_tests'><h3>"+cap_t("Public spade tests")+"</h3>"+tab+"</div>";
+  html+="<div style='' id='spade_test_welcome'><div class='alert alert-info'>"+cap_t("spade_test_welcome")+"</div></div>";
 
   html+='<div id="spade_test_result"></div>';
   jQuery('#capsella_info').html(html);
 
+
+  jQuery('#save_spade_test_online').click(function(){
+      save_spade_test_online();
+  });
 }
+
+function save_spade_test_online(){
+  var my_spade_tests=jQuery.jStorage.get('my_spade_tests');
+  jQuery('#save_spade_test_info').html(cap_t("We are uploading the spade test on the server"));
+    jQuery.ajax({
+      'url':global_opt.online_path+'api/spade_test_batch/',
+      'method': 'POST',
+      'data': JSON.stringify(my_spade_tests),
+      'dataType': 'JSON',
+      'success': function(d){
+        var saved=d.data;
+        var my_spade_tests=jQuery.jStorage.get('my_spade_tests');
+        jQuery.each(saved,function(k,v){
+          console.log(k);
+          if(v.ok===true){
+            my_spade_tests[k]['saved']=true;
+          }
+        });
+        jQuery.jStorage.set('my_spade_tests',my_spade_tests);
+        jQuery('#save_spade_test_info').html(cap_t("OK"));
+        init_spade_test();
+      },
+      'error':function(e){
+        console.log(e);
+        var msg=cap_t("An error occurred during the data savings. Please check the connection and try again later.");
+        alert(msg);
+        jQuery('#save_spade_test_info').html(msg);
+      }
+    });
+
+    var img=jQuery.jStorage.get('my_spade_images');
+    jQuery.each(img,function(k,v){
+      if(!v.saved){
+          jQuery.ajax({
+            'url':global_opt.online_path+'api/spade_test_image/'+k,
+            'method': 'POST',
+            'data': v.base64,
+            'dataType': 'JSON',
+            'success': function(d){
+              if(d.ok){
+                v.saved=true;
+                //jQuery('#save_spade_test_info').append("Saved image "+k);
+                jQuery.jStorage.set('my_spade_images',img);
+              }
+            },
+            'error':function(e){
+              console.log(e);
+            }
+          });
+      }
+    });
+}
+
 function init_spade_test(){
 
   var user_id=jQuery.jStorage.get('capsella_settings').user_id;
@@ -404,7 +634,7 @@ function init_spade_test(){
   }
   else{
     jQuery.ajax({
-      'url':global_opt.base_path+'/api/spade_test/?filter_user='+user_id,
+      'url':global_opt.base_path+'api/spade_test/?filter_user='+user_id,
       'method': 'GET',
       'dataType': 'JSON',
       'success': function(d){
@@ -417,10 +647,14 @@ function init_spade_test(){
 
 function renderSpadesList(spades_list){
   var user_id=jQuery.jStorage.get('capsella_settings').user_id;
+  var to_be_save=false;
+
   jQuery.each(spades_list, function(k,v){
     var data;
     if(typeof v.json!=='undefined'){
       data=JSON.parse(v.json);
+      data.lat=v.lat;
+      data.lon=v.lon;
     }
     else{
       data=v;
@@ -428,7 +662,7 @@ function renderSpadesList(spades_list){
     var type='public';
     // var i=base_icon;
     var icon = new L.Icon({
-      iconUrl: global_opt.base_path+'/res/img/marker/blue_marker.png',
+      iconUrl: global_opt.base_path+'res/img/marker/blue_marker.png',
       iconSize:     [25, 41],
       iconAnchor:   [12, 41],
     });
@@ -436,7 +670,7 @@ function renderSpadesList(spades_list){
       jQuery("#spade_test_welcome").hide();
       type='my';
       icon = new L.Icon({
-        iconUrl: global_opt.base_path+'/res/img/marker/green_marker.png',
+        iconUrl: global_opt.base_path+'res/img/marker/green_marker.png',
         iconSize:     [25, 41],
         iconAnchor:   [12, 41],
       });
@@ -446,30 +680,50 @@ function renderSpadesList(spades_list){
 
     var marker = L.marker([data.lat, data.lon], {icon: icon}).addTo(map);
 
-      var el="<li>";
+      var el="<tr>";
+      el+="<th>"+encodeHtml(data.name)+"</th><td>"+data.date+"</td>";
+
+      el+="<td>";
       if(data.step_done<24){
         el+="<button class='btn btn-sm btn-warning'>"+cap_t("Resume")+"</button>";
       }
       else{
         el+="<button class='btn btn-sm btn-success'>"+cap_t("View")+"</button>";
       }
-      el+=data.date+" "+encodeHtml(data.name)+" ";
-      //
-      el+="</li>";
+      el+="</td>";
+
+      if(type=='my'){
+        if(global_opt.offline===true){
+          el+="<td>";
+          if(data.saved===false){
+            el+="<span class='label label-danger'>On the phone</span>";
+            to_be_save=true;
+          }
+          else{
+            el+="<span class='label label-success'>Online</span>";
+          }
+          el+="</td>";
+        }
+      }
+      el+="</tr>";
 
       var el2=jQuery(el);
       el2.find('button').click(function(){
         reset_and_show(data);
         map.flyTo([data.lat,data.lon],14);
       });
-      jQuery('#'+type+'_spade_tests').show().append(el2);
-
-
+      jQuery('#'+type+'_spade_tests').show();
+      jQuery('#'+type+'_spade_tests').find("tbody").append(el2);
 
     marker.on('click', function(){
         reset_and_show(data);
     });
   });
+
+
+  if(to_be_save){
+    jQuery('#save_spade_test_online').show();
+  }
 }
 
 function reset_and_show(data){
@@ -492,35 +746,40 @@ function add_spade(){
   var html='<h3>'+cap_t("Enter a new spade test")+'</h3>';
   html+='<div style="height:300px;" id="capsella_map2"></div>';
   html+='<div class="alert alert-info">'+cap_t('Click on the map to move the spade test location')+'</div>';
-
+  html+='<div id="coords_descr"></div>';
   html+='<input type="hidden"   id="spade_lat" />';
   html+='<input type="hidden"   id="spade_lon" />';
+
   html+='<label>'+cap_t('Sample code')+'</label><input class="form-control" id="spade_name" />';
   html+='<label>'+cap_t('Date')+'</label><input class="form-control" value="'+new Date().toJSON().slice(0,10)+'" type="date" id="spade_date" />';
+  html+='<div id="spade_address_div" style="display:none;"><label>'+cap_t('Address')+'</label><input class="form-control" id="spade_address" /></div>';
   // html+='<label>'+cap_t('Picture')+'</label><input class="form-control" type="file" accept="image/*;capture=camera"  id="spade_img" />';
   html+='<button id="spade_next" onClick="spade_test1()" class="btn btn-success">'+cap_t("Next")+'</button>';
   jQuery('#spade_test_insert').html(html);
 
-
-
-  map = L.map('capsella_map2').setView([43.6,10.6], 6);
-  updateControlsMap();
-
-
-
+  if(global_opt.offline===true){
+    jQuery('#coords_descr').html(cap_t("We are getting the coordinates..."));
+    jQuery('#capsella_map2').hide();
+  }
+  else{
+    map = L.map('capsella_map2').setView([43.6,10.6], 6);
+    updateControlsMap();
+    map.on('click', function(e){
+      position = {'coords':{'latitude':e.latlng.lat, 'longitude':e.latlng.lng}};
+      createPoint(position);
+    });
+  }
   get_location();
-  map.on('click', function(e){
-    position = {'coords':{'latitude':e.latlng.lat, 'longitude':e.latlng.lng}};
-    createPoint(position);
-  });
-
-
 }
 
 //get the gps location
 function get_location(){
+  console.log('start_get_log');
+  console.log(navigator.geolocation);
   navigator.geolocation.getCurrentPosition(
     function(position) {
+        console.log('get_log');
+        console.log(position);
         createPoint(position);
     },
     function(error) {alert(error.message);}
@@ -558,11 +817,15 @@ function geocode_address(){
 function createPoint(position){
   var lat=position.coords.latitude;
   var lon=position.coords.longitude;
-  if(marker){
-    map.removeLayer(marker);
+  jQuery('#coords_descr').html(cap_t("Latitude")+":"+lat+" - "+cap_t("Longitude")+":"+lon);
+
+  if(global_opt.offline===false){
+    if(marker){
+      map.removeLayer(marker);
+    }
+    marker = L.marker([lat,lon]).addTo(map);
+    map.flyTo([lat,lon],14);
   }
-  marker = L.marker([lat,lon]).addTo(map);
-  map.flyTo([lat,lon],14);
   jQuery('#spade_lat').val(lat);
   jQuery('#spade_lon').val(lon);
 }
@@ -580,13 +843,18 @@ function caps_save(data, fun, move){
     if(my_spade_tests===null){
       my_spade_tests={};
     }
+    var my_spade_images=jQuery.jStorage.get('my_spade_images');
+    if(my_spade_images===null){
+      my_spade_images={};
+      jQuery.jStorage.set('my_spade_images', my_spade_images);
+    }
     my_spade_tests[data.guid]=data;
     jQuery.jStorage.set('my_spade_tests', my_spade_tests);
     move_next(data,fun, move);
   }
   else{
     jQuery.ajax({
-      'url':global_opt.base_path+'/api/spade_test/',
+      'url':global_opt.base_path+'api/spade_test/',
       'method': 'POST',
       'data': JSON.stringify(data),
       'dataType': 'JSON',
@@ -611,17 +879,31 @@ function spade_test1(){
   var data={'guid':Guid.newGuid()};
   data.lat=jQuery('#spade_lat').val();
   data.lon=jQuery('#spade_lon').val();
+  data.address=jQuery('#spade_address').val();
   data.date=jQuery('#spade_date').val();
   data.name=jQuery('#spade_name').val();
   var settings=jQuery.jStorage.get('capsella_settings');
   data.user_id=settings.user_id;
   data.email=settings.email;
-  if(data.lat && data.lon && data.date && data.name){
-    global_opt.spade_step=-1;
-    caps_save(data, spade_test_draw, 1);
+  if(global_opt.offline===true){
+    data.saved=false;
+  }
+  if(data.date && data.name){
+    if( (data.lat && data.lon) || data.address ){
+      if(!(data.lat && data.lon)){
+        data.lat=0;
+        data.lon=0;
+      }
+      global_opt.spade_step=-1;
+      caps_save(data, spade_test_draw, 1);
+    }
+    else{
+      alert(cap_t("It is not possile to get the position. Please add an address or a place name"));
+      jQuery('#spade_address_div').show();
+    }
   }
   else{
-    alert(cap_t("Please fill all the required data"));
+      alert(cap_t("Please fill all the required data"));
   }
 }
 
@@ -681,22 +963,22 @@ function spade_test_draw(data, move){
       var img="";
       if(question.help=='ressli_info'){
         img="RESSLI/ressli.jpeg";
-        html+="<div style='text-align:center'><img style='height:200px;' src='"+global_opt.base_path+"/res/img/spade_test/"+img+"'></div>";
+        html+="<div style='text-align:center'><img style='height:200px;' src='"+global_opt.base_path+"res/img/spade_test/"+img+"'></div>";
       }
       else if(question.help=='laynum_info'){
         img="LAYNUM/laynum.jpeg";
-        html+="<figure style='text-align:center'><img style='height:300px;' src='"+global_opt.base_path+"/res/img/spade_test/"+img+"'><figcaption>"+cap_t("Sample with three layers")+"</figcaption></figure>";
+        html+="<figure style='text-align:center'><img style='height:300px;' src='"+global_opt.base_path+"res/img/spade_test/"+img+"'><figcaption>"+cap_t("Sample with three layers")+"</figcaption></figure>";
       }
       else if(question.help=='roott_info'){
         img1="ROOTT/root1.jpeg";
         img2="ROOTT/root2.jpeg";
-        html+="<div style='text-align:center'><figure><img style='height:200px;' src='"+global_opt.base_path+"/res/img/spade_test/"+img1+"'><figcaption>"+cap_t("legume with root nodules")+"</figcaption></figure>";
-        html+="<figure><img style='height:200px;' src='"+global_opt.base_path+"/res/img/spade_test/"+img2+"'><figcaption>"+cap_t("open root nodule (red inside)")+"</figcaption></figure></div>";
+        html+="<div style='text-align:center'><figure><img style='height:200px;' src='"+global_opt.base_path+"res/img/spade_test/"+img1+"'><figcaption>"+cap_t("legume with root nodules")+"</figcaption></figure>";
+        html+="<figure><img style='height:200px;' src='"+global_opt.base_path+"res/img/spade_test/"+img2+"'><figcaption>"+cap_t("open root nodule (red inside)")+"</figcaption></figure></div>";
 
       }
       else if(question.help=='biodivoth_info'){
         img="BIODIVOTH/19.jpeg";
-        html+="<div style='text-align:center'><img style='height:200px;' src='"+global_opt.base_path+"/res/img/spade_test/"+img+"'></div>";
+        html+="<div style='text-align:center'><img style='height:200px;' src='"+global_opt.base_path+"res/img/spade_test/"+img+"'></div>";
       }
 
 
@@ -742,6 +1024,26 @@ function spade_test_draw(data, move){
     }
     if(question.data_type=='info'){
       //No answers, move on...
+
+      if(question.help=='info_sample_help'){
+        if(global_opt.offline===true){
+          if(!is_cordova()){
+            html+='<input class="form-control" id="take_picture_file" type="file" accept="image/*" capture="camera">';
+          }
+
+          html+='<button id="take_picture" class="btn btn-success btn-block">'+cap_t("Take a picture")+'</button>';
+          html+='<div id="take_picture_div">';
+          if(typeof data.image!=='undefined'){
+            var imgs=jQuery.jStorage.get("my_spade_images");
+            if(typeof imgs[data.image]!=='undefined'){
+              html+="<img class='img-responsive' src='"+imgs[data.image].base64+"' />";
+            }
+          }
+          html+='</div>';
+
+
+        }
+      }
     }
     else if(question.data_type=='integer'){
 
@@ -813,7 +1115,7 @@ function spade_test_draw(data, move){
 
           html+="<div onclick='triggerAns("+k+","+n+")' class='answer_box "+clsckd+"' id='answer_box_"+k+"_"+n+"'>";
           if(images){
-            var styl="background-image: url("+global_opt.base_path+"/res/img/spade_test"+v.image+")";
+            var styl="background-image: url("+global_opt.base_path+"res/img/spade_test"+v.image+")";
             html+="<div  style='"+styl+"' id='answer_tile_"+k+"_"+n+"' class='type_"+type+" spade_tile_answer'>";
             html+="</div>";
           }
@@ -836,6 +1138,49 @@ function spade_test_draw(data, move){
   jQuery('#spade_test_insert').html(html);
   jQuery(document).scrollTop( jQuery("#spade_question_title").offset().top-jQuery('.navbar-fixed-top').height() );
 
+
+    jQuery('#take_picture').click(function(){
+      if(is_cordova()){
+        var cameraOptions={ 'quality': 50, 'targetWidth':640, 'destinationType': navigator.camera.DestinationType.DATA_URL};
+        navigator.camera.getPicture(
+          function(imageData){
+            var base64 = "data:image/jpeg;base64," + imageData;
+            save_image(data, base64);
+          },
+          function(message){
+            alert(message);
+          },
+        cameraOptions);
+      }
+      else{
+        if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
+          alert('The File APIs are not fully supported in this browser.');
+        }
+        input = document.getElementById('take_picture_file');
+        if (!input) {
+           alert("Um, couldn't find the fileinput element.");
+        }
+        else if (!input.files) {
+          alert("This browser doesn't seem to support the `files` property of file inputs.");
+        }
+        else if (!input.files[0]) {
+          alert(cap_t("Please select a file"));
+        }
+        else {
+          file = input.files[0];
+          fr = new FileReader();
+          fr.onload = function(){
+            var base64=fr.result;
+            save_image(data, base64);
+          };
+          //fr.readAsText(file);
+          fr.readAsDataURL(file);
+       }
+      }
+    });
+
+
+
   jQuery("#spade_before").click(function(){
     update_data(data, -1);
   });
@@ -845,6 +1190,39 @@ function spade_test_draw(data, move){
 }
 
 
+function save_image(data,base64){
+  jQuery('#take_picture_div').html("<img class='img-responsive' src='"+base64+"' />");
+  var my_spade_images=jQuery.jStorage.get('my_spade_images');
+  my_spade_images[data.guid]={'base64':base64, 'saved':false};
+  jQuery.jStorage.set('my_spade_images', my_spade_images);
+  data.image=data.guid;
+}
+
+function get_image(guid, div){
+  if(is_cordova()){
+    var my_spade_images=jQuery.jStorage.get('my_spade_images');
+    var html='';
+    html+="<h4>"+cap_t("Soil Image")+"</h4>";
+    if(typeof my_spade_images[guid] !=='undefined'){
+      html+='<img class="img-responsive" src="'+my_spade_images[guid].base64+'"/>';
+    }
+    if(typeof div !=='undefined'){
+      jQuery(div).html(html);
+    }
+    return html;
+  }
+  else{
+    jQuery.ajax({
+      'url':global_opt.base_path+'api/get_image/'+guid,
+      'method': 'GET',
+      'success': function(d){
+          html+="<h4>"+cap_t("Soil Image")+"</h4>";
+          html+='<img class="img-responsive" src="'+d+'"/>';
+          jQuery(div).html(html);
+       }
+    });
+  }
+}
 
 function triggerAns(k,n){
   console.log(k+" "+n);
@@ -1018,24 +1396,35 @@ function spade_save_email(data){
       data.email=email;
       settings.email=email;
       jQuery.jStorage.set('capsella_settings',settings);
+      if(global_opt.offline===false){
+        jQuery.ajax({
+          'url':global_opt.base_path+'api/spade_test/',
+          'method': 'POST',
+          'data': JSON.stringify(data),
+          'dataType': 'JSON',
+          'success': function(d){
+              var html="";
+              html="<div id='spade_test_result'></div>";
+              html+="<div id='back_map'><button class='btn btn-success'>"+cap_t("Go back to the map")+"</button></div>";
+              jQuery('#spade_test_insert').html(html);
+              spade_test_result(data);
 
-      jQuery.ajax({
-        'url':global_opt.base_path+'/api/spade_test/',
-        'method': 'POST',
-        'data': JSON.stringify(data),
-        'dataType': 'JSON',
-        'success': function(d){
-            var html="";
-            html="<div id='spade_test_result'></div>";
-            html+="<div id='back_map'><button class='btn btn-success'>"+cap_t("Go back to the map")+"</button></div>";
-            jQuery('#spade_test_insert').html(html);
-            spade_test_result(data);
+              jQuery("#back_map").click(function(){
+                init_capsella('spade_test');
+              });
+           }
+        });
+      }
+      else{
+        html="<div id='spade_test_result'></div>";
+        html+="<div id='back_map'><button class='btn btn-success'>"+cap_t("Go back to the map")+"</button></div>";
+        jQuery('#spade_test_insert').html(html);
+        spade_test_result(data);
 
-            jQuery("#back_map").click(function(){
-              init_capsella('spade_test');
-            });
-         }
-      });
+        jQuery("#back_map").click(function(){
+          init_capsella('spade_test');
+        });
+      }
     }
     else{
       alert(cap_t("Please insert a valid email"));
@@ -1044,6 +1433,7 @@ function spade_save_email(data){
 }
 
 function spade_resume(data){
+  data.saved=false;
   resetSpade();
   global_opt.spade_step=data.step_done;
   if(typeof global_opt.spade_step =='undefined'){
@@ -1233,6 +1623,8 @@ function spade_test_result(data){
         // html+="<p/>"+cap_t("We have seen the following plants")+":  <b>"+ww.join("</b>, <b>");
       }
 
+      html+="<div id='spade_image_placeholder'></div>";
+
       html+="</div>";
 
     }
@@ -1243,13 +1635,18 @@ function spade_test_result(data){
           html+="<button data-toggle='collapse' id='spade_edit' class='btn btn-success btn-sm'>"+cap_t("Edit")+"</button>";
         }
         html+="<div id='spade_raw_result' class='collapse'>";
-        html+="<h3>"+cap_t("Spade test raw data")+"</h3><pre>"+JSON.stringify(data,null,2)+"</pre>";
+        html+="<h4>"+cap_t("Spade test raw data")+"</h4><pre>"+JSON.stringify(data,null,2)+"</pre>";
         html+="</div>";
 
         html+='<a onclick="add_spade()" class="new_spade_test_button form-control btn btn-success">'+cap_t("Enter a new spade test")+'</a>';
 
 
         jQuery("#spade_test_result").html(html);
+
+        if(typeof data.image!='undefined'){
+          get_image(data.image,'#spade_image_placeholder');
+        }
+
         jQuery('#spade_resume').click(function(){
           spade_resume(data);
         });
@@ -1258,8 +1655,6 @@ function spade_test_result(data){
           global_opt.spade_step=21;
           spade_resume(data);
         });
-    html+="</div>";
-
 }
 
 function spade_test_result_old(data){
@@ -1355,6 +1750,8 @@ function spade_test_result_old(data){
 
 
         jQuery("#spade_test_result").html(html);
+
+
         jQuery('#spade_resume').click(function(){
           spade_resume(data);
         });
@@ -1423,7 +1820,7 @@ function caps_home(){
   var group='soil_app';
 
   jQuery.ajax({
-    'url':global_opt.base_path+'/api/caps_get_group_datasets/'+group,
+    'url':global_opt.base_path+'api/caps_get_group_datasets/'+group,
     'method': 'POST',
     'data':{
       'token':global_opt.token,
@@ -1451,7 +1848,7 @@ function caps_show_dataset(uuid,group,ct){
   jQuery('#caps_values').html("Loading...");
 
   jQuery.ajax({
-    'url':global_opt.base_path+'/api/caps_get_dataset/'+uuid,
+    'url':global_opt.base_path+'api/caps_get_dataset/'+uuid,
     'method': 'POST',
     'data':{
       'token':global_opt.token,
@@ -1491,7 +1888,7 @@ function caps_show_dataset(uuid,group,ct){
 
 function caps_login(user, pswd, success){
   jQuery.ajax({
-    'url':global_opt.base_path+'/api/caps_login?username='+user+'&password='+pswd,
+    'url':global_opt.base_path+'api/caps_login?username='+user+'&password='+pswd,
     'method': 'POST',
     'dataType': 'JSON',
     'success': function(d){

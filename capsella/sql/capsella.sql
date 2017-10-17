@@ -244,5 +244,50 @@ ALTER TABLE ONLY caps_themes
 -- Completed on 2017-07-01 11:37:53 CEST
 
 --
--- PostgreSQL database dump complete
+-- Tables for user management
 --
+
+
+CREATE TABLE dbmng_role
+(
+	rid serial NOT NULL,
+	name VARCHAR(65),
+   CONSTRAINT dbmng_role_rid PRIMARY KEY (rid)
+);
+
+CREATE TABLE dbmng_users
+(
+  uid serial NOT NULL,
+  name varchar(60) NOT NULL,
+  pass varchar(128) NOT NULL,
+  mail varchar(254) DEFAULT '',
+  realname varchar(254) DEFAULT '',
+  realsurname varchar(254) DEFAULT '',
+  description varchar(254) DEFAULT '',
+  CONSTRAINT dbmng_users_uid PRIMARY KEY (uid),
+  CONSTRAINT dbmng_users_name UNIQUE (name)
+);
+
+CREATE TABLE dbmng_users_roles
+(
+	uid integer NOT NULL,
+	rid integer NOT NULL,
+   CONSTRAINT dbmng_users_roles_pk PRIMARY KEY (uid,rid)
+);
+
+--
+-- Insert in the tables default values
+--
+INSERT INTO dbmng_users (uid, name, pass, mail) VALUES (1, 'admin', md5('changeit'), 'info@soilhealth.capsella.eu');
+
+
+INSERT INTO dbmng_role (rid, name) VALUES
+(1, 'anonymous user'),
+(2, 'authenticated user'),
+(3, 'administrator');
+
+INSERT INTO dbmng_users_roles (uid, rid) VALUES (1, 3);
+
+
+SELECT pg_catalog.setval('dbmng_role_rid_seq', 4, true);
+SELECT pg_catalog.setval('dbmng_users_uid_seq', 2, true);

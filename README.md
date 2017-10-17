@@ -1,15 +1,15 @@
-# Soil-Health-Web-Application
+#Soil-Health-Web-Application
 
-
+Web and hybrid application for support farmers in soil health self-assessment.
 
 Installation and Test
 ---------------
 
-Requiremennts
-	* Postgres/Postgis: https://www.postgresql.org/download/
-	* Apache2: https://httpd.apache.org/
-	* PHP:
-	* Composer: https://getcomposer.org/download/
+Requirements
+	$ Postgres/Postgis: https://www.postgresql.org/download/
+	$ Apache2: https://httpd.apache.org/
+	$ PHP:
+	$ Composer: https://getcomposer.org/download/
 
 First install composer
 
@@ -24,4 +24,3 @@ Clone the repository from github
 Install the dependencies using composer
 
 	$ composer update
-  
