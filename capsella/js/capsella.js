@@ -165,6 +165,7 @@ function init_capsella(type, topic){
   if(jQuery('.navbar-fixed-top').height()>60){
     jQuery('#capsella_container').css('margin-top','60px');
   }
+  jQuery('#container_all').show();
 
 }
 
@@ -184,6 +185,9 @@ function init_home(){
 function init_admin(){
 
   var html="<h1>"+cap_t("Admin Capsella soil health platform")+"</h1>";
+
+  html+="<div id='button_container'><button onClick='doSynch()' class='btn btn-default btn-block'>"+cap_t("Synch to Capsella Platform")+"</button></div>";
+  html+="<div id='filters_container'></div>";
   html+="<div id='frame_container'></div>";
   jQuery('#capsella_home').html(html);
 
@@ -233,6 +237,25 @@ function init_admin(){
   });
 }
 
+function doSynch(){
+  jQuery('#frame_container').html(cap_t("<div class='alert alert-warning'>Please wait....</div>"));
+  jQuery.ajax({
+    'url':global_opt.base_path+'api/caps_login_and_save?',
+    'method': 'POST',
+    'dataType': 'JSON',
+    'success': function(d){
+      if(d.ok){
+        alert(d.msg);
+        init_admin();
+      }
+      else{
+        alert(d.msg);
+        init_admin();
+      }
+     }
+  });
+
+}
 
 function edit_spade_admin(v){
 
