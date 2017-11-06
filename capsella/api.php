@@ -81,7 +81,7 @@
       $body = file_get_contents("php://input");
       $q="select * from caps_image WHERE guid=:guid;";
       $ret=$db->select($q,array(':guid'=>$guid));
-      
+
       echo ($ret['data'][0]['base64']);
     });
 
@@ -116,14 +116,13 @@
     $router->get('/api/spade_test_all/', function() use ($db, $user) {
       // print_r($user);
       if($user['isAdmin']){
-        $q="select * from caps_spade";
+        $q="select * from caps_spade order by time_ref desc";
         $ret=$db->select($q,array());
         $json_string=json_encode($ret);
         echo ($json_string);
       }
       else{
         return json_encode(Array('ok'=>false,'msg'=>'Unauthorize'));
-
       }
     });
 
@@ -203,13 +202,51 @@
         // insert into caps_spade (date_mon, lat, lon, json)
         // values (Now(),43,11,'{"b":1}');
 
-
-
     $router->any('/api/caps_login', function() use ($db, $user) {
       $username=$_REQUEST['username'];
       $password=$_REQUEST['password'];
       $call='https://capsella-services.madgik.di.uoa.gr:8443/capsella_authentication_service/authenticate?username='.$username.'&password='.$password;
       echo (fetchUrl($call));
+    });
+
+    $router->any('/api/caps_login_and_save', function() use ($db, $user,$aSetting) {
+      $username=$aSetting['CAPSELLA_USERID'];//$_REQUEST['username'];
+      $password=$aSetting['CAPSELLA_PASSWORD'];
+      $call='https://capsella-services.madgik.di.uoa.gr:8443/capsella_authentication_service/authenticate?username='.$username.'&password='.$password;
+      $tok=json_decode(fetchUrl($call,'POST',null,false));
+
+      if(isset($tok->token)){
+        $token=($tok->token);
+
+
+
+
+        $id_dataset=$aSetting['CAPSELLA_DATASET_PUBLIC'];#"70693a29-9b30-4fab-818a-64af1e043f43";
+
+        $id_group="soil_app";
+        $call2="https://capsella-services.madgik.di.uoa.gr:8443/data-manager-service/datasets/".$id_dataset;
+
+        //echo $call2."<br/>";
+
+        $sel="select json from caps_spade WHERE flag=10;";
+        $json=Array();
+        $ret=$db->select($sel,Array());
+        foreach ($ret['data'] as $key => $value) {
+          array_push($json, json_decode($value['json']));
+          # code...
+        }
+
+        uploadfile($call2, $token, json_encode($json));
+        echo(json_encode(Array('ok'=>true,'msg'=>'Public data has been uploaded')));
+        //echo fetchUrl($call2,'POST',array('Accept: */*','Content-Type:multipart/form-data','Authorization: Bearer '.$token, 'group:'.$id_group),false,'AAAA');
+
+
+        //https://capsella-services.madgik.di.uoa.gr:8443/data-manager-service/datasets/70693a29-9b30-4fab-818a-64af1e043f43
+      }
+      else{
+        echo(json_encode(Array('ok'=>false,'msg'=>'Wrong authentication')));
+      }
+
     });
 
     $router->any('/api/caps_get_group_datasets/*', function($id_group) use ($db, $user) {
@@ -287,7 +324,22 @@
       return $ret;
     }
 
-    function fetchUrl($url, $method='POST',$h=null){
+
+    function uploadfile($url, $token, $content){
+
+      $temp_file = tempnam(sys_get_temp_dir(), 'test.json');
+      $handle = fopen($temp_file, "w");
+      fwrite($handle, $content);
+      fclose($handle);
+
+
+      exec("curl   -F 'uploadfile=@".$temp_file."'  -H 'Group: soil_app' -H 'Authorization: Bearer ".$token."'  '".$url."'");
+      unlink($temp_file);
+
+    }
+
+
+    function fetchUrl($url, $method='POST',$h=null,$doEcho=true, $file=null){
 
       $curl = curl_init();
       $headers=array(
@@ -314,16 +366,36 @@
         CURLOPT_HTTPHEADER => $headers
       ));
 
+      if($file!=null){
+        echo $file;
+        $cfile = curl_file_create('/home/guidotti/capsella/sample.json','application/json','sample.json');
+        $data = array('uploadfile' => $cfile);
+
+        $ch = curl_init();
+        $options = array(
+            CURLOPT_POST => 1,
+            CURLOPT_POSTFIELDS => $data
+            //,CURLOPT_INFILESIZE => $filesize
+        );
+        curl_setopt_array($curl,$options);
+
+      }
+
 
       $response = curl_exec($curl);
       $err = curl_error($curl);
 
       curl_close($curl);
 
-      if ($err) {
-        echo "cURL Error #:" . $err;
-      } else {
-        echo $response;
+      if($doEcho){
+        if ($err) {
+          echo "cURL Error #:" . $err;
+        } else {
+          echo $response;
+        }
+      }
+      else{
+        return $response;
       }
 
 			// $ret_dbg="";
