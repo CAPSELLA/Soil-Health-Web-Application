@@ -977,8 +977,6 @@ function spade_test_draw(data, move){
   else{
     question_code=question.code.toLowerCase();
   }
-  // jQuery('#spade_test_result').html();
-
   var html='<h3 id="spade_question_title">'+cap_t(question_code+"_question")+'</h3>';
   if(question.help!=='' && question.help!=='no'){
 
@@ -1102,49 +1100,67 @@ function spade_test_draw(data, move){
 
         html+='<div class="row spade_tile_answers">';
         jQuery.each(answers, function(k,v){
-          var checked=false;
-          var answer_code=v.answer_code;
-          var answer_label=cap_t(v.answer);
-          if(typeof answer_code=='undefined'){
-            answer_code=v.answer;
-          }
-          else{
-            answer_label=cap_t(question_code+"_"+v.answer_code);
-          }
 
+          var show_answer=true;
 
-
-          if(question.data_type=='select_multi'){
-
-            if(jQuery.inArray(answer_code, value)>-1){
-              checked=true;
+          //Filtra le immaggini dell'umidità
+          console.log(question_code);
+          if(question_code=='moist2'){
+            var stext=data.stext.substr(0,4);
+            show_answer=false;
+            console.log(stext);
+              var cod=v.answer_code.substring(0,4);
+              if(cod==stext){
+                show_answer=true;
+              }
             }
-          }
-          else{
-            if(answer_code==value){
-              checked=true;
+
+
+            if(show_answer){
+            var checked=false;
+            var answer_code=v.answer_code;
+            var answer_label=cap_t(v.answer);
+            if(typeof answer_code=='undefined'){
+              answer_code=v.answer;
             }
-          }
+            else{
+              answer_label=cap_t(question_code+"_"+v.answer_code);
+            }
 
-          var chk="";
-          var clsckd="";
-          if(checked){
-            chk=' checked="true" ';
-            clsckd="answer_box_selected";
-          }
 
-          html+="<div class='col-xs-6'>";
-          html+='<input class="spade_input" '+chk+' id="answer_'+k+'_'+n+'"  type="'+type+'" name="'+field_name+'" value="'+answer_code+'" />';
 
-          html+="<div onclick='triggerAns("+k+","+n+")' class='answer_box "+clsckd+"' id='answer_box_"+k+"_"+n+"'>";
-          if(images){
-            var styl="background-image: url("+global_opt.base_path+"res/img/spade_test"+v.image+")";
-            html+="<div  style='"+styl+"' id='answer_tile_"+k+"_"+n+"' class='type_"+type+" spade_tile_answer'>";
-            html+="</div>";
+            if(question.data_type=='select_multi'){
+
+              if(jQuery.inArray(answer_code, value)>-1){
+                checked=true;
+              }
+            }
+            else{
+              if(answer_code==value){
+                checked=true;
+              }
+            }
+
+            var chk="";
+            var clsckd="";
+            if(checked){
+              chk=' checked="true" ';
+              clsckd="answer_box_selected";
+            }
+
+            html+="<div class='col-xs-6'>";
+            html+='<input class="spade_input" '+chk+' id="answer_'+k+'_'+n+'"  type="'+type+'" name="'+field_name+'" value="'+answer_code+'" />';
+
+            html+="<div onclick='triggerAns("+k+","+n+")' class='answer_box "+clsckd+"' id='answer_box_"+k+"_"+n+"'>";
+            if(images){
+              var styl="background-image: url("+global_opt.base_path+"res/img/spade_test"+v.image+")";
+              html+="<div  style='"+styl+"' id='answer_tile_"+k+"_"+n+"' class='type_"+type+" spade_tile_answer'>";
+              html+="</div>";
+            }
+            html+="<div class='spade_tile_answer_sub'>"; //onclick="selectAns('+k+','+n+')"
+                html+='<div class="spade_answer_title" >'+answer_label+'</div>';
+            html+='</div></div></div>';
           }
-          html+="<div class='spade_tile_answer_sub'>"; //onclick="selectAns('+k+','+n+')"
-              html+='<div class="spade_answer_title" >'+answer_label+'</div>';
-          html+='</div></div></div>';
         });
         html+="</div>";
       }
