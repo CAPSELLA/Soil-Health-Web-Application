@@ -613,7 +613,7 @@ function init_spade_question(){
           //"answer": "You can easly break the sample into its aggregates",
           "answer_code": "av_text_moist",
 		  "score": 1,
-          "image": "/MOIST2/sand_moist.jpg",
+          "image": "/MOIST2/av_text_moist.jpg",
           "link": "link1 - Info on soil operations (you can  use machines on the soil); link2- Info on irrigation (Irrigation is  needed)",
           "question_code": "MOIST2"
         },
