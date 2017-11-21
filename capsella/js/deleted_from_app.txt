@@ -75,3 +75,13 @@
         }
       ]
     },
+	
+	
+	        {
+          //"answer": "Layers darker than others",
+		  "answer_code": "darker_layers",
+          "score": 0,
+          "image": "/COL/54.jpeg",
+          "link": "link - Effects of humus content on soil color (due to different moisture or different content of humus)",
+          "question_code": "COL"
+        }

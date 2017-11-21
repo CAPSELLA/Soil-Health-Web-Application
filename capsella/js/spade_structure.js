@@ -581,31 +581,40 @@ function init_spade_question(){
         {
           "answer_code": "sand_dry",
 		  "score": -1,
-          "image": "/MOIST3/sand_dry.jpg",
+          "image": "/MOIST2/sand_dry.jpg",
           "link": "link1- Info on soil operations (you cannot use machines on the soil); link2-Info on irrigation (you should consider the irrigation)",
+          "question_code": "MOIST2"
+        },
+		 {
+          //"answer": "You can easly break the sample into its aggregates",
+          "answer_code": "sand_moist",
+		  "score": 1,
+          "image": "/MOIST2/sand_moist.jpg",
+          "link": "link1 - Info on soil operations (you can  use machines on the soil); link2- Info on irrigation (Irrigation is  needed)",
           "question_code": "MOIST2"
         },
         {
           //"answer": "The sample does not break because it is plastic",
           "answer_code": "sand_wet",
 		  "score": -0.5,
-          "image": "/MOIST3/sand_wet.jpg",
+          "image": "/MOIST2/sand_wet.jpg",
           "link": "link1 - Info on soil operations (you cannot use machines on the soil); link2- Info on irrigation (Irrigation is not needed)",
           "question_code": "MOIST2"
         },
-        {
-          //"answer": "You can easly break the sample into its aggregates",
-          "answer_code": "sand_moist",
-		  "score": 1,
-          "image": "/MOIST3/sand_moist.jpg",
-          "link": "link1 - Info on soil operations (you can  use machines on the soil); link2- Info on irrigation (Irrigation is  needed)",
-          "question_code": "MOIST2"
-        },
+       
 		{
           "answer_code": "av_text_dry",
 		  "score": -1,
-          "image": "/MOIST3/av_text_dry.jpg",
+          "image": "/MOIST2/av_text_dry.jpg",
           "link": "link1- Info on soil operations (you cannot use machines on the soil); link2-Info on irrigation (you should consider the irrigation)",
+          "question_code": "MOIST2"
+        },
+		{
+          //"answer": "You can easly break the sample into its aggregates",
+          "answer_code": "av_text_moist",
+		  "score": 1,
+          "image": "/MOIST2/sand_moist.jpg",
+          "link": "link1 - Info on soil operations (you can  use machines on the soil); link2- Info on irrigation (Irrigation is  needed)",
           "question_code": "MOIST2"
         },
         {
@@ -616,37 +625,29 @@ function init_spade_question(){
           "link": "link1 - Info on soil operations (you cannot use machines on the soil); link2- Info on irrigation (Irrigation is not needed)",
           "question_code": "MOIST2"
         },
-        {
-          //"answer": "You can easly break the sample into its aggregates",
-          "answer_code": "av_text_moist",
-		  "score": 1,
-          "image": "/MOIST3/sand_moist.jpg",
-          "link": "link1 - Info on soil operations (you can  use machines on the soil); link2- Info on irrigation (Irrigation is  needed)",
-          "question_code": "MOIST2"
-        },
 		{
           "answer_code": "clay_dry",
 		  "score": -1,
-          "image": "/MOIST3/clay_dry.jpg",
+          "image": "/MOIST2/clay_dry.jpg",
           "link": "link1- Info on soil operations (you cannot use machines on the soil); link2-Info on irrigation (you should consider the irrigation)",
+          "question_code": "MOIST2"
+        },
+		{
+          //"answer": "You can easly break the sample into its aggregates",
+          "answer_code": "clay_moist",
+		  "score": 1,
+          "image": "/MOIST2/clay_moist.jpg",
+          "link": "link1 - Info on soil operations (you can  use machines on the soil); link2- Info on irrigation (Irrigation is  needed)",
           "question_code": "MOIST2"
         },
         {
           //"answer": "The sample does not break because it is plastic",
           "answer_code": "clay_wet",
 		  "score": -0.5,
-          "image": "/MOIST3/clay_wet.jpg",
+          "image": "/MOIST2/clay_wet.jpg",
           "link": "link1 - Info on soil operations (you cannot use machines on the soil); link2- Info on irrigation (Irrigation is not needed)",
           "question_code": "MOIST2"
-        },
-        {
-          //"answer": "You can easly break the sample into its aggregates",
-          "answer_code": "clay_moist",
-		  "score": 1,
-          "image": "/MOIST3/clay_moist.jpg",
-          "link": "link1 - Info on soil operations (you can  use machines on the soil); link2- Info on irrigation (Irrigation is  needed)",
-          "question_code": "MOIST2"
-        },
+        },  
       ]
     },
     {
@@ -678,14 +679,6 @@ function init_spade_question(){
           "link": "link -  Water logging (sign of long period of water logging)",
           "question_code": "COL"
         },
-        {
-          //"answer": "Layers darker than others",
-		  "answer_code": "darker_layers",
-          "score": 0,
-          "image": "/COL/54.jpeg",
-          "link": "link - Effects of humus content on soil color (due to different moisture or different content of humus)",
-          "question_code": "COL"
-        }
       ]
     },
     {

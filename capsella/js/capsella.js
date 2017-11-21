@@ -1106,10 +1106,10 @@ function spade_test_draw(data, move){
           //Filtra le immaggini dell'umidità
           console.log(question_code);
           if(question_code=='moist2'){
-            var stext=data.stext.substr(0,4);
+            var stext=data.stext.substr(0,3);
             show_answer=false;
             console.log(stext);
-              var cod=v.answer_code.substring(0,4);
+              var cod=v.answer_code.substring(0,3);
               if(cod==stext){
                 show_answer=true;
               }
