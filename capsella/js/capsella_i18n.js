@@ -15,6 +15,11 @@
 
 var i18n_glob={
   "it": {
+	"biodivoth_beetles":"Coleotteri, in particolare: a) Carabidi (Carabidae), genere Pterosticus; b) Carabidi (Carabidae), genere Carabus; c) Coleotteri scavatori (Geotrupidae). Indicatori di alta qualità del suolo.",
+	"biodivoth__soil_centipedes":"Geophilidae (centopiedi del suolo). Strettamente legati al suolo, ottimi indicatori della qualità del suolo.",
+	"biodivoth__tropical_centipedes":"Ordine Scolopendromorpha, es. Scolopendra cingulata (centopiedi tropicali). Buoni indicatori della qualità del suolo.",
+	"biodivoth__millipedes":"Millepiedi, Class Diplopoda. Da buoni a ottimi indicatori della qualità del suolo",
+	"biodivoth__beetle_larvae":"Larve di coleotteri (es. Coleoptera: Elateridae). Indicano alta biodiversità ma possono anche essere insetti dannosi per le colture",
 	"moist2_question":"Quanto è umido il suolo in questo strato?",
 	"moist2_sand_dry":"Secco",
 	"moist2_sand_moist":"In tempera",
@@ -82,7 +87,7 @@ var i18n_glob={
     "ressli_hard_alternation": "Non uniforme - Il suolo alterna strati facili e difficili da tagliare",
     "selected point": "Punto selezionato",
     "sois_crust": "Crosta superficiale",
-    "note_question": "Altro da registrare su questo campione?",
+    "note_question": "Informazioni aggiuntive a supporto dell'interpretazione dell'osservazione?",
     "rootp_no_roots": "Nessuna radice",
     //"rootf_no_roots": "Nessuna radice",
     "smell_bad_smell": "Cattivo (di marcio)",
@@ -249,6 +254,11 @@ var i18n_glob={
     "average dimension in mm": "dimensione media in mm"
   },
   "en": {
+	"biodivoth_beetles":"Beetles (Coleoptera): a) Carabid beetle (Carabidae), genus Pterosticus; b) Carabid beetle (Carabidae), genus Carabus; c) Earth-boring beetle (Geotrupidae). Optimum indicator of soil quality",
+	"biodivoth_soil_centipedes":"Geophilidae (soil centipedes). Tightly related to soil, optimum indicator of soil quality.",
+	"biodivoth_tropical_centipedes":"Order Scolopendromorpha, e.g. Scolopendra cingulata (tropical centipedes). Good indicators of soil quality",
+	"biodivoth_millipedes":"Millipedes, Class Diplopoda. Good to optimum soil quality indicator.",
+	"biodivoth_beetle_larvae":"Beetle's larvae (Coleoptera: Elateridae). Indicate high biodiversity but can also be crop pests.",
 	"moist2_question":"How wet is the soil?",
 	"moist2_sand_dry":"Dry",
 	"moist2_sand_moist":"Moist",
@@ -317,7 +327,7 @@ var i18n_glob={
     "ressli_hard_alternation": "Alternation of easy and hards parts to cut",
     "selected point": "Selected point",
     "sois_crust": "Superficial crust",
-    "note_question": "Anything else to record on this sample?",
+    "note_question": "Any additional info to support the interpretation of this observation?",
     "rootp_no_roots": "No roots",
     //"rootf_no_roots": "No roots",
     "smell_bad_smell": "Bad (rotten)",
@@ -379,7 +389,7 @@ var i18n_glob={
     "ressli_easy": "Easy to cut the soil up to the spade depth",
     "agshp_crumb": "Crumb (rounded surfaces but larger than granular)",
     "soil health": "Soil Health",
-    "biodivoth_question": "Do you see presense of other wild life?",
+    "biodivoth_question": "While observing and manipulating the sample, have you noticed the presence of any of the following arthropods?",
     "leg_question": "On your sample area are present legume plants?",
     "fslo_high": "High slope (21-60%)",
     "soil threat": "Soil threat",
@@ -483,6 +493,12 @@ var i18n_glob={
     "average dimension in mm": "Average dimension in mm"
   },
   "gr": {
+	"biodivoth_beetles":"Beetles (Coleoptera): a) Carabid beetle (Carabidae), genus Pterosticus; b) Carabid beetle (Carabidae), genus Carabus; c) Earth-boring beetle (Geotrupidae). Optimum indicator of soil quality",
+	"biodivoth_soil_centipedes":"Geophilidae (soil centipedes). Tightly related to soil, optimum indicator of soil quality.",
+	"biodivoth_tropical_centipedes":"Order Scolopendromorpha, e.g. Scolopendra cingulata (tropical centipedes). Good indicators of soil quality",
+	"biodivoth_millipedes":"Millipedes, Class Diplopoda. Good to optimum soil quality indicator.",
+	"biodivoth_beetle_larvae":"Beetle's larvae (Coleoptera: Elateridae). Indicate high biodiversity but can also be crop pests.",
+
 	"moist2_question":"How wet is the soil?",
 	"moist2_sand_dry":"Dry",
 	"moist2_sand_moist":"Moist",

@@ -932,16 +932,54 @@ function init_spade_question(){
        }
       ]
     },
-    {
+	{
       "code": "BIODIVOTH",
       "Title": "sign of other wild life",
-      "question": "Do you see presense of other wild life?",
-      "data_type": "text",
-      "help": "biodivoth_info",
+      "data_type": "select_multi",
+      "help": "no",
       "how_many": "once",
-      "Importance": "low",
+      "Importance": "medium",
+	  "mandatory": false,
+	  "images": true,
       "condition": "",
-      "order": 27
+      "order": 27,
+      "answers":[
+        {
+          "answer_code": "beetles",
+		  "score": 0,
+          "image": "/BIODIVOTH/beetles.png",
+          "link": "no",
+          "question_code": "BIODIVOTH"
+        },
+	   {
+         "answer_code": "soil_centipedes",
+		  "score": 0,
+          "image": "/BIODIVOTH/soil_centipedes.png",
+          "link": "no",
+          "question_code": "BIODIVOTH"
+       },
+	    {
+         "answer_code": "tropical_centipedes",
+		  "score": 0,
+          "image": "/BIODIVOTH/tropical_centipedes.jpg",
+          "link": "no",
+          "question_code": "BIODIVOTH"
+       },
+	      {
+         "answer_code": "millipedes",
+		  "score": 0,
+          "image": "/BIODIVOTH/millipedes.jpg",
+          "link": "no",
+          "question_code": "BIODIVOTH"
+       },
+	   {
+		   "answer_code": "beetle_larvae",
+		  "score": 0,
+          "image": "/BIODIVOTH/beetle_larvae.jpg",
+          "link": "no",
+          "question_code": "BIODIVOTH"
+       }
+      ]
     },
     {
       "code": "SQ",
