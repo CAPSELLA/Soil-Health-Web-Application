@@ -601,7 +601,7 @@ function init_spade_question(){
           "link": "link1 - Info on soil operations (you cannot use machines on the soil); link2- Info on irrigation (Irrigation is not needed)",
           "question_code": "MOIST2"
         },
-       
+
 		{
           "answer_code": "av_text_dry",
 		  "score": -1,
@@ -612,7 +612,7 @@ function init_spade_question(){
 		{
           //"answer": "You can easly break the sample into its aggregates",
           "answer_code": "av_text_moist",
-		  "score": 1,
+		        "score": 1,
           "image": "/MOIST2/av_text_moist.jpg",
           "link": "link1 - Info on soil operations (you can  use machines on the soil); link2- Info on irrigation (Irrigation is  needed)",
           "question_code": "MOIST2"
@@ -620,8 +620,8 @@ function init_spade_question(){
         {
           //"answer": "The sample does not break because it is plastic",
           "answer_code": "av_text_wet",
-		  "score": -0.5,
-          "image": "/MOIST3/av_text_wet.jpg",
+		        "score": -0.5,
+          "image": "/MOIST2/av_text_wet.jpg",
           "link": "link1 - Info on soil operations (you cannot use machines on the soil); link2- Info on irrigation (Irrigation is not needed)",
           "question_code": "MOIST2"
         },
@@ -647,7 +647,7 @@ function init_spade_question(){
           "image": "/MOIST2/clay_wet.jpg",
           "link": "link1 - Info on soil operations (you cannot use machines on the soil); link2- Info on irrigation (Irrigation is not needed)",
           "question_code": "MOIST2"
-        },  
+        },
       ]
     },
     {
