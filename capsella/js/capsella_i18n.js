@@ -17,6 +17,7 @@
 
 var i18n_glob={
   "it": {
+  "add a comment or a picture":"Aggiungi un commento o un'immagine",
 	"biodivoth_beetles":"Coleotteri, in particolare: a) Carabidi (Carabidae), genere Pterosticus; b) Carabidi (Carabidae), genere Carabus; c) Coleotteri scavatori (Geotrupidae). Indicatori di alta qualità del suolo.",
 	"biodivoth_soil_centipedes":"Geophilidae (centopiedi del suolo). Strettamente legati al suolo, ottimi indicatori della qualità del suolo.",
 	"biodivoth_tropical_centipedes":"Ordine Scolopendromorpha, es. Scolopendra cingulata (centopiedi tropicali). Buoni indicatori della qualità del suolo.",
