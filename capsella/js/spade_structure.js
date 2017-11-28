@@ -1,5 +1,6 @@
 var spade_question;
 
+
 function init_spade_question(){
   spade_question=[
 	{

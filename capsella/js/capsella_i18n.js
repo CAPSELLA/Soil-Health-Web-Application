@@ -1,5 +1,6 @@
 
 
+
 //An error occurred during the data savings. Please check the connection and try again later.
 //Save the spade tests
 //SΑποθήκευση
@@ -13,13 +14,14 @@
 //Address
 //Soil Image
 
+
 var i18n_glob={
   "it": {
 	"biodivoth_beetles":"Coleotteri, in particolare: a) Carabidi (Carabidae), genere Pterosticus; b) Carabidi (Carabidae), genere Carabus; c) Coleotteri scavatori (Geotrupidae). Indicatori di alta qualità del suolo.",
-	"biodivoth__soil_centipedes":"Geophilidae (centopiedi del suolo). Strettamente legati al suolo, ottimi indicatori della qualità del suolo.",
-	"biodivoth__tropical_centipedes":"Ordine Scolopendromorpha, es. Scolopendra cingulata (centopiedi tropicali). Buoni indicatori della qualità del suolo.",
-	"biodivoth__millipedes":"Millepiedi, Class Diplopoda. Da buoni a ottimi indicatori della qualità del suolo",
-	"biodivoth__beetle_larvae":"Larve di coleotteri (es. Coleoptera: Elateridae). Indicano alta biodiversità ma possono anche essere insetti dannosi per le colture",
+	"biodivoth_soil_centipedes":"Geophilidae (centopiedi del suolo). Strettamente legati al suolo, ottimi indicatori della qualità del suolo.",
+	"biodivoth_tropical_centipedes":"Ordine Scolopendromorpha, es. Scolopendra cingulata (centopiedi tropicali). Buoni indicatori della qualità del suolo.",
+	"biodivoth_millipedes":"Millepiedi, Class Diplopoda. Da buoni a ottimi indicatori della qualità del suolo",
+	"biodivoth_beetle_larvae":"Larve di coleotteri (es. Coleoptera: Elateridae). Indicano alta biodiversità ma possono anche essere insetti dannosi per le colture",
 	"moist2_question":"Quanto è umido il suolo in questo strato?",
 	"moist2_sand_dry":"Secco",
 	"moist2_sand_moist":"In tempera",
