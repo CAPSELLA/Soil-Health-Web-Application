@@ -575,7 +575,7 @@ function getWMSMapfile(mapfile, raster_theme, layer){
 
 function reset_spade_view(){
   var tab="<table class='table'><thead></thead><tbody></tbody></table>";
-  var html="";
+  var html="<div id='resume_spade'></div>";
   html+="<div class='alert alert-info'>";
   html+='<div>'+cap_t('spade_test_before')+'</div>';
   html+="<p/><div class='row'><div class=col-xs-4><img class='img-responsive' src='res/img/general/spade.jpg'/></div>";
@@ -597,56 +597,71 @@ function reset_spade_view(){
   });
 }
 
-function save_spade_test_online(){
+function save_spade_test_online(reinit){
+  if(typeof reinit=='undefined'){
+    reinit=true;
+  }
   var my_spade_tests=jQuery.jStorage.get('my_spade_tests');
+  jQuery('#loading_icon').html('<span class="glyphicon glyphicon-cloud-upload"></span>');
+
   jQuery('#save_spade_test_info').html(cap_t("We are uploading the spade test on the server"));
     jQuery.ajax({
       'url':global_opt.online_path+'api/spade_test_batch/',
       'method': 'POST',
       'data': JSON.stringify(my_spade_tests),
       'dataType': 'JSON',
+      'timeout': 10000, // sets timeout to 10 seconds
       'success': function(d){
+        jQuery('#loading_icon').html('<span class="glyphicon glyphicon-thumbs-up"></span>');
+
         var saved=d.data;
         var my_spade_tests=jQuery.jStorage.get('my_spade_tests');
         jQuery.each(saved,function(k,v){
           console.log(k);
           if(v.ok===true){
-            my_spade_tests[k]['saved']=true;
+            my_spade_tests[k].saved=true;
           }
         });
         jQuery.jStorage.set('my_spade_tests',my_spade_tests);
         jQuery('#save_spade_test_info').html(cap_t("OK"));
-        init_spade_test();
+        if(reinit){
+          init_spade_test();
+        }
       },
       'error':function(e){
         console.log(e);
-        var msg=cap_t("An error occurred during the data savings. Please check the connection and try again later.");
-        alert(msg);
-        jQuery('#save_spade_test_info').html(msg);
+        jQuery('#loading_icon').html('<span class="glyphicon glyphicon-thumbs-down"></span>');
+        if(reinit){
+          var msg=cap_t("An error occurred during the data savings. Please check the connection and try again later.");
+          alert(msg);
+          jQuery('#save_spade_test_info').html(msg);
+        }
       }
     });
 
-    var img=jQuery.jStorage.get('my_spade_images');
-    jQuery.each(img,function(k,v){
-      if(!v.saved){
-          jQuery.ajax({
-            'url':global_opt.online_path+'api/spade_test_image/'+k,
-            'method': 'POST',
-            'data': v.base64,
-            'dataType': 'JSON',
-            'success': function(d){
-              if(d.ok){
-                v.saved=true;
-                //jQuery('#save_spade_test_info').append("Saved image "+k);
-                jQuery.jStorage.set('my_spade_images',img);
+    //Save the images only if online
+      var img=jQuery.jStorage.get('my_spade_images');
+      jQuery.each(img,function(k,v){
+        if(!v.saved){
+            jQuery.ajax({
+              'url':global_opt.online_path+'api/spade_test_image/'+k,
+              'method': 'POST',
+              'data': v.base64,
+              'dataType': 'JSON',
+              'timeout': 30000, // sets timeout to 10 seconds
+              'success': function(d){
+                if(d.ok){
+                  v.saved=true;
+                  //jQuery('#save_spade_test_info').append("Saved image "+k);
+                  jQuery.jStorage.set('my_spade_images',img);
+                }
+              },
+              'error':function(e){
+                console.log(e);
               }
-            },
-            'error':function(e){
-              console.log(e);
-            }
-          });
-      }
-    });
+            });
+        }
+      });
 }
 
 function init_spade_test(){
@@ -714,6 +729,7 @@ function renderSpadesList(spades_list){
 
       el+="<td>";
       if(data.step_done<24){
+        jQuery('#resume_spade').html("<div style='text-align:center' class='alert alert-warning'>"+cap_t("unfinished job")+"<br/><button id='resume_unfinished' class='btn btn-sm btn-warning'>"+cap_t("Resume")+"</button></div>");
         el+="<button class='btn btn-sm btn-warning'>"+cap_t("Resume")+"</button>";
       }
       else{
@@ -735,6 +751,10 @@ function renderSpadesList(spades_list){
         }
       }
       el+="</tr>";
+
+      jQuery('#resume_unfinished').click(function(){
+        spade_resume(data);
+      });
 
       var el2=jQuery(el);
       el2.find('button').click(function(){
@@ -880,6 +900,11 @@ function caps_save(data, fun, move){
     my_spade_tests[data.guid]=data;
     jQuery.jStorage.set('my_spade_tests', my_spade_tests);
     move_next(data,fun, move);
+
+    //Try to save every 5 step
+    if(data.step_done%5===0){
+      save_spade_test_online(false);
+    }
   }
   else{
     jQuery.ajax({
@@ -991,22 +1016,22 @@ function spade_test_draw(data, move){
       var img="";
       if(question.help=='ressli_info'){
         img="RESSLI/ressli.jpeg";
-        html+="<div style='text-align:center'><img style='height:200px;' src='"+global_opt.base_path+"res/img/spade_test/"+img+"'></div>";
+        html+="<div style='text-align:center'><img class='img-responsive' style='height:200px;' src='"+global_opt.base_path+"res/img/spade_test/"+img+"'></div>";
       }
       else if(question.help=='laynum_info'){
         img="LAYNUM/laynum.jpeg";
-        html+="<figure style='text-align:center'><img style='height:300px;' src='"+global_opt.base_path+"res/img/spade_test/"+img+"'><figcaption>"+cap_t("Sample with three layers")+"</figcaption></figure>";
+        html+="<figure style='text-align:center'><img class='img-responsive' style='height:300px;' src='"+global_opt.base_path+"res/img/spade_test/"+img+"'><figcaption>"+cap_t("Sample with three layers")+"</figcaption></figure>";
       }
       else if(question.help=='roott_info'){
         img1="ROOTT/root1.jpeg";
         img2="ROOTT/root2.jpeg";
-        html+="<div style='text-align:center'><figure><img style='height:200px;' src='"+global_opt.base_path+"res/img/spade_test/"+img1+"'><figcaption>"+cap_t("legume with root nodules")+"</figcaption></figure>";
-        html+="<figure><img style='height:200px;' src='"+global_opt.base_path+"res/img/spade_test/"+img2+"'><figcaption>"+cap_t("open root nodule (red inside)")+"</figcaption></figure></div>";
+        html+="<div style='text-align:center'><figure><img class='img-responsive' style='height:200px;' src='"+global_opt.base_path+"res/img/spade_test/"+img1+"'><figcaption>"+cap_t("legume with root nodules")+"</figcaption></figure>";
+        html+="<figure><img class='img-responsive' style='height:200px;' src='"+global_opt.base_path+"res/img/spade_test/"+img2+"'><figcaption>"+cap_t("open root nodule (red inside)")+"</figcaption></figure></div>";
 
       }
       else if(question.help=='biodivoth_info'){
         img="BIODIVOTH/19.jpeg";
-        html+="<div style='text-align:center'><img style='height:200px;' src='"+global_opt.base_path+"res/img/spade_test/"+img+"'></div>";
+        html+="<div style='text-align:center'><img class='img-responsive' style='height:200px;' src='"+global_opt.base_path+"res/img/spade_test/"+img+"'></div>";
       }
 
 
@@ -1155,7 +1180,7 @@ function spade_test_draw(data, move){
               clsckd="answer_box_selected";
             }
 
-            html+="<div class='col-xs-6'>";
+            html+="<div class='col-sm-6'>";
             html+='<input class="spade_input" '+chk+' id="answer_'+k+'_'+n+'"  type="'+type+'" name="'+field_name+'" value="'+answer_code+'" />';
 
             html+="<div onclick='triggerAns("+k+","+n+")' class='answer_box "+clsckd+"' id='answer_box_"+k+"_"+n+"'>";
@@ -1170,37 +1195,8 @@ function spade_test_draw(data, move){
           }
         });
 
-        var show_more_button=true;
-        if(show_more_button && global_opt.offline===true){
 
-          var has_data=false;
-          var stl='display:none';
-          var comment_val='';
-          var img_val='';
-
-          if(typeof data[question_code+"_more"]!=='undefined'){
-              has_data=true;
-              stl='';
-              comment_val=data[question_code+"_more"].comment;
-              var my_spade_images=jQuery.jStorage.get('my_spade_images');
-              var image_guid=data[question_code+"_more"].image;
-
-              if(typeof my_spade_images[image_guid]!=='undefined'){
-                img_val="<img class='img-responsive' src='"+my_spade_images[image_guid].base64+"' />";
-              }
-          }
-          //={'image':guid_image,'comment':jQuery('#spade_textarea').val()};
-
-          html+='<div class="col-xs-12" style="margin:20px; text-align:center;"><button id="spade_more" class="btn btn-info">'+cap_t("Add a comment or a picture")+'</button>';
-          html+='<div id="spade_more_content" style="'+stl+'"><textarea class="form-control" id="spade_textarea">'+comment_val+'</textarea>';
-          if(!is_cordova()){
-            html+='<input class="form-control" id="take_picture_file" type="file" accept="image/*" capture="camera">';
-          }
-          html+='<button id="take_picture" class="btn btn-success btn-block">'+cap_t("Take a picture")+'</button>';
-          html+='<div id="take_picture_div">'+img_val+'</div>';
-          html+='</div>';
-        }
-        html+="</div>";
+        //html+="</div>";
 
 
       }
@@ -1208,6 +1204,38 @@ function spade_test_draw(data, move){
         html+='<div class="alert alert-warning">'+cap_t("There are no answers!")+'</div>';
       }
     }
+  }
+
+  //More button
+  var show_more_button=true;
+  if(show_more_button && global_opt.offline===true){
+
+    var has_data=false;
+    var stl='display:none';
+    var comment_val='';
+    var img_val='';
+
+    if(typeof data[question_code+"_more"]!=='undefined'){
+        has_data=true;
+        stl='';
+        comment_val=data[question_code+"_more"].comment;
+        var my_spade_images=jQuery.jStorage.get('my_spade_images');
+        var image_guid=data[question_code+"_more"].image;
+
+        if(typeof my_spade_images[image_guid]!=='undefined'){
+          img_val="<img class='img-responsive' src='"+my_spade_images[image_guid].base64+"' />";
+        }
+    }
+    //={'image':guid_image,'comment':jQuery('#spade_textarea').val()};
+
+    html+='<div class="col-xs-12" style="margin-bottom:20px; margin-top:10px; text-align:center;"><button id="spade_more" class="btn-sm btn btn-info">'+cap_t("Add a comment or a picture")+'</button>';
+    html+='<div id="spade_more_content" style="'+stl+'"><textarea class="form-control" id="spade_textarea">'+comment_val+'</textarea>';
+    if(!is_cordova()){
+      html+='<input class="form-control" id="take_picture_file" type="file" accept="image/*" capture="camera">';
+    }
+    html+='<button id="take_picture" class="btn btn-success btn-block">'+cap_t("Take a picture")+'</button>';
+    html+='<div id="take_picture_div">'+img_val+'</div>';
+    html+='</div></div>';
   }
 
   if(global_opt.spade_step>0){
@@ -1227,6 +1255,23 @@ function spade_test_draw(data, move){
       param=question_code;
     }
 
+    //Manage the more buttons
+    if(show_more_button && global_opt.offline===true){
+
+      //Update the text field alone
+      jQuery('#spade_textarea').change(function(){
+        console.log('update textarea');
+        if(typeof data[question_code+"_more"] == 'undefined'){
+          data[question_code+"_more"]={'image':'','comment':jQuery('#spade_textarea').val()};
+        }
+        else{
+          data[question_code+"_more"].comment=jQuery('#spade_textarea').val();
+        }
+      });
+      if(!is_cordova()){
+        //jQuery('#take_picture_file').change(function(){console.log("upload");jQuery('#take_picture').trigger('click');});
+      }
+    }
 
     jQuery('#take_picture').click(function(){
       if(is_cordova()){
@@ -1293,8 +1338,6 @@ function save_image(data,base64, param){
     jQuery.jStorage.set('my_spade_images', my_spade_images);
     data[param+"_more"]={'image':guid_image,'comment':jQuery('#spade_textarea').val()};
 
-
-    my_spade_images[data.guid]={'base64':base64, 'saved':false};
 
   }
 }
@@ -1517,6 +1560,7 @@ function spade_save_email(data){
         });
       }
       else{
+        save_spade_test_online(false);
         html="<div id='spade_test_result'></div>";
         html+="<div id='back_map'><button class='btn btn-success'>"+cap_t("Go back to the map")+"</button></div>";
         jQuery('#spade_test_insert').html(html);

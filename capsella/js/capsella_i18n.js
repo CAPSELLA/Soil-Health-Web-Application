@@ -17,6 +17,7 @@
 
 var i18n_glob={
   "it": {
+  "unfinished job": "C'è una prova della vanga in sospeso!",
   "add a comment or a picture":"Aggiungi un commento o un'immagine",
 	"biodivoth_beetles":"Coleotteri, in particolare: a) Carabidi (Carabidae), genere Pterosticus; b) Carabidi (Carabidae), genere Carabus; c) Coleotteri scavatori (Geotrupidae); d) Stafilinidi (Stafilinidae). Indicatori di alta qualità del suolo.",
 	"biodivoth_soil_centipedes":"Geophilidae (centopiedi del suolo). Strettamente legati al suolo, ottimi indicatori della qualità del suolo.",
@@ -255,8 +256,9 @@ var i18n_glob={
     "insert the layer number": "Inserisci il numero di strati",
     "average depth from soil surface": "Profondità media dalla superficie del suolo (in cm)",
     "average dimension in mm": "dimensione media in mm"
-  },
-  "en": {
+},
+"en": {
+  "unfinished job": "You have an unfinished job! Resume the spade test.",
 	"biodivoth_beetles":"Beetles (Coleoptera): a) Carabid beetle (Carabidae), genus Pterosticus; b) Carabid beetle (Carabidae), genus Carabus; c) Earth-boring beetle (Geotrupidae). d) Rove beetles (Stafilinidae). Optimum indicator of soil quality",
 	"biodivoth_soil_centipedes":"Geophilidae (soil centipedes). Tightly related to soil, optimum indicator of soil quality.",
 	"biodivoth_tropical_centipedes":"Order Scolopendromorpha, e.g. Scolopendra cingulata (tropical centipedes). Good indicators of soil quality",
