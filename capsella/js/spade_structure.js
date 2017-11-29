@@ -226,14 +226,6 @@ function init_spade_question(){
       "order": 9,
       "answers":[
         {
-          //"answer": "URTICA SPP.",
-		  "answer_code": "urtica",
-          "score": 0.3,
-          "image": "/WILPLA/ortica.JPG",
-          "link": "link- N availability",
-          "question_code": "WILPLA"
-        },
-        {
           //"answer": "STELLARIA MEDIA",
 		  "answer_code": "stellaria",
           "score": 0.3,
@@ -255,6 +247,22 @@ function init_spade_question(){
           "score": 0.3,
           "image": "/WILPLA/galisoga.JPG",
           "link": "link- Good soil structure",
+          "question_code": "WILPLA"
+        },
+		{
+          //"answer": "CAPSELLA BURSA-PASTORIS",
+		  "answer_code": "capsella",
+          "score": 0.3,
+          "image": "/WILPLA/capsella.JPG",
+          "link": "link- N availability",
+          "question_code": "WILPLA"
+        },
+		{
+          //"answer": "URTICA SPP.",
+		  "answer_code": "urtica",
+          "score": 0.3,
+          "image": "/WILPLA/ortica.JPG",
+          "link": "link- N availability",
           "question_code": "WILPLA"
         },
         {
@@ -297,14 +305,7 @@ function init_spade_question(){
           "link": "link- Superficial crust and/or soil compaction",
           "question_code": "WILPLA"
         },
-        {
-          //"answer": "CAPSELLA BURSA-PASTORIS",
-		  "answer_code": "capsella",
-          "score": 0.3,
-          "image": "/WILPLA/capsella.JPG",
-          "link": "link- N availability",
-          "question_code": "WILPLA"
-        },
+
         {
           //"answer": "PLANTAGO SPP.",
 		  "answer_code": "plantago",
@@ -948,21 +949,21 @@ function init_spade_question(){
         {
           "answer_code": "beetles",
 		  "score": 0,
-          "image": "/BIODIVOTH/beetles.png",
+          "image": "/BIODIVOTH/beetles3.png",
           "link": "no",
           "question_code": "BIODIVOTH"
         },
 	   {
          "answer_code": "soil_centipedes",
 		  "score": 0,
-          "image": "/BIODIVOTH/soil_centipedes.png",
+          "image": "/BIODIVOTH/soil_centipedes2.png",
           "link": "no",
           "question_code": "BIODIVOTH"
        },
 	    {
          "answer_code": "tropical_centipedes",
 		  "score": 0,
-          "image": "/BIODIVOTH/tropical_centipedes.jpg",
+          "image": "/BIODIVOTH/tropical_centipedes2.jpg",
           "link": "no",
           "question_code": "BIODIVOTH"
        },
