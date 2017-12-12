@@ -92,8 +92,8 @@
 
 
 
-    $script="<script src='".$bp."/js/capsella.js?v=3.4'></script>";
-    $script.="<script src='".$bp."/js/capsella_i18n.js?v=3.4'></script>";
+    $script="<script src='".$bp."/js/capsella.js?v=3.5'></script>";
+    $script.="<script src='".$bp."/js/capsella_i18n.js?v=3.5'></script>";
     $script.="<script src='".$bp."/js/external/jquery.datetimepicker.full.min.js'></script>";
     $aPage['script']  = $script;
 
@@ -191,7 +191,7 @@
 
 
     $body .= '</script>';
-    $body .="<script src='".$bp."/js/spade_structure.js?v=3.4'></script>";
+    $body .="<script src='".$bp."/js/spade_structure.js?v=3.5'></script>";
 
 
 

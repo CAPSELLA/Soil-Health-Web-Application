@@ -1196,7 +1196,7 @@ function spade_test_draw(data, move){
         });
 
 
-        //html+="</div>";
+        html+="</div>";
 
 
       }
