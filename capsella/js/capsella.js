@@ -177,10 +177,12 @@ function init_home(){
   html+="<div id='frame_container'></div>";
   html+="<div class='row'><div class='col-xs-12'><div class='alert alert-success' style='text-align: center;' id='contact_us'>"+cap_t("contact_us")+"</div></div></div>";
 
+
   jQuery('#capsella_home').html(html);
   drawFrame(cap_t("Spade test"), "", function(){init_capsella('spade_test');});
   drawFrame(cap_t("Knowledge base"), "", function(){init_kb();});
   drawFrame(cap_t("SOM Dynamics"), "", function(){init_capsella('som_dyn');});
+  drawFrame(cap_t("QBS-eartworms"), "", function(){init_capsella('qbse');});
   // drawFrame(cap_t("Soil threats"), "", function(){init_capsella('esdb');});
 
 }
