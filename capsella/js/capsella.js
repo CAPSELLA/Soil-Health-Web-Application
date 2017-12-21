@@ -148,7 +148,10 @@ function init_capsella(type, topic){
     init_caps_plat();
   }
   else if(type=="spade_test"){
-    init_spade_test();
+    init_spade_test('spade_test');
+  }
+  else if(type=="qbse"){
+    init_qbse('qbse');
   }
   else if(type=="som_dyn"){
     init_som_dyn();
@@ -330,6 +333,7 @@ function drawFrame(title, content, fun){
   res.find("img, a.sh_frame_button").click(fun);
   jQuery('#frame_container').append(res);
 }
+
 
 
 function init_kb(topic){

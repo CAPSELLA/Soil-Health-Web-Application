@@ -307,3 +307,63 @@ h1.dbmng_page_title {
   right: 10px;
   top: 15px;
 }
+
+
+
+
+/* QBSe styles */
+
+/**/
+
+
+.qbs-tile .tile_title h5{
+	font-weight: bold;
+	text-decoration: underline;
+    background-color: rgba(255,255,255,0.8);
+    padding: 5px;
+    font-size: 12px;
+}
+
+
+.qbs-tile{
+ padding:2px!important;
+}
+#button_containers .qbs-tile-int {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+#button_containers .qbs-tile-int{
+    background-color: #CCC;
+    padding: 10px;
+}
+
+#button_containers .tile_title{
+    padding-bottom: 120px;
+}
+.qbs-tile-int{
+ margin:0px;
+ text-align: center;
+}
+
+.qbs-tile-int .valore{
+  font-size:20px;
+  font-weight: bold;
+}
+
+.qbs-tile-int .az_data{
+  font-size:10px;
+}
+.qbs-tile h4{
+background-color: rgba(255,255,255,0.8);
+}
+
+.qbs-tile .btn{
+  display:none;
+}
+
+
+#qbs_classify{
+  margin-top: 120px;
+}
