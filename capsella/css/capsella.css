@@ -301,3 +301,9 @@ h1.dbmng_page_title {
   height: 80px;
   line-height: 60px;
 }
+
+#loading_icon{
+  position: absolute;
+  right: 10px;
+  top: 15px;
+}

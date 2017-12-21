@@ -1,58 +1,14 @@
 var spade_question;
 
+
 function init_spade_question(){
   spade_question=[
-    {
-      "code": "FCov",
-      "question": "What is the field cover for the most part?",
-      "data_type": "select",
-      "help": "spade_test_info_start",
-      "how_many": "once",
-      "answers":[
-        {
-          // "answer": "Bare soil",
-          "answer_code": "bare_soil",
-          "score": 0
-        },
-        {
-          // "answer": "Arable crop",
-          "answer_code": "arable",
-          "score": 0
-        },
-        {
-          // "answer": "Horticoltural crop",
-          "answer_code": "horticolture",
-          "score": 0,
-        },
-        {
-          //"answer": "Tree crop",
-          "answer_code": "tree_crop",
-          "score": 0,
-        },
-        {
-          //"answer": "Forest",
-          "answer_code": "forest",
-          "score": 0,
-          "image": "Easy",
-          "link": "no",
-          "question_code": "FCov"
-        },
-        {
-          //"answer": "Grassland",
-		  "answer_code": "grassland",
-          "score": 0,
-          "image": "Easy",
-          "link": "no",
-          "question_code": "FCov"
-        }
-      ]
-    },
-    {
+	{
       "code": "FSlo",
       "Title": "Field  slope",
       "question": "What is the slope of the field?",
       "data_type": "select",
-      "help": "no",
+      "help": "spade_test_info_start",
       "how_many": "once",
       "Importance": "medium",
       "condition": "",
@@ -98,6 +54,51 @@ function init_spade_question(){
            "link": "no",
            "question_code": "FSlo"
          }
+      ]
+    },
+	{
+      "code": "FCov",
+      "question": "What is the field cover for the most part?",
+      "data_type": "select",
+      "help":"no" ,
+      "how_many": "once",
+      "answers":[
+        {
+          // "answer": "Bare soil",
+          "answer_code": "bare_soil",
+          "score": 0
+        },
+        {
+          // "answer": "Arable crop",
+          "answer_code": "arable",
+          "score": 0
+        },
+        {
+          // "answer": "Horticoltural crop",
+          "answer_code": "horticolture",
+          "score": 0,
+        },
+        {
+          //"answer": "Tree crop",
+          "answer_code": "tree_crop",
+          "score": 0,
+        },
+        {
+          //"answer": "Forest",
+          "answer_code": "forest",
+          "score": 0,
+          "image": "Easy",
+          "link": "no",
+          "question_code": "FCov"
+        },
+        {
+          //"answer": "Grassland",
+		  "answer_code": "grassland",
+          "score": 0,
+          "image": "Easy",
+          "link": "no",
+          "question_code": "FCov"
+        }
       ]
     },
     {
@@ -225,14 +226,6 @@ function init_spade_question(){
       "order": 9,
       "answers":[
         {
-          //"answer": "URTICA SPP.",
-		  "answer_code": "urtica",
-          "score": 0.3,
-          "image": "/WILPLA/ortica.JPG",
-          "link": "link- N availability",
-          "question_code": "WILPLA"
-        },
-        {
           //"answer": "STELLARIA MEDIA",
 		  "answer_code": "stellaria",
           "score": 0.3,
@@ -254,6 +247,22 @@ function init_spade_question(){
           "score": 0.3,
           "image": "/WILPLA/galisoga.JPG",
           "link": "link- Good soil structure",
+          "question_code": "WILPLA"
+        },
+		{
+          //"answer": "CAPSELLA BURSA-PASTORIS",
+		  "answer_code": "capsella",
+          "score": 0.3,
+          "image": "/WILPLA/capsella.JPG",
+          "link": "link- N availability",
+          "question_code": "WILPLA"
+        },
+		{
+          //"answer": "URTICA SPP.",
+		  "answer_code": "urtica",
+          "score": 0.3,
+          "image": "/WILPLA/ortica.JPG",
+          "link": "link- N availability",
           "question_code": "WILPLA"
         },
         {
@@ -296,14 +305,7 @@ function init_spade_question(){
           "link": "link- Superficial crust and/or soil compaction",
           "question_code": "WILPLA"
         },
-        {
-          //"answer": "CAPSELLA BURSA-PASTORIS",
-		  "answer_code": "capsella",
-          "score": 0.3,
-          "image": "/WILPLA/capsella.JPG",
-          "link": "link- N availability",
-          "question_code": "WILPLA"
-        },
+
         {
           //"answer": "PLANTAGO SPP.",
 		  "answer_code": "plantago",
@@ -382,6 +384,40 @@ function init_spade_question(){
     //   "order": 12
     // },
     {
+      "code": "SText",
+      "Title": "Soil texture",
+      "question": "How is the soil texture in the observation point?",
+      "data_type": "select",
+      "help": "no",
+      "how_many": "once",
+      "Importance": "medium",
+      "condition": "",
+      "order": 6,
+      "answers":[
+        {
+		  "answer_code": "sand",
+          "score": 0,
+          "image": "Easy",
+          "link": "no",
+          "question_code": "SText"
+        },
+        {
+		  "answer_code": "av_text",
+          "score": 0,
+          "image": "Easy",
+          "link": "no",
+          "question_code": "SText"
+        },
+        {
+		  "answer_code": "clay",
+          "score": 0,
+          "image": "Easy",
+          "link": "no",
+          "question_code": "SText"
+        }
+      ]
+    },
+	{
       "code": "LAYNUM",
       "Title": "Layers number",
       "question": "Insert the layer number",
@@ -405,19 +441,7 @@ function init_spade_question(){
       "condition": "",
       "order": 14
     },
-    {
-      "code": "AGDIM",
-      "Title": "Aggregates dimension",
-      "question": "What is the most frequent dimension of the aggregate in mm?",
-      "data_type": "integer",
-      "placeholder": "average dimension in mm",
-      "help": "agdim_info",
-      "how_many": "by_layer",
-      "Importance": "mandatory",
-      "condition": "",
-      "order": 15
-    },
-    {
+	{
       "code": "AGSHP",
       "Title": "Aggregates shape",
       "question": "What is the shape of the soil aggregates?",
@@ -496,6 +520,18 @@ function init_spade_question(){
       ]
     },
     {
+      "code": "AGDIM",
+      "Title": "Aggregates dimension",
+      "question": "What is the most frequent dimension of the aggregate in mm?",
+      "data_type": "integer",
+      "placeholder": "average dimension in mm",
+      "help": "agdim_info",
+      "how_many": "by_layer",
+      "Importance": "mandatory",
+      "condition": "",
+      "order": 15
+    },
+    {
       "code": "COMP",
       "Title": "Soil compaction",
       "question": "How compact is the soil layer?",
@@ -533,7 +569,7 @@ function init_spade_question(){
       ]
     },
     {
-      "code": "MOIST",
+      "code": "MOIST2",
       "Title": "Soil moisture",
       "question": "How wet is the soil?",
       "data_type": "select",
@@ -545,29 +581,75 @@ function init_spade_question(){
       "order": 18,
       "answers":[
         {
-          //"answer": "You cannot break it because the sample is too hard",
-          "answer_code": "dry",
+          "answer_code": "sand_dry",
 		  "score": -1,
-          "image": "/MOIST/49.jpeg",
+          "image": "/MOIST2/sand_dry.jpg",
           "link": "link1- Info on soil operations (you cannot use machines on the soil); link2-Info on irrigation (you should consider the irrigation)",
-          "question_code": "MOIST"
+          "question_code": "MOIST2"
+        },
+		 {
+          //"answer": "You can easly break the sample into its aggregates",
+          "answer_code": "sand_moist",
+		  "score": 1,
+          "image": "/MOIST2/sand_moist.jpg",
+          "link": "link1 - Info on soil operations (you can  use machines on the soil); link2- Info on irrigation (Irrigation is  needed)",
+          "question_code": "MOIST2"
         },
         {
           //"answer": "The sample does not break because it is plastic",
-          "answer_code": "wet",
+          "answer_code": "sand_wet",
 		  "score": -0.5,
-          "image": "/MOIST/51.jpeg",
+          "image": "/MOIST2/sand_wet.jpg",
           "link": "link1 - Info on soil operations (you cannot use machines on the soil); link2- Info on irrigation (Irrigation is not needed)",
-          "question_code": "MOIST"
+          "question_code": "MOIST2"
+        },
+
+		{
+          "answer_code": "av_text_dry",
+		  "score": -1,
+          "image": "/MOIST2/av_text_dry.jpg",
+          "link": "link1- Info on soil operations (you cannot use machines on the soil); link2-Info on irrigation (you should consider the irrigation)",
+          "question_code": "MOIST2"
+        },
+		{
+          //"answer": "You can easly break the sample into its aggregates",
+          "answer_code": "av_text_moist",
+		        "score": 1,
+          "image": "/MOIST2/av_text_moist.jpg",
+          "link": "link1 - Info on soil operations (you can  use machines on the soil); link2- Info on irrigation (Irrigation is  needed)",
+          "question_code": "MOIST2"
         },
         {
+          //"answer": "The sample does not break because it is plastic",
+          "answer_code": "av_text_wet",
+		        "score": -0.5,
+          "image": "/MOIST2/av_text_wet.jpg",
+          "link": "link1 - Info on soil operations (you cannot use machines on the soil); link2- Info on irrigation (Irrigation is not needed)",
+          "question_code": "MOIST2"
+        },
+		{
+          "answer_code": "clay_dry",
+		  "score": -1,
+          "image": "/MOIST2/clay_dry.jpg",
+          "link": "link1- Info on soil operations (you cannot use machines on the soil); link2-Info on irrigation (you should consider the irrigation)",
+          "question_code": "MOIST2"
+        },
+		{
           //"answer": "You can easly break the sample into its aggregates",
-          "answer_code": "good",
+          "answer_code": "clay_moist",
 		  "score": 1,
-          "image": "/MOIST/50.jpeg",
+          "image": "/MOIST2/clay_moist.jpg",
           "link": "link1 - Info on soil operations (you can  use machines on the soil); link2- Info on irrigation (Irrigation is  needed)",
-          "question_code": "MOIST"
-        }
+          "question_code": "MOIST2"
+        },
+        {
+          //"answer": "The sample does not break because it is plastic",
+          "answer_code": "clay_wet",
+		  "score": -0.5,
+          "image": "/MOIST2/clay_wet.jpg",
+          "link": "link1 - Info on soil operations (you cannot use machines on the soil); link2- Info on irrigation (Irrigation is not needed)",
+          "question_code": "MOIST2"
+        },
       ]
     },
     {
@@ -599,14 +681,6 @@ function init_spade_question(){
           "link": "link -  Water logging (sign of long period of water logging)",
           "question_code": "COL"
         },
-        {
-          //"answer": "Layers darker than others",
-		  "answer_code": "darker_layers",
-          "score": 0,
-          "image": "/COL/54.jpeg",
-          "link": "link - Effects of humus content on soil color (due to different moisture or different content of humus)",
-          "question_code": "COL"
-        }
       ]
     },
     {
@@ -779,44 +853,6 @@ function init_spade_question(){
       ]
     },
     {
-      "code": "ROOTF",
-      "Title": "presence of fine root",
-      "question": "How many fine roots (diameter < 1mm) do you see?",
-      "data_type": "select",
-      "help": "no",
-      "how_many": "by_layer",
-      "images": true,
-      "Importance": "low",
-      "condition": "visible only if PCov ! from Mostly bare soil",
-      "order": 24,
-      "answers":[
-        {
-          //"answer": "No roots",
-          "answer_code": "no_roots",
-          "score": -1,
-          "image": "/ROOTP/no_root.jpeg",
-          "link": "link-Root growth",
-          "question_code": "ROOTF"
-        },
-        {
-          //"answer": "Very few roots",
-          "answer_code": "few_roots",
-          "score": -0.5,
-          "image": "/ROOTF/few.jpeg",
-          "link": "link-Root growth",
-          "question_code": "ROOTF"
-        },
-        {
-          //"answer": "A lot of roots",
-          "answer_code": "lot_roots",
-          "score": 1,
-          "image": "/ROOTF/lot.jpeg",
-          "link": "link-Root growth",
-          "question_code": "ROOTF"
-        }
-      ]
-    },
-    {
       "code": "ROOTT",
       "Title": "presence of tubercle",
       "question": "Do you see legume tubercles?",
@@ -898,16 +934,54 @@ function init_spade_question(){
        }
       ]
     },
-    {
+	{
       "code": "BIODIVOTH",
       "Title": "sign of other wild life",
-      "question": "Do you see presense of other wild life?",
-      "data_type": "text",
-      "help": "biodivoth_info",
+      "data_type": "select_multi",
+      "help": "no",
       "how_many": "once",
-      "Importance": "low",
+      "Importance": "medium",
+	  "mandatory": false,
+	  "images": true,
       "condition": "",
-      "order": 27
+      "order": 27,
+      "answers":[
+        {
+          "answer_code": "beetles",
+		  "score": 0,
+          "image": "/BIODIVOTH/beetles3.png",
+          "link": "no",
+          "question_code": "BIODIVOTH"
+        },
+	   {
+         "answer_code": "soil_centipedes",
+		  "score": 0,
+          "image": "/BIODIVOTH/soil_centipedes2.png",
+          "link": "no",
+          "question_code": "BIODIVOTH"
+       },
+	    {
+         "answer_code": "tropical_centipedes",
+		  "score": 0,
+          "image": "/BIODIVOTH/tropical_centipedes2.jpg",
+          "link": "no",
+          "question_code": "BIODIVOTH"
+       },
+	      {
+         "answer_code": "millipedes",
+		  "score": 0,
+          "image": "/BIODIVOTH/millipedes.jpg",
+          "link": "no",
+          "question_code": "BIODIVOTH"
+       },
+	   {
+		   "answer_code": "beetle_larvae",
+		  "score": 0,
+          "image": "/BIODIVOTH/beetle_larvae.jpg",
+          "link": "no",
+          "question_code": "BIODIVOTH"
+       }
+      ]
     },
     {
       "code": "SQ",

@@ -1,11 +1,13 @@
 
 //select flag, json->'name', json->'step_done', email, * from caps_spade order by id_caps_spade desc
 
+
 var overlayMaps;
 var controlMaps;
 var pluvio_layer;
 
 var map, marker;
+
 
 // var custom_icon = L.Icon.extend({
 //     options: {
@@ -173,6 +175,7 @@ function init_home(){
 
   var html="<h1>"+cap_t("Capsella soil health platform")+"</h1>";
   html+="<div id='frame_container'></div>";
+  html+="<div class='row'><div class='col-xs-12'><div class='alert alert-success' style='text-align: center;' id='contact_us'>"+cap_t("contact_us")+"</div></div></div>";
 
   jQuery('#capsella_home').html(html);
   drawFrame(cap_t("Spade test"), "", function(){init_capsella('spade_test');});
@@ -310,15 +313,19 @@ function drawFrame(title, content, fun){
   if(typeof fun !=='function'){
    fun=function(){alert('aa');};
   }
+  var img='';
+  if(title==cap_t("Spade test")){
+      img='<div style="margin-bottom:10px;"><img class="img-responsive" src="'+global_opt.base_path+'res/img/logo_spade.png"/></div>';
+  }
 
   var html="<div class='col-sm-6'><div class='sh_box'>";
     html+="<div class='sh_header'><h3>"+title+"</h3></div>";
-    html+="<div class='sh_frame_content'>"+content+"</div>";
+    html+="<div class='sh_frame_content'>"+content+"</div>"+img;
     html+="<div class='sh_frame_buttons'><a class='btn btn-success sh_frame_button'>"+cap_t('start')+"</a></div>";
   html+="</div></div>";
   var res=jQuery(html);
 
-  res.find("a.sh_frame_button").click(fun);
+  res.find("img, a.sh_frame_button").click(fun);
   jQuery('#frame_container').append(res);
 }
 
@@ -569,7 +576,7 @@ function getWMSMapfile(mapfile, raster_theme, layer){
 
 function reset_spade_view(){
   var tab="<table class='table'><thead></thead><tbody></tbody></table>";
-  var html="";
+  var html="<div id='resume_spade'></div>";
   html+="<div class='alert alert-info'>";
   html+='<div>'+cap_t('spade_test_before')+'</div>';
   html+="<p/><div class='row'><div class=col-xs-4><img class='img-responsive' src='res/img/general/spade.jpg'/></div>";
@@ -591,56 +598,71 @@ function reset_spade_view(){
   });
 }
 
-function save_spade_test_online(){
+function save_spade_test_online(reinit){
+  if(typeof reinit=='undefined'){
+    reinit=true;
+  }
   var my_spade_tests=jQuery.jStorage.get('my_spade_tests');
+  jQuery('#loading_icon').html('<span class="glyphicon glyphicon-cloud-upload"></span>');
+
   jQuery('#save_spade_test_info').html(cap_t("We are uploading the spade test on the server"));
     jQuery.ajax({
       'url':global_opt.online_path+'api/spade_test_batch/',
       'method': 'POST',
       'data': JSON.stringify(my_spade_tests),
       'dataType': 'JSON',
+      'timeout': 10000, // sets timeout to 10 seconds
       'success': function(d){
+        jQuery('#loading_icon').html('<span class="glyphicon glyphicon-thumbs-up"></span>');
+
         var saved=d.data;
         var my_spade_tests=jQuery.jStorage.get('my_spade_tests');
         jQuery.each(saved,function(k,v){
           console.log(k);
           if(v.ok===true){
-            my_spade_tests[k]['saved']=true;
+            my_spade_tests[k].saved=true;
           }
         });
         jQuery.jStorage.set('my_spade_tests',my_spade_tests);
         jQuery('#save_spade_test_info').html(cap_t("OK"));
-        init_spade_test();
+        if(reinit){
+          init_spade_test();
+        }
       },
       'error':function(e){
         console.log(e);
-        var msg=cap_t("An error occurred during the data savings. Please check the connection and try again later.");
-        alert(msg);
-        jQuery('#save_spade_test_info').html(msg);
+        jQuery('#loading_icon').html('<span class="glyphicon glyphicon-thumbs-down"></span>');
+        if(reinit){
+          var msg=cap_t("An error occurred during the data savings. Please check the connection and try again later.");
+          alert(msg);
+          jQuery('#save_spade_test_info').html(msg);
+        }
       }
     });
 
-    var img=jQuery.jStorage.get('my_spade_images');
-    jQuery.each(img,function(k,v){
-      if(!v.saved){
-          jQuery.ajax({
-            'url':global_opt.online_path+'api/spade_test_image/'+k,
-            'method': 'POST',
-            'data': v.base64,
-            'dataType': 'JSON',
-            'success': function(d){
-              if(d.ok){
-                v.saved=true;
-                //jQuery('#save_spade_test_info').append("Saved image "+k);
-                jQuery.jStorage.set('my_spade_images',img);
+    //Save the images only if online
+      var img=jQuery.jStorage.get('my_spade_images');
+      jQuery.each(img,function(k,v){
+        if(!v.saved){
+            jQuery.ajax({
+              'url':global_opt.online_path+'api/spade_test_image/'+k,
+              'method': 'POST',
+              'data': v.base64,
+              'dataType': 'JSON',
+              'timeout': 30000, // sets timeout to 10 seconds
+              'success': function(d){
+                if(d.ok){
+                  v.saved=true;
+                  //jQuery('#save_spade_test_info').append("Saved image "+k);
+                  jQuery.jStorage.set('my_spade_images',img);
+                }
+              },
+              'error':function(e){
+                console.log(e);
               }
-            },
-            'error':function(e){
-              console.log(e);
-            }
-          });
-      }
-    });
+            });
+        }
+      });
 }
 
 function init_spade_test(){
@@ -708,6 +730,7 @@ function renderSpadesList(spades_list){
 
       el+="<td>";
       if(data.step_done<24){
+        jQuery('#resume_spade').html("<div style='text-align:center' class='alert alert-warning'>"+cap_t("unfinished job")+"<br/><button id='resume_unfinished' class='btn btn-sm btn-warning'>"+cap_t("Resume")+"</button></div>");
         el+="<button class='btn btn-sm btn-warning'>"+cap_t("Resume")+"</button>";
       }
       else{
@@ -729,6 +752,10 @@ function renderSpadesList(spades_list){
         }
       }
       el+="</tr>";
+
+      jQuery('#resume_unfinished').click(function(){
+        spade_resume(data);
+      });
 
       var el2=jQuery(el);
       el2.find('button').click(function(){
@@ -874,6 +901,11 @@ function caps_save(data, fun, move){
     my_spade_tests[data.guid]=data;
     jQuery.jStorage.set('my_spade_tests', my_spade_tests);
     move_next(data,fun, move);
+
+    //Try to save every 5 step
+    if(data.step_done%5===0){
+      save_spade_test_online(false);
+    }
   }
   else{
     jQuery.ajax({
@@ -944,11 +976,12 @@ function spade_test_draw(data, move){
   if(typeof question.check_question!== 'undefined' && question.check_question===true){
     //Skip a question
     var skip_question=false;
+
     if(question_code=='decor'){
       //all the answers should be no residues to skip
       skip_question=true;
       jQuery.each(data.typor, function(k,v){
-        if(!(v.length==1 && v[0]=="No residues")){
+        if(!(v.length==1 && v[0]=="no_residues")){
           skip_question=false;
         }
       });
@@ -977,8 +1010,6 @@ function spade_test_draw(data, move){
   else{
     question_code=question.code.toLowerCase();
   }
-  // jQuery('#spade_test_result').html();
-
   var html='<h3 id="spade_question_title">'+cap_t(question_code+"_question")+'</h3>';
   if(question.help!=='' && question.help!=='no'){
 
@@ -986,23 +1017,29 @@ function spade_test_draw(data, move){
       var img="";
       if(question.help=='ressli_info'){
         img="RESSLI/ressli.jpeg";
-        html+="<div style='text-align:center'><img style='height:200px;' src='"+global_opt.base_path+"res/img/spade_test/"+img+"'></div>";
+        html+="<div style='text-align:center'><img class='img-responsive' style='height:200px;' src='"+global_opt.base_path+"res/img/spade_test/"+img+"'></div>";
       }
       else if(question.help=='laynum_info'){
         img="LAYNUM/laynum.jpeg";
-        html+="<figure style='text-align:center'><img style='height:300px;' src='"+global_opt.base_path+"res/img/spade_test/"+img+"'><figcaption>"+cap_t("Sample with three layers")+"</figcaption></figure>";
+        html+="<figure style='text-align:center'><img class='img-responsive' style='height:300px;' src='"+global_opt.base_path+"res/img/spade_test/"+img+"'><figcaption>"+cap_t("Sample with three layers")+"</figcaption></figure>";
       }
       else if(question.help=='roott_info'){
         img1="ROOTT/root1.jpeg";
         img2="ROOTT/root2.jpeg";
-        html+="<div style='text-align:center'><figure><img style='height:200px;' src='"+global_opt.base_path+"res/img/spade_test/"+img1+"'><figcaption>"+cap_t("legume with root nodules")+"</figcaption></figure>";
-        html+="<figure><img style='height:200px;' src='"+global_opt.base_path+"res/img/spade_test/"+img2+"'><figcaption>"+cap_t("open root nodule (red inside)")+"</figcaption></figure></div>";
+        html+="<div style='text-align:center'><figure><img class='img-responsive' style='height:200px;' src='"+global_opt.base_path+"res/img/spade_test/"+img1+"'><figcaption>"+cap_t("legume with root nodules")+"</figcaption></figure>";
+        html+="<figure><img class='img-responsive' style='height:200px;' src='"+global_opt.base_path+"res/img/spade_test/"+img2+"'><figcaption>"+cap_t("open root nodule (red inside)")+"</figcaption></figure></div>";
 
       }
       else if(question.help=='biodivoth_info'){
         img="BIODIVOTH/19.jpeg";
-        html+="<div style='text-align:center'><img style='height:200px;' src='"+global_opt.base_path+"res/img/spade_test/"+img+"'></div>";
+        html+="<div style='text-align:center'><img class='img-responsive' style='height:200px;' src='"+global_opt.base_path+"res/img/spade_test/"+img+"'></div>";
       }
+      else if(question.help=='info_sample_help'){
+        img="spade_test_video.gif";
+        html+="<div style='text-align:center'><img class='img-responsive' style='width:100%' src='"+global_opt.base_path+"res/img/spade_test/"+img+"'></div>";
+      }
+
+
 
 
 
@@ -1060,6 +1097,7 @@ function spade_test_draw(data, move){
             var imgs=jQuery.jStorage.get("my_spade_images");
             if(typeof imgs[data.image]!=='undefined'){
               html+="<img class='img-responsive' src='"+imgs[data.image].base64+"' />";
+
             }
           }
           html+='</div>';
@@ -1069,7 +1107,6 @@ function spade_test_draw(data, move){
       }
     }
     else if(question.data_type=='integer'){
-
       html+='<input class="form-control" placeholder="'+placeholder+'" name="'+field_name+'" type="number" value="'+value+'"/>';
     }
     else if(question.data_type=='text'){
@@ -1102,56 +1139,110 @@ function spade_test_draw(data, move){
 
         html+='<div class="row spade_tile_answers">';
         jQuery.each(answers, function(k,v){
-          var checked=false;
-          var answer_code=v.answer_code;
-          var answer_label=cap_t(v.answer);
-          if(typeof answer_code=='undefined'){
-            answer_code=v.answer;
-          }
-          else{
-            answer_label=cap_t(question_code+"_"+v.answer_code);
-          }
 
+          var show_answer=true;
 
-
-          if(question.data_type=='select_multi'){
-
-            if(jQuery.inArray(answer_code, value)>-1){
-              checked=true;
+          //Filtra le immaggini dell'umidità
+          console.log(question_code);
+          if(question_code=='moist2'){
+            var stext=data.stext.substr(0,3);
+            show_answer=false;
+            console.log(stext);
+              var cod=v.answer_code.substring(0,3);
+              if(cod==stext){
+                show_answer=true;
+              }
             }
-          }
-          else{
-            if(answer_code==value){
-              checked=true;
+
+
+            if(show_answer){
+            var checked=false;
+            var answer_code=v.answer_code;
+            var answer_label=cap_t(v.answer);
+            if(typeof answer_code=='undefined'){
+              answer_code=v.answer;
             }
-          }
+            else{
+              answer_label=cap_t(question_code+"_"+v.answer_code);
+            }
 
-          var chk="";
-          var clsckd="";
-          if(checked){
-            chk=' checked="true" ';
-            clsckd="answer_box_selected";
-          }
 
-          html+="<div class='col-xs-6'>";
-          html+='<input class="spade_input" '+chk+' id="answer_'+k+'_'+n+'"  type="'+type+'" name="'+field_name+'" value="'+answer_code+'" />';
 
-          html+="<div onclick='triggerAns("+k+","+n+")' class='answer_box "+clsckd+"' id='answer_box_"+k+"_"+n+"'>";
-          if(images){
-            var styl="background-image: url("+global_opt.base_path+"res/img/spade_test"+v.image+")";
-            html+="<div  style='"+styl+"' id='answer_tile_"+k+"_"+n+"' class='type_"+type+" spade_tile_answer'>";
-            html+="</div>";
+            if(question.data_type=='select_multi'){
+
+              if(jQuery.inArray(answer_code, value)>-1){
+                checked=true;
+              }
+            }
+            else{
+              if(answer_code==value){
+                checked=true;
+              }
+            }
+
+            var chk="";
+            var clsckd="";
+            if(checked){
+              chk=' checked="true" ';
+              clsckd="answer_box_selected";
+            }
+
+            html+="<div class='col-sm-6'>";
+            html+='<input class="spade_input" '+chk+' id="answer_'+k+'_'+n+'"  type="'+type+'" name="'+field_name+'" value="'+answer_code+'" />';
+
+            html+="<div onclick='triggerAns("+k+","+n+")' class='answer_box "+clsckd+"' id='answer_box_"+k+"_"+n+"'>";
+            if(images){
+              var styl="background-image: url("+global_opt.base_path+"res/img/spade_test"+v.image+")";
+              html+="<div  style='"+styl+"' id='answer_tile_"+k+"_"+n+"' class='type_"+type+" spade_tile_answer'>";
+              html+="</div>";
+            }
+            html+="<div class='spade_tile_answer_sub'>"; //onclick="selectAns('+k+','+n+')"
+                html+='<div class="spade_answer_title" >'+answer_label+'</div>';
+            html+='</div></div></div>';
           }
-          html+="<div class='spade_tile_answer_sub'>"; //onclick="selectAns('+k+','+n+')"
-              html+='<div class="spade_answer_title" >'+answer_label+'</div>';
-          html+='</div></div></div>';
         });
+
+
         html+="</div>";
+
+
       }
       else{
         html+='<div class="alert alert-warning">'+cap_t("There are no answers!")+'</div>';
       }
     }
+  }
+
+  //More button
+  var show_more_button=true;
+  if(show_more_button && global_opt.offline===true){
+
+    var has_data=false;
+    var stl='display:none';
+    var comment_val='';
+    var img_val='';
+
+    if(typeof data[question_code+"_more"]!=='undefined'){
+        has_data=true;
+        stl='';
+        comment_val=data[question_code+"_more"].comment;
+        var my_spade_images=jQuery.jStorage.get('my_spade_images');
+        var image_guid=data[question_code+"_more"].image;
+
+        if(typeof my_spade_images[image_guid]!=='undefined'){
+          img_val="<img class='img-responsive' src='"+my_spade_images[image_guid].base64+"' />";
+        }
+    }
+    //={'image':guid_image,'comment':jQuery('#spade_textarea').val()};
+
+    html+='<div class="col-xs-12" style="margin-bottom:20px; margin-top:10px; text-align:center;"><button id="spade_more" class="btn-sm btn btn-info">'+cap_t("Add a comment or a picture")+'</button>';
+    html+='<div id="spade_more_content" style="'+stl+'"><textarea class="form-control" id="spade_textarea">'+comment_val+'</textarea>';
+    if(!is_cordova()){
+      html+='<input class="form-control" id="take_picture_file" type="file" accept="image/*" capture="camera">';
+    }
+    html+='<button id="take_picture" class="btn btn-success btn-block">'+cap_t("Take a picture")+'</button>';
+    html+='<div id="take_picture_div">'+img_val+'</div>';
+    html+='</div></div>';
   }
 
   if(global_opt.spade_step>0){
@@ -1162,13 +1253,40 @@ function spade_test_draw(data, move){
   jQuery(document).scrollTop( jQuery("#spade_question_title").offset().top-jQuery('.navbar-fixed-top').height() );
 
 
+    jQuery('#spade_more').click(function(){
+      jQuery('#spade_more_content').show();
+    });
+
+    var param=null;
+    if(question.help!=='info_sample_help'){
+      param=question_code;
+    }
+
+    //Manage the more buttons
+    if(show_more_button && global_opt.offline===true){
+
+      //Update the text field alone
+      jQuery('#spade_textarea').change(function(){
+        console.log('update textarea');
+        if(typeof data[question_code+"_more"] == 'undefined'){
+          data[question_code+"_more"]={'image':'','comment':jQuery('#spade_textarea').val()};
+        }
+        else{
+          data[question_code+"_more"].comment=jQuery('#spade_textarea').val();
+        }
+      });
+      if(!is_cordova()){
+        //jQuery('#take_picture_file').change(function(){console.log("upload");jQuery('#take_picture').trigger('click');});
+      }
+    }
+
     jQuery('#take_picture').click(function(){
       if(is_cordova()){
         var cameraOptions={ 'quality': 50, 'targetWidth':640, 'destinationType': navigator.camera.DestinationType.DATA_URL};
         navigator.camera.getPicture(
           function(imageData){
             var base64 = "data:image/jpeg;base64," + imageData;
-            save_image(data, base64);
+            save_image(data, base64,param);
           },
           function(message){
             alert(message);
@@ -1194,7 +1312,7 @@ function spade_test_draw(data, move){
           fr = new FileReader();
           fr.onload = function(){
             var base64=fr.result;
-            save_image(data, base64);
+            save_image(data, base64,param);
           };
           //fr.readAsText(file);
           fr.readAsDataURL(file);
@@ -1213,12 +1331,22 @@ function spade_test_draw(data, move){
 }
 
 
-function save_image(data,base64){
+function save_image(data,base64, param){
   jQuery('#take_picture_div').html("<img class='img-responsive' src='"+base64+"' />");
   var my_spade_images=jQuery.jStorage.get('my_spade_images');
-  my_spade_images[data.guid]={'base64':base64, 'saved':false};
-  jQuery.jStorage.set('my_spade_images', my_spade_images);
-  data.image=data.guid;
+  if(param==null){
+    my_spade_images[data.guid]={'base64':base64, 'saved':false};
+    jQuery.jStorage.set('my_spade_images', my_spade_images);
+    data.image=data.guid;
+  }
+  else{
+    var guid_image=data.guid+"_"+param;
+    my_spade_images[guid_image]={'base64':base64, 'saved':false};
+    jQuery.jStorage.set('my_spade_images', my_spade_images);
+    data[param+"_more"]={'image':guid_image,'comment':jQuery('#spade_textarea').val()};
+
+
+  }
 }
 
 function get_image(guid, div){
@@ -1439,6 +1567,7 @@ function spade_save_email(data){
         });
       }
       else{
+        save_spade_test_online(false);
         html="<div id='spade_test_result'></div>";
         html+="<div id='back_map'><button class='btn btn-success'>"+cap_t("Go back to the map")+"</button></div>";
         jQuery('#spade_test_insert').html(html);
