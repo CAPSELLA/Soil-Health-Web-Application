@@ -175,6 +175,7 @@ function init_home(){
 
   var html="<h1>"+cap_t("Capsella soil health platform")+"</h1>";
   html+="<div id='frame_container'></div>";
+  html+="<div class='row'><div class='col-xs-12'><div class='alert alert-success' style='text-align: center;' id='contact_us'>"+cap_t("contact_us")+"</div></div></div>";
 
   jQuery('#capsella_home').html(html);
   drawFrame(cap_t("Spade test"), "", function(){init_capsella('spade_test');});
@@ -1033,6 +1034,12 @@ function spade_test_draw(data, move){
         img="BIODIVOTH/19.jpeg";
         html+="<div style='text-align:center'><img class='img-responsive' style='height:200px;' src='"+global_opt.base_path+"res/img/spade_test/"+img+"'></div>";
       }
+      else if(question.help=='info_sample_help'){
+        img="spade_test_video.gif";
+        html+="<div style='text-align:center'><img class='img-responsive' style='width:100%' src='"+global_opt.base_path+"res/img/spade_test/"+img+"'></div>";
+      }
+
+
 
 
 

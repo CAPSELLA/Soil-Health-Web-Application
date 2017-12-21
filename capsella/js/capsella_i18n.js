@@ -17,6 +17,7 @@
 
 var i18n_glob={
   "it": {
+  "contact_us": "<span class='glyphicon glyphicon-envelope'></span> Scrivici a <a href='mailto:soilhealth.capsella@santannapisa.it'>soilhealth.capsella@santannapisa.it</a>",
   "unfinished job": "C'è una prova della vanga in sospeso!",
   "add a comment or a picture":"Aggiungi un commento o un'immagine",
 	"biodivoth_beetles":"Coleotteri, in particolare: a) Carabidi (Carabidae), genere Pterosticus; b) Carabidi (Carabidae), genere Carabus; c) Coleotteri scavatori (Geotrupidae); d) Stafilinidi (Stafilinidae). Indicatori di alta qualità del suolo.",
@@ -258,6 +259,7 @@ var i18n_glob={
     "average dimension in mm": "dimensione media in mm"
 },
 "en": {
+  "contact_us": "<span class='glyphicon glyphicon-envelope'></span> Contact us at <a href='mailto:soilhealth.capsella@santannapisa.it'>soilhealth.capsella@santannapisa.it</a>",
   "unfinished job": "You have an unfinished job! Resume the spade test.",
 	"biodivoth_beetles":"Beetles (Coleoptera): a) Carabid beetle (Carabidae), genus Pterosticus; b) Carabid beetle (Carabidae), genus Carabus; c) Earth-boring beetle (Geotrupidae). d) Rove beetles (Stafilinidae). Optimum indicator of soil quality",
 	"biodivoth_soil_centipedes":"Geophilidae (soil centipedes). Tightly related to soil, optimum indicator of soil quality.",
@@ -498,6 +500,7 @@ var i18n_glob={
     "average dimension in mm": "Average dimension in mm"
   },
   "gr": {
+  "contact_us": "<span class='glyphicon glyphicon-envelope'></span> Contact us at <a href='mailto:soilhealth.capsella@santannapisa.it'>soilhealth.capsella@santannapisa.it</a>",
 	"biodivoth_beetles":"Beetles (Coleoptera): a) Carabid beetle (Carabidae), genus Pterosticus; b) Carabid beetle (Carabidae), genus Carabus; c) Earth-boring beetle (Geotrupidae). Optimum indicator of soil quality",
 	"biodivoth_soil_centipedes":"Geophilidae (soil centipedes). Tightly related to soil, optimum indicator of soil quality.",
 	"biodivoth_tropical_centipedes":"Order Scolopendromorpha, e.g. Scolopendra cingulata (tropical centipedes). Good indicators of soil quality",
