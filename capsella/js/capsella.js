@@ -1037,7 +1037,14 @@ function spade_test_draw(data, move){
       else if(question.help=='info_sample_help'){
         img="spade_test_video.gif";
         html+="<div style='text-align:center'><img class='img-responsive' style='width:100%' src='"+global_opt.base_path+"res/img/spade_test/"+img+"'></div>";
+        html+=cap_t("spade_test_welcome_short");
       }
+      else if(question.help=='laydep_info'){
+        img="soil_depth.png";
+        html+="<div style='text-align:center'><img class='img-responsive' style='width:100%' src='"+global_opt.base_path+"res/img/spade_test/"+img+"'></div>";
+      }
+
+
 
 
 
