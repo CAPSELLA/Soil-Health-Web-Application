@@ -569,6 +569,45 @@ function init_spade_question(){
       ]
     },
     {
+      "code": "MOIST",
+      "Title": "Soil moisture",
+      "question": "How wet is the soil?",
+      "data_type": "select",
+      "help": "moist_info",
+      "how_many": "by_layer",
+      "Importance": "mandatory",
+      "condition": "",
+      "images": true,
+      "order": 18,
+      "answers":[
+        {
+          //"answer": "You cannot break it because the sample is too hard",
+          "answer_code": "dry",
+		  "score": -1,
+          "image": "/MOIST/49.jpeg",
+          "link": "link1- Info on soil operations (you cannot use machines on the soil); link2-Info on irrigation (you should consider the irrigation)",
+          "question_code": "MOIST"
+        },
+        {
+          //"answer": "The sample does not break because it is plastic",
+          "answer_code": "wet",
+		  "score": -0.5,
+          "image": "/MOIST/51.jpeg",
+          "link": "link1 - Info on soil operations (you cannot use machines on the soil); link2- Info on irrigation (Irrigation is not needed)",
+          "question_code": "MOIST"
+        },
+        {
+          //"answer": "You can easly break the sample into its aggregates",
+          "answer_code": "good",
+		  "score": 1,
+          "image": "/MOIST/50.jpeg",
+          "link": "link1 - Info on soil operations (you can  use machines on the soil); link2- Info on irrigation (Irrigation is  needed)",
+          "question_code": "MOIST"
+        }
+      ]
+    },
+    /*
+    {
       "code": "MOIST2",
       "Title": "Soil moisture",
       "question": "How wet is the soil?",
@@ -652,6 +691,7 @@ function init_spade_question(){
         },
       ]
     },
+    */
     {
       "code": "COL",
       "Title": "Soil color",

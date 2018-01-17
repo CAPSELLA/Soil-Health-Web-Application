@@ -402,7 +402,7 @@ var i18n_glob={
     "soil threat": "Soil threat",
     "typor_residues": "Plant residues",
     "low": "Low",
-    "fcov_grassland": "Grassland",
+    "fcov_grassland": "Grassland and perennial arable crop",
     "agshp_structureless": "Structureless",
     "high": "High",
     "comp_very_compacted": "Very compacted",
