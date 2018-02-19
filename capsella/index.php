@@ -45,7 +45,7 @@
 
     $aPage = Array();
 
-    $login = new Dbmng\Login($db);
+    $login = new Dbmng\Login($app);
     if( isset($_REQUEST['do_logout']) )
       {
         $login->doLogout();
@@ -129,8 +129,8 @@
 
         $aPage['navRight'][3]['title'] = 'Login';
         $aPage['navRight'][3]['link']  = $bp.'/?do_login=true';
-        // $aPage['navRight'][4]['title'] = 'Register';
-        // $aPage['navRight'][4]['link']  = $bp.'/?do_register=true';
+        $aPage['navRight'][4]['title'] = 'Register';
+        $aPage['navRight'][4]['link']  = $bp.'/?do_register=true';
 
 
         if(isset($_REQUEST['setLang'])){
@@ -140,7 +140,7 @@
 
         if( isset($_REQUEST['do_login']) )
           {
-            $body .= '<form>';
+            $body .= '<form method="POST" action="?">';
             $body .= '<input class="form-control" name="dbmng_user_id" placeholder="user ID" />';
             $body .= '<input type="password" class="form-control" name="dbmng_password" placeholder="password" />';
             $body .= '<input class="form-control" type="submit" value="login"></form>';
@@ -154,8 +154,16 @@
       {
         $acc = $login_res['user'];
 
+
         if( $acc )
           {
+            if($acc['mail']!==''){
+              $update_spade= $db->select(
+                "UPDATE caps_spade set uid=:uid WHERE uid=0 AND user_id in (select distinct user_id from caps_spade WHERE lower(trim(email))=:mail)",
+                Array(':uid'=>$acc['uid'],':mail'=>$acc['mail'])
+              );
+            }
+
             $aPage['navRight'][3]['title'] = 'Hi '.$acc['name'];
             if( isset($acc['roles']) )
               {
@@ -218,16 +226,57 @@
     // $aPage['nav'][2]['title'] = 'Capsella platform';
     // $aPage['nav'][2]['link']  = '?sect=caps_plat';
 
-    if( isset($_REQUEST['do_login']) )
+    if( isset($_REQUEST['do_login'])  )
       {
+        $aPage['content']=$body;
+      }
+      else if( isset($_REQUEST['check_email']) ){
+
+        $token=$_REQUEST['check_email'];
+        $reg = $login->check_email($token, Array());
+        if($reg['ok']){
+          $body .= '<div class="alert alert-info">'.$reg['message'].'</div>';
+
+        }
+        else{
+          $body .= '<div class="alert alert-danger">'.$reg['message'].'</div>';
+        }
         $aPage['content']=$body;
       }
     else if( isset($_REQUEST['do_register']) )
       {
-        $body .= '<div class="alert alert-info">Please enter your email and a password to register to the Spade test app. You will receive an email to confirm the validity of your email address.</div><form>';
-        $body .= '<input class="form-control" name="dbmng_user_id" placeholder="Insert your email" />';
-        $body .= '<input type="password" class="form-control" name="dbmng_password" placeholder="password" />';
-        $body .= '<input class="form-control" type="submit" value="register"></form>';
+        $reg=Array('ok'=>false, 'message'=>'');
+
+        $email_opt=Array();
+        $email_opt['subject']="Confirmation message";
+        $email_opt['body']="<div>Welcome on <b>SOILapp and SOIL HEALTH</b> platform from CAPSELLA initiative.</div>";
+        $email_opt['body'].="<div>By confirming your email, you will be able to access  your spade test observations. From your account on the platform, you can manage your data, deciding which observations to publish on the online map and which to keep private. In attachment to this email you find a document with detailed information about the Terms of Use of this application. For support on using the application or any other needed information, please contact <a href='mailto:soilhealth.capsella@santannapisa.it'>soilhealth.capsella@santannapisa.it</a></div>";
+
+        $email_opt['$click_here']="<h3>Click here to confirm your email and access your account.</h3>";
+
+
+        if(isset($_REQUEST['dbmng_user_id_register'])){
+          $email=$_REQUEST['dbmng_user_id_register'];
+          $password=$_REQUEST['dbmng_password_register'];
+          $reg = $login->register($email, $password, $email_opt);
+        }
+
+        if(!$reg['ok']){
+          if($reg['message']==''){
+            $body .= '<div class="alert alert-info">Please enter your email and a password to register to the Spade test app. You will receive an email to confirm the validity of your email address.</div>';
+          }
+          else{
+            $body .= '<div class="alert alert-danger">'.$reg['message'].'</div>';
+          }
+          $body .= '<form method="POST">';
+          $body .= '<input class="form-control" name="dbmng_user_id_register" placeholder="Insert your email" />';
+          $body .= '<input type="password" class="form-control" name="dbmng_password_register" placeholder="password" />';
+          $body .= '<input class="form-control" type="submit" value="register"></form>';
+        }
+        else{
+          $body .= '<div class="alert alert-info">'.$reg['message'].'</div>';
+
+        }
         $aPage['content']=$body;
       }
     else if( isset($_REQUEST['sect']) )

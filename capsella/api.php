@@ -7,13 +7,25 @@
     $app = new Dbmng\App($db, $aSetting);
 
     $db->setDebug($aSetting['DB']['DEBUG']);
-    $login = new Dbmng\Login($db);
-    $user = $login->auth();
+
+/*
+
+Query per utenti
+select u.email, count(*), min(time_ref), max(time_ref) from (
+select lower(trim(email)) as email, user_id, count(*) from caps_spade
+WHERE email is not null
+ GROUP BY lower(trim(email)), user_id
+
+) u RIGHT JOIN caps_spade c
+ON u.user_id=c.user_id
+group by  u.email
+order by max(time_ref) desc
+*/
 
     $base_path = $aSetting['BASE_PATH'];
     $router = new \Respect\Rest\Router($base_path);
 
-    $login = new Dbmng\Login($db);
+    $login = new Dbmng\Login($app);
     $login_res = $login->auth();
     $isAdmin = false;
 
@@ -129,10 +141,15 @@
   //$router->post('/api/spade_test_image/*', function($guid)     use ($db, $user) {
     $router->post('/api/spade_test_admin/*', function($id_caps_spade) use ($db, $user) {
 
+
+  
+
       if($user['isAdmin']){
         $body = file_get_contents("php://input");
         $ret=Array('ok'=>false);
         $obj=json_decode($body);
+
+
 
         $array=array(
           ":lat"=>$obj->lat,
