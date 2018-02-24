@@ -9,21 +9,6 @@ var pluvio_layer;
 var map, marker;
 
 
-// var custom_icon = L.Icon.extend({
-//     options: {
-//         shadowUrl: 'leaf-shadow.png',
-//         iconSize:     [38, 95],
-//         shadowSize:   [50, 64],
-//         iconAnchor:   [22, 94],
-//         shadowAnchor: [4, 62],
-//         popupAnchor:  [-3, -76]
-//     }
-// });
-// var base_icon = new custom_icon({iconUrl: global_opt.base_path+'/res/img/marker/green_marker.png'});
-// var my_icon = new custom_icon({iconUrl: global_opt.base_path+'/res/img/marker/green_marker.png'});
-// var my_icon = new L.Icon({
-//   iconUrl: global_opt.base_path+'/res/img/marker/green_marker.png'
-// });
 
 
 //go back. the block_function stops the back function; the exit_function exit the app
@@ -40,6 +25,15 @@ function goBack(block_function, exit_function){
       block_function();
         init_capsella('spade_test');
     }
+}
+
+//check bar size
+jQuery(function(){
+    resize();
+});
+
+function resize(){
+    jQuery('body').css('padding-top',jQuery('.navbar-fixed-top').height()+"px");
 }
 
 function is_cordova() {
@@ -113,7 +107,7 @@ function init_capsella(type, topic){
 
   //basic structure
   var html='';
-  if(type=="home" || type=="kb"|| type=="admin"){
+  if(type=="home" || type=="kb"|| type=="admin"|| type=="my_data"){
     html+='<div class="col-xs-12" id="capsella_home"></div>';
     jQuery('#capsella_container').html(html);
   }
@@ -156,8 +150,8 @@ function init_capsella(type, topic){
   else if(type=="kb"){
     init_kb(topic);
   }
-  else if(type=="admin"){
-    init_admin();
+  else if(type=="admin" || type=="my_data"){
+    init_admin(type);
   }
   else{
     init_home();
@@ -185,11 +179,35 @@ function init_home(){
 
 }
 
-function init_admin(){
+function do_register(register){
 
-  var html="<h1>"+cap_t("Admin Capsella soil health platform")+"</h1>";
+  if(!register){
+    jQuery('#signupform').submit();
+  }
+  else{
+    if(jQuery('input[name=dbmng_password_accept]').is(':checked')){
+      jQuery('#signupform').submit();
+    }
 
-  html+="<div id='button_container'><button onClick='doSynch()' class='btn btn-default btn-block'>"+cap_t("Synch to Capsella Platform")+"</button></div>";
+    else{
+      jQuery('#signupalert').html('You should accept the <a target="_NEW" href="?sect=tos">Term of service</a>').show();
+    }
+  }
+}
+
+function init_admin(type){
+
+
+  var title=cap_t("Manage my data");
+  if(type=='admin'){
+    title=cap_t("Admin Capsella soil health platform");
+  }
+
+  var html="<h1>"+title+"</h1>";
+
+  if(type=='admin'){
+    html+="<div id='button_container'><button onClick='doSynch()' class='btn btn-default btn-block'>"+cap_t("Synch to Capsella Platform")+"</button></div>";
+  }
   html+="<div id='filters_container'></div>";
   html+="<div id='frame_container'></div>";
   jQuery('#capsella_home').html(html);
@@ -200,7 +218,15 @@ function init_admin(){
     'dataType': 'JSON',
     'success': function(d){
         var res=d.data;
-        jQuery('#frame_container').html("<table class='table'><thead><tr><th>"+cap_t("Name")+"</th><th>"+cap_t("Date")+"</th><th>"+cap_t("Coords")+"</th><th>"+cap_t("Flag")+"</th><th>"+cap_t("Email")+"</th><th>"+cap_t("Status")+"</th></thead><tbody></tbody></table>");
+        var hidden_test=0;
+
+        var tab="<table class='table'><thead><tr><th>"+cap_t("Name")+"</th><th>"+cap_t("Date")+"</th><th>"+cap_t("Coords")+"</th>";
+        if(type=='admin'){
+          tr+="<th>"+cap_t("user")+"</th>";
+        }
+        tab+="<th>"+cap_t("Complete")+"</th><th>"+cap_t("Public/Private")+"</th></thead><tbody></tbody></table>";
+
+        jQuery('#frame_container').html(tab);
         jQuery.each(d.data, function(k,v){
           try{
             v.json=JSON.parse(v.json);
@@ -213,7 +239,7 @@ function init_admin(){
             }
             catch(exc){}
 
-            varlabel="";
+            var varlabel="";
             if(v.json.step_done==24 || varnum==34 ){
               varlabel="<div class='label label-success'>"+cap_t("Complete")+"</div>";
             }
@@ -221,11 +247,46 @@ function init_admin(){
               varlabel="<div class='label label-danger'>"+cap_t("Empty")+"</div>";
             }
             else{
-              varlabel="<div class='label label-warning'>"+cap_t("incomplete")+"</div><br/>("+(34-varnum)+" missing)";
+              varlabel="<div class='label label-warning'>"+cap_t("Incomplete")+"</div><br/>("+(34-varnum)+" missing)";
             }
 
-              var tr="<tr id='"+v.id_caps_spade+"'><th>"+cap_t(v.json.name)+"</th><th>"+cap_t(v.date_mon)+"</th><td>"+v.lat+"<br/>"+v.lon+"</td><td>"+v.flag+"</td><td>"+v.email+"</td>";
+            var st="";
+            var flaglabel="";
+            if(v.flag<0){
+              st="display:none;";
+              flaglabel="<div class='label label-danger'>"+cap_t("Deleted")+"</div>";
+              hidden_test++;
+            }
+            else if (v.flag===0) {
+              flaglabel="<div class='label label-warning'>"+cap_t("To be evaluated")+"</div>";
+            }
+            else if (v.flag<10 ) {
+              flaglabel="<div class='label label-success'>"+cap_t("OK. Private")+"</div>";
+            }
+            else{
+              flaglabel="<div class='label label-info'>"+cap_t("OK. Public")+"</div>";
+            }
+
+            var userlabel="";
+            if(v.user_name!==null){
+              userlabel="<div class='label label-success'>"+v.user_name+"</div>";
+            }
+            else if(v.email!==null && v.email!==''){
+              userlabel="<div class='label label-warning'>"+v.email+"</div>";
+            }
+            else{
+              userlabel="<div class='label label-danger'>"+cap_t("No user data!")+"</div>";
+            }
+
+              var tr="<tr style='"+st+"' id='"+v.id_caps_spade+"'><th>"+cap_t(v.json.name)+"</th><th>"+cap_t(v.date_mon)+"</th><td>"+v.lat+"<br/>"+v.lon+"</td>";
+
+              if(type=='admin'){
+                tr+="<td>"+userlabel+"</td>";
+              }
               tr+="<td>"+varlabel+"</td>";
+              tr+="<td>"+flaglabel+"</td>";
+
+
               tr+="<td><button class='edit_spade btn btn-success'>"+cap_t("Edit")+"</button></td>";
               tr+="</tr>";
               tr=jQuery(tr);
@@ -236,6 +297,14 @@ function init_admin(){
             }
             catch(exce){}
           });
+
+          if(hidden_test>0){
+            jQuery('#frame_container').append("<button class='show_all btn-sm btn btn-default'>"+cap_t("Show deleted tests")+"</button>")
+              .click(function(){
+                jQuery('#frame_container tr').show();
+              });
+
+          }
       }
   });
 }
@@ -264,20 +333,24 @@ function edit_spade_admin(v){
 
   var html='';
   html+="<button onclick='init_admin()' id='spade_admin_back' class='btn btn-block btn-default'>"+cap_t("Back")+"</button>";
-  html+='<h3>'+cap_t("View")+' - '+v.json.name+'</h3>';
-  html+='<div id="spade_test_result"></div>';
-
 
   html+='<h3>'+cap_t("Edit")+' - '+v.json.name+'</h3>';
   html+='<label>'+cap_t('Sample code')+'</label><input class="form-control" id="spade_name" value="'+v.json.name+'" />';
   html+='<label>'+cap_t('Date')+'</label><input class="form-control" value="'+v.date_mon+'" type="date" id="spade_date_mon" />';
   html+='<label>'+cap_t('Latitude')+'</label><input class="form-control" value="'+v.lat+'" type="numeric" id="spade_lat" />';
   html+='<label>'+cap_t('Longitude')+'</label><input class="form-control" value="'+v.lon+'" type="numeric" id="spade_lon" />';
-  html+='<label>'+cap_t('Flag')+'</label><input class="form-control" value="'+v.flag+'" type="numeric" id="spade_flag" />';
+  html+='<label>'+cap_t('Is it the spade test good?')+'</label><select class="form-control"  id="spade_flag" ><option/><option value="10">Yes. Show it to all the users (public)</option><option value="5">Yes. But I want to keep it private.</option><option value="-1">No. Delete it was a test.</option></select>';
   html+="<button id='spade_admin_save' class='btn btn-block btn-success'>"+cap_t("Save")+"</button>";
   html+="<button id='spade_admin_undo' class='btn btn-block btn-default'>"+cap_t("Undo")+"</button>";
 
+
+  html+='<hr/><h3>'+cap_t("View")+' - '+v.json.name+'</h3>';
+  html+='<div id="spade_test_result"></div>';
+
+
   jQuery('#frame_container').html(html);
+
+  jQuery('#spade_flag').val(v.flag);
 
   spade_test_result(v.json);
 

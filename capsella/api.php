@@ -29,6 +29,8 @@ order by max(time_ref) desc
     $login_res = $login->auth();
     $isAdmin = false;
 
+    $user=$login_res['user'];
+
     $interset = array_intersect(["administrator"], $login_res['user']['roles']);
     if( count($interset) > 0 )
       {
@@ -126,10 +128,19 @@ order by max(time_ref) desc
     });
 
     $router->get('/api/spade_test_all/', function() use ($db, $user) {
-      // print_r($user);
-      if($user['isAdmin']){
-        $q="select * from caps_spade order by time_ref desc";
-        $ret=$db->select($q,array());
+
+      if($user['uid']>0){
+        $q="select s.*, u.name as user_name from caps_spade s LEFT JOIN dbmng_users u ON s.uid=u.uid  ";
+        $a=array();
+        if($user['isAdmin']){
+          ;//show all
+        }
+        else{
+          $q.=" WHERE s.uid=:uid ";
+          $a[':uid']=$user['uid'];
+        }
+        $q.=" order  by time_ref desc";
+        $ret=$db->select($q,$a);
         $json_string=json_encode($ret);
         echo ($json_string);
       }
@@ -142,9 +153,9 @@ order by max(time_ref) desc
     $router->post('/api/spade_test_admin/*', function($id_caps_spade) use ($db, $user) {
 
 
-  
 
-      if($user['isAdmin']){
+
+      if($user['uid']>0){
         $body = file_get_contents("php://input");
         $ret=Array('ok'=>false);
         $obj=json_decode($body);
@@ -158,7 +169,15 @@ order by max(time_ref) desc
           ":json"=>json_encode($obj->json),
           ":id_caps_spade"=>$id_caps_spade
         );
-        $ins="update caps_spade set lat=:lat, lon=:lon, json=:json, flag=:flag  WHERE id_caps_spade=:id_caps_spade;";
+        $ins="update caps_spade set lat=:lat, lon=:lon, json=:json, flag=:flag  WHERE id_caps_spade=:id_caps_spade ";
+        if($user['isAdmin']){
+          $ins.=" AND uid=:uid ";
+          $array[':uid']=$user['uid'];
+        }
+        else{
+
+        }
+
         $ret=$db->update($ins,$array);
       }
       else{
@@ -227,41 +246,48 @@ order by max(time_ref) desc
     });
 
     $router->any('/api/caps_login_and_save', function() use ($db, $user,$aSetting) {
-      $username=$aSetting['CAPSELLA_USERID'];//$_REQUEST['username'];
-      $password=$aSetting['CAPSELLA_PASSWORD'];
-      $call='https://capsella-services.madgik.di.uoa.gr:8443/capsella_authentication_service/authenticate?username='.$username.'&password='.$password;
-      $tok=json_decode(fetchUrl($call,'POST',null,false));
 
-      if(isset($tok->token)){
-        $token=($tok->token);
+      if($user['isAdmin']){
+
+        $username=$aSetting['CAPSELLA_USERID'];//$_REQUEST['username'];
+        $password=$aSetting['CAPSELLA_PASSWORD'];
+        $call='https://capsella-services.madgik.di.uoa.gr:8443/capsella_authentication_service/authenticate?username='.$username.'&password='.$password;
+        $tok=json_decode(fetchUrl($call,'POST',null,false));
+
+        if(isset($tok->token)){
+          $token=($tok->token);
 
 
 
 
-        $id_dataset=$aSetting['CAPSELLA_DATASET_PUBLIC'];#"70693a29-9b30-4fab-818a-64af1e043f43";
+          $id_dataset=$aSetting['CAPSELLA_DATASET_PUBLIC'];#"70693a29-9b30-4fab-818a-64af1e043f43";
 
-        $id_group="soil_app";
-        $call2="https://capsella-services.madgik.di.uoa.gr:8443/data-manager-service/datasets/".$id_dataset;
+          $id_group="soil_app";
+          $call2="https://capsella-services.madgik.di.uoa.gr:8443/data-manager-service/datasets/".$id_dataset;
 
-        //echo $call2."<br/>";
+          //echo $call2."<br/>";
 
-        $sel="select json from caps_spade WHERE flag=10;";
-        $json=Array();
-        $ret=$db->select($sel,Array());
-        foreach ($ret['data'] as $key => $value) {
-          array_push($json, json_decode($value['json']));
-          # code...
+          $sel="select json from caps_spade WHERE flag=10;";
+          $json=Array();
+          $ret=$db->select($sel,Array());
+          foreach ($ret['data'] as $key => $value) {
+            array_push($json, json_decode($value['json']));
+            # code...
+          }
+
+          uploadfile($call2, $token, json_encode($json));
+          echo(json_encode(Array('ok'=>true,'msg'=>'Public data has been uploaded')));
+          //echo fetchUrl($call2,'POST',array('Accept: */*','Content-Type:multipart/form-data','Authorization: Bearer '.$token, 'group:'.$id_group),false,'AAAA');
+
+
+          //https://capsella-services.madgik.di.uoa.gr:8443/data-manager-service/datasets/70693a29-9b30-4fab-818a-64af1e043f43
         }
-
-        uploadfile($call2, $token, json_encode($json));
-        echo(json_encode(Array('ok'=>true,'msg'=>'Public data has been uploaded')));
-        //echo fetchUrl($call2,'POST',array('Accept: */*','Content-Type:multipart/form-data','Authorization: Bearer '.$token, 'group:'.$id_group),false,'AAAA');
-
-
-        //https://capsella-services.madgik.di.uoa.gr:8443/data-manager-service/datasets/70693a29-9b30-4fab-818a-64af1e043f43
+        else{
+          echo(json_encode(Array('ok'=>false,'msg'=>'Wrong authentication')));
+        }
       }
       else{
-        echo(json_encode(Array('ok'=>false,'msg'=>'Wrong authentication')));
+        echo(json_encode(Array('ok'=>false,'msg'=>'You have not the right to do this.')));
       }
 
     });
@@ -304,15 +330,18 @@ order by max(time_ref) desc
         ":lon"=>$obj->lon,
         ":user_id"=>$obj->user_id,
         ":email"=>$obj->email,
-        ":json"=>json_encode($obj)
+        ":json"=>json_encode($obj),
+        ":uid"=>$user['uid']
       );
 
       if(count($look['data'])==0){
-        $ins="insert into caps_spade (guid, date_mon, lat, lon, json, user_id, email) ";
-        $ins.="VALUES (:guid, :date_mon, :lat, :lon, :json, :user_id, :email);";
+
+        $ins="insert into caps_spade (guid, date_mon, lat, lon, json, user_id, email, uid) ";
+        $ins.="VALUES (:guid, :date_mon, :lat, :lon, :json, :user_id, :email, :uid);";
         $ret=$db->update($ins,$array);
       }
       else{
+        //TODO: update other user's spade test
         $ins="update caps_spade set date_mon=:date_mon, lat=:lat, lon=:lon, json=:json, user_id=:user_id, email=:email WHERE guid=:guid;";
         $ret=$db->update($ins,$array);
       }

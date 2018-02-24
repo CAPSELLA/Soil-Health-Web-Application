@@ -46,7 +46,7 @@ CREATE TABLE dbmng_users_register
 (
   mail character varying(254),
   pass character varying(254),
-  token character varying(254,
+  token character varying(254),
   time_ref timestamp without time zone DEFAULT now(),
   used integer DEFAULT 0,
   CONSTRAINT dbmng_users_register_mail UNIQUE (mail)
@@ -56,3 +56,5 @@ CREATE TABLE dbmng_users_register
 
 ALTER TABLE caps_spade ADD COLUMN uid integer;
 ALTER TABLE caps_spade ALTER COLUMN uid SET DEFAULT 0;
+ALTER TABLE dbmng_users_register ADD COLUMN op character varying(254);
+ALTER TABLE dbmng_users_register ALTER COLUMN op SET DEFAULT 'register'::character varying;

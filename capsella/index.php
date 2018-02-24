@@ -79,7 +79,7 @@
       $footer.="<div id='footer1'>Capsella has received funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement No 688813</div>";
       $footer.="<div id='footer_partner'></div>";
       $footer.="<div class='footer_images'>";
-      $footer.="<img class='img-responsive img_eu imgs_footer' src='".$bp."/res/img/logo_partners_bw.png'></img><br/><a class='credits' href='?sect=credits'>Credits</a>";
+      $footer.="<img class='img-responsive img_eu imgs_footer' src='".$bp."/res/img/logo_partners_bw.png'></img><br/><a class='credits' href='?sect=credits'>Credits</a> - <a class='tos' href='?sect=tos'>Term of Service</a>";
       // $footer.="<img class='img-responsive img_eu imgs_footer' src='".$bp."/res/img/Logo_Horizon2020.png'></img><img class='imgs_footer' src='".$bp."/res/img/general/scuola_esp.png' />";
       // $footer.="<img class='img-responsive imgs_footer' src='".$bp."/res/img/general/esapoda.jpg' />";
       // $footer.="<img class='img-responsive imgs_footer' src='".$bp."/res/img/general/isv.jpg' />";
@@ -117,7 +117,7 @@
       {
         if( isset($_REQUEST['dbmng_user_id']) && isset($login_res['message']) )
           {
-            $body .= '<div class="alert alert-warning">' . $login_res['message'] . '</div>';
+            $body .= '<div style="margin-top:50px;" class="alert alert-warning">' . $login_res['message'] . '</div>';
           }
 
         $aPage['navRight'][0]['title'] = 'EN';
@@ -140,10 +140,50 @@
 
         if( isset($_REQUEST['do_login']) )
           {
-            $body .= '<form method="POST" action="?">';
-            $body .= '<input class="form-control" name="dbmng_user_id" placeholder="user ID" />';
-            $body .= '<input type="password" class="form-control" name="dbmng_password" placeholder="password" />';
-            $body .= '<input class="form-control" type="submit" value="login"></form>';
+            // $body .= '<form method="POST" action="?">';
+            // $body .= '<input class="form-control" name="dbmng_user_id" placeholder="user ID" />';
+            // $body .= '<input type="password" class="form-control" name="dbmng_password" placeholder="password" />';
+            // $body .= '<input class="form-control" type="submit" value="login"></form>';
+
+              $body.="<h1>Login</h1>";
+              $body.='<div class="panel-body" ><form method="POST" action="?" id="signupform" class="form-horizontal" role="form">';
+
+                $body.='<div id="signupalert" style="display:none" class="alert alert-danger">
+                    <p>Error:</p>
+                    <span></span>
+                </div>';
+
+                      $body.='
+                        <div class="form-group">
+                            <label for="dbmng_user_id" class="col-md-3 control-label">Email</label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" name="dbmng_user_id" placeholder="Email Address">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="dbmng_password" class="col-md-3 control-label">Password</label>
+                            <div class="col-md-9">
+                                <input type="password" class="form-control" name="dbmng_password" placeholder="Password">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                          <div class="col-md-3"></div>
+                            <div class="col-md-9">
+                                If you have not a login go to the <a href="?do_register=true">registration page</a>.<br/>
+                                If you have do not remember the password <a href="?do_reset_password=true">click here to reset it</a>.<br/>
+                                </br/>
+                            </div>
+                        </div>
+                        ';
+                      $body.='
+                        <div class="form-group">
+                            <!-- Button -->
+                            <div class="col-md-offset-3 col-md-9">
+                                <button id="btn-signup"  type="submit" class="btn-block btn btn-info"><i class="icon-hand-right"></i>Login</button>
+                            </div>
+                        </div>';
+
+                      $body.="  </form></div></div>";
           }
         else
           {
@@ -159,7 +199,7 @@
           {
             if($acc['mail']!==''){
               $update_spade= $db->select(
-                "UPDATE caps_spade set uid=:uid WHERE uid=0 AND user_id in (select distinct user_id from caps_spade WHERE lower(trim(email))=:mail)",
+                "UPDATE caps_spade set uid=:uid WHERE (uid=0 OR uid is null) AND user_id in (select distinct user_id from caps_spade WHERE lower(trim(email))=:mail)",
                 Array(':uid'=>$acc['uid'],':mail'=>$acc['mail'])
               );
             }
@@ -212,17 +252,23 @@
     $aPage['nav'][2]['title'] = 'SOM dynamics';
     $aPage['nav'][2]['link']  = $bp.'/?sect=som_dyn';
 
-    $aPage['nav'][3]['title'] = 'Knowledge base';
-    $aPage['nav'][3]['link']  = $bp.'/kb/';
+    // $aPage['nav'][3]['title'] = 'Knowledge base';
+    // $aPage['nav'][3]['link']  = $bp.'/kb/';
+    //
+    // $aPage['nav'][4]['title'] = 'Maps';
+    // $aPage['nav'][4]['link']  = $bp.'/?sect=esdb';
 
-    $aPage['nav'][4]['title'] = 'Maps';
-    $aPage['nav'][4]['link']  = $bp.'/?sect=esdb';
 
     if(  $isAdmin ){
       $aPage['nav'][5]['title'] = 'Admin';
       $aPage['nav'][5]['link']  = $bp.'/?sect=admin';
 
     }
+    else if( $logged_in ){
+      $aPage['nav'][5]['title'] = 'My Data';
+      $aPage['nav'][5]['link']  = $bp.'/?sect=my_data';
+    }
+
     // $aPage['nav'][2]['title'] = 'Capsella platform';
     // $aPage['nav'][2]['link']  = '?sect=caps_plat';
 
@@ -239,39 +285,112 @@
 
         }
         else{
-          $body .= '<div class="alert alert-danger">'.$reg['message'].'</div>';
+          if($reg['register']){
+            $body .= '<div class="alert alert-danger">'.$reg['message'].'</div>';
+          }
+          else{
+            $body .= '<div class="">'.$reg['message'].'</div>';            
+          }
         }
         $aPage['content']=$body;
       }
-    else if( isset($_REQUEST['do_register']) )
+    else if( isset($_REQUEST['do_register']) || isset($_REQUEST['do_reset_password']) )
       {
         $reg=Array('ok'=>false, 'message'=>'');
+
+        $register=true;
+        if( isset($_REQUEST['do_reset_password'])){
+          $register=false;
+        }
 
         $email_opt=Array();
         $email_opt['subject']="Confirmation message";
         $email_opt['body']="<div>Welcome on <b>SOILapp and SOIL HEALTH</b> platform from CAPSELLA initiative.</div>";
-        $email_opt['body'].="<div>By confirming your email, you will be able to access  your spade test observations. From your account on the platform, you can manage your data, deciding which observations to publish on the online map and which to keep private. In attachment to this email you find a document with detailed information about the Terms of Use of this application. For support on using the application or any other needed information, please contact <a href='mailto:soilhealth.capsella@santannapisa.it'>soilhealth.capsella@santannapisa.it</a></div>";
 
-        $email_opt['$click_here']="<h3>Click here to confirm your email and access your account.</h3>";
+        $msgmail="<div>";
+        if($register){
+          $msgmail.="By confirming your email, you will be able to access  your spade test observations. ";
+          $msgmail.="From your account on the platform, you can manage your data, deciding which observations to publish on the online map and which to keep private. ";
+          $msgmail.="Online you can access a document with detailed information about the <a href='https://soilhealth.capsella.eu/?sect=tos'>Terms of Use of this application</a>.";
+          $email_opt['$click_here']="<h3>Click here to confirm your email and access your account.</h3>";
+        }
+        else{
+          $msgmail.="If you click on the next link you will be able to reset the password of your account.";
+          $email_opt['$click_here']="<h3>Click here to reset your password.</h3>";
+        }
+        $msgmail.=" For support on using the application or any other needed information, please contact <a href='mailto:soilhealth.capsella@santannapisa.it'>soilhealth.capsella@santannapisa.it</a></div>";
+
+        $email_opt['body'].=$msgmail;
 
 
         if(isset($_REQUEST['dbmng_user_id_register'])){
           $email=$_REQUEST['dbmng_user_id_register'];
-          $password=$_REQUEST['dbmng_password_register'];
-          $reg = $login->register($email, $password, $email_opt);
+          if($register){
+            $password=$_REQUEST['dbmng_password_register'];
+            $reg = $login->register($email, $password, $email_opt);
+          }
+          else{
+            $email_opt['reset_password']=true;
+            $reg = $login->register($email, "",$email_opt);
+          }
         }
 
         if(!$reg['ok']){
+          if($register){
+            $body.="<h1>Register to the SoilHealth Capsella Platform</h1>";
+          }
+          else{
+            $body.="<h1>Reset the password</h1>";
+          }
           if($reg['message']==''){
             $body .= '<div class="alert alert-info">Please enter your email and a password to register to the Spade test app. You will receive an email to confirm the validity of your email address.</div>';
           }
           else{
             $body .= '<div class="alert alert-danger">'.$reg['message'].'</div>';
           }
-          $body .= '<form method="POST">';
-          $body .= '<input class="form-control" name="dbmng_user_id_register" placeholder="Insert your email" />';
-          $body .= '<input type="password" class="form-control" name="dbmng_password_register" placeholder="password" />';
-          $body .= '<input class="form-control" type="submit" value="register"></form>';
+
+          $body.='<div class="panel-body" ><form method="POST" id="signupform" class="form-horizontal" role="form">';
+
+          $body.='<div id="signupalert" style="display:none" class="alert alert-danger">
+              <p>Error:</p>
+              <span></span>
+          </div>';
+
+          $body.='
+            <div class="form-group">
+                <label for="dbmng_user_id_register" class="col-md-3 control-label">Email</label>
+                <div class="col-md-9">
+                    <input type="text" class="form-control" name="dbmng_user_id_register" placeholder="Email Address">
+                </div>
+            </div>';
+
+
+            if($register){
+              $body.='
+              <div class="form-group">
+                  <label for="dbmng_password_register" class="col-md-3 control-label">Password</label>
+                  <div class="col-md-9">
+                      <input type="password" class="form-control" name="dbmng_password_register" placeholder="Password">
+                  </div>
+              </div>
+              <div class="form-group">
+                <div class="col-md-3"></div>
+                  <div class="col-md-9">
+                      <input type="checkbox" name="dbmng_password_accept"/>I agree with the <a target="_NEW" href="?sect=tos">Term of service</a>
+                  </div>
+              </div>
+              ';
+            }
+          $body.='
+            <div class="form-group">
+                <!-- Button -->
+                <div class="col-md-offset-3 col-md-9">
+                    <button id="btn-signup" onClick="do_register('.$register.')" type="button" class="btn-block btn btn-info"><i class="icon-hand-right"></i>Register</button>
+                </div>
+            </div>';
+
+          $body.="  </form></div></div>";
+
         }
         else{
           $body .= '<div class="alert alert-info">'.$reg['message'].'</div>';
@@ -282,12 +401,41 @@
     else if( isset($_REQUEST['sect']) )
       {
         $sect = $_REQUEST['sect'];
-        if(  $sect=="kb" || $sect=="esdb" || $sect=="som_dyn" || $sect=="kb"  || $sect=="caps_plat" || $sect=="spade_test"|| $sect=="admin")
+        if(  $sect=="kb" || $sect=="esdb" || $sect=="som_dyn" || $sect=="kb"  || $sect=="caps_plat" || $sect=="spade_test"|| $sect=="admin"|| $sect=="my_data")
           {
             $aPage['content']=$body;
             $aPage['sidebar']=NULL;
             capsella_createmap($aPage,$app, $sect, $aSetting);
           }
+        else if($sect=='credits'){
+          $credits="
+            <h1>Credits</h1>
+            Paolo Bàrberi, Diego Guidotti and Mariateresa Lazzaro for Institute of Life Sciences, Scuola Superiore Sant’Anna (Pisa)<p/>
+            Panagiotis Zervas, Agroknow<p/>
+            Eleni Toli and  Panagiota Koltsida for ATHENA (Research and Innovation Center in Information, Communication and Knowledge Technologies)<p/>
+            Luca Conte for Scuola Esperienziale Itinerante di Agricoltura Biologica and ESAPODA association<p/>
+            Christina Vakali for AEGILOPS - The Greek Network for Biodiversity and Ecology in Agriculture";
+            $aPage['title']="Credits";
+          $aPage['content']=$credits;
+        }
+        else if($sect=='tos'){
+
+          $link=$aSetting['BASE_PATH']."/res/docs/capsella_tos.pdf";
+
+          $tos="<h1>Term of Service</h1>";
+          $tos.="<p style='text-align:center'>You can download CASPELLA Soil Health <a href='".$link."'>Term of Service</a>
+
+          </p/>";
+          $tos.='
+            <div class="col-xs-12">
+              <div class="embed-responsive" style="padding-bottom:150%">
+                  <object data="'.$link.'" type="application/pdf" width="100%" height="100%"></object>
+              </div>
+            </div>';
+
+          $aPage['content']=$tos;
+        }
+
       }
     else
       {
@@ -308,5 +456,10 @@
 
     return $html;
   }
+
+
+
+
+
 
 ?>
