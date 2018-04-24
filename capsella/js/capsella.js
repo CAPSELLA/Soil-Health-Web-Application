@@ -220,11 +220,23 @@ function init_admin(type){
         var res=d.data;
         var hidden_test=0;
 
-        var tab="<table class='table'><thead><tr><th>"+cap_t("Name")+"</th><th>"+cap_t("Date")+"</th><th>"+cap_t("Coords")+"</th>";
+        var csv='';
+        var sep_row='\n';
+        var sep_col=";";
+
+
+        var tab="<button id='download_data' class='btn btn-info'>"+cap_t("Download data")+"</button><table class='table'><thead><tr><th>"+cap_t("Name")+"</th><th>"+cap_t("Date")+"</th><th>"+cap_t("Coords")+"</th>";
         if(type=='admin'){
-          tr+="<th>"+cap_t("user")+"</th>";
+          tr+="<th>"+cap_t("user")+"</th><th>"+cap_t("source")+"</th>";
         }
         tab+="<th>"+cap_t("Complete")+"</th><th>"+cap_t("Public/Private")+"</th></thead><tbody></tbody></table>";
+
+        csv+=cap_t("ID")+sep_col+cap_t("Name")+sep_col+cap_t("Date")+sep_col+cap_t("Lat")+sep_col+cap_t("Lon")+sep_col+cap_t("Flag")+sep_col+cap_t("No. Layer");
+        jQuery.each(spade_question, function(k,v){
+          csv+=sep_col+v.code.toLowerCase();
+        });
+        csv+=sep_row;
+
 
         jQuery('#frame_container').html(tab);
         jQuery.each(d.data, function(k,v){
@@ -281,7 +293,11 @@ function init_admin(type){
               var tr="<tr style='"+st+"' id='"+v.id_caps_spade+"'><th>"+cap_t(v.json.name)+"</th><th>"+cap_t(v.date_mon)+"</th><td>"+v.lat+"<br/>"+v.lon+"</td>";
 
               if(type=='admin'){
-                tr+="<td>"+userlabel+"</td>";
+                var source='-';
+                if(typeof v.json.source!=='undefined'){
+                  source=v.json.source;
+                }
+                tr+="<td>"+userlabel+"</td><td>"+source+"</td>";
               }
               tr+="<td>"+varlabel+"</td>";
               tr+="<td>"+flaglabel+"</td>";
@@ -291,15 +307,48 @@ function init_admin(type){
               tr+="</tr>";
               tr=jQuery(tr);
               tr.find('.edit_spade').click(function(){
-                edit_spade_admin(v);
+                edit_spade_admin(v, type);
               });
               jQuery('#frame_container table tbody').append(tr);
+
+              var laynum=1;
+              if(typeof v.json!=='undefined'){
+                if(typeof v.json.laynum!=='undefined'){
+                  laynum=v.json.laynum;
+                }
+              }
+              for(var lay=0; lay<laynum; lay++){
+                if(v.flag>=0){
+                  csv+=v.id_caps_spade+sep_col+v.json.name+sep_col+v.date_mon+sep_col+v.lat+sep_col+v.lon+sep_col+jQuery(flaglabel).text()+sep_col+"Layer "+(lay+1);
+                  jQuery.each(spade_question, function(k2,v2){
+                    var code=v2.code.toLowerCase();
+                    console.log(code);
+                    var val="-";
+                    if(typeof v.json!=='undefined'){
+                      if(typeof v.json[code]!=='undefined'){
+                        val=v.json[code];
+                        //if the field change by layer wrote the correspondent layer
+                        if(v2.how_many=='by_layer'){
+                          val=val[lay];
+                        }
+                      }
+                    }
+                    csv+=sep_col+val;
+                  });
+                  csv+=sep_row;
+                }
+              }
             }
             catch(exce){}
           });
 
+          jQuery('#download_data').click(function(){
+            downloadText(csv,'export.csv');
+          });
+
           if(hidden_test>0){
-            jQuery('#frame_container').append("<button class='show_all btn-sm btn btn-default'>"+cap_t("Show deleted tests")+"</button>")
+            jQuery('#frame_container').append("<button class='show_all btn-sm btn btn-default'>"+cap_t("Show deleted tests")+"</button>");
+            jQuery('#frame_container .show_all')
               .click(function(){
                 jQuery('#frame_container tr').show();
               });
@@ -308,6 +357,29 @@ function init_admin(type){
       }
   });
 }
+
+
+
+function downloadText(csvContent, filename){
+   var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+   if (navigator.msSaveBlob) { // IE 10+
+       navigator.msSaveBlob(blob, filename);
+   }
+   else {
+       var link = document.createElement("a");
+       if (link.download !== undefined) { // feature detection
+           // Browsers that support HTML5 download attribute
+           var url = URL.createObjectURL(blob);
+           link.setAttribute("href", url);
+           link.setAttribute("download", filename);
+           link.style.visibility = 'hidden';
+           document.body.appendChild(link);
+           link.click();
+           document.body.removeChild(link);
+       }
+     }
+}
+
 
 function doSynch(){
   jQuery('#frame_container').html(cap_t("<div class='alert alert-warning'>Please wait....</div>"));
@@ -318,21 +390,23 @@ function doSynch(){
     'success': function(d){
       if(d.ok){
         alert(d.msg);
-        init_admin();
+        init_admin(type);
       }
       else{
         alert(d.msg);
-        init_admin();
+        init_admin(type);
       }
      }
   });
 
 }
 
-function edit_spade_admin(v){
+function edit_spade_admin(v, type){
 
   var html='';
-  html+="<button onclick='init_admin()' id='spade_admin_back' class='btn btn-block btn-default'>"+cap_t("Back")+"</button>";
+
+
+  html+="<button  id='spade_admin_back' class='btn btn-block btn-default'>"+cap_t("Back")+"</button>";
 
   html+='<h3>'+cap_t("Edit")+' - '+v.json.name+'</h3>';
   html+='<label>'+cap_t('Sample code')+'</label><input class="form-control" id="spade_name" value="'+v.json.name+'" />';
@@ -349,6 +423,12 @@ function edit_spade_admin(v){
 
 
   jQuery('#frame_container').html(html);
+
+
+  jQuery("#spade_admin_back").click(function(){
+      init_admin(type);
+  });
+
 
   jQuery('#spade_flag').val(v.flag);
 
@@ -649,26 +729,145 @@ function getWMSMapfile(mapfile, raster_theme, layer){
 
 function reset_spade_view(){
   var tab="<table class='table'><thead></thead><tbody></tbody></table>";
-  var html="<div id='resume_spade'></div>";
-  html+="<div class='alert alert-info'>";
-  html+='<div>'+cap_t('spade_test_before')+'</div>';
-  html+="<p/><div class='row'><div class=col-xs-4><img class='img-responsive' src='res/img/general/spade.jpg'/></div>";
-  html+="<div class=col-xs-4><img class='img-responsive' src='res/img/general/knife.jpg'/></div>";
-  html+="<div class=col-xs-4><img class='img-responsive' src='res/img/general/tray.jpg'/></div></div>";
-  html+="</div>";
-  html+='<div id="spade_test_insert"><a onClick="add_spade()" class="new_spade_test_button form-control btn btn-success">'+cap_t("Enter a new spade test")+'</a></div>';
-  html+="<div style='display:none' id='my_spade_tests'><h3>"+cap_t("My spade tests")+"</h3>"+tab+"</div>";
-  html+="<div class='row'><div id='save_spade_test_info'></div><button  style='display:none' class='btn btn-success btn-block' id='save_spade_test_online'>"+cap_t("Save the spade tests")+"</button></div>";
-  html+="<div style='display:none' id='public_spade_tests'><h3>"+cap_t("Public spade tests")+"</h3>"+tab+"</div>";
-  html+="<div style='' id='spade_test_welcome'><div class='alert alert-info'>"+cap_t("spade_test_welcome")+"</div></div>";
+  var html="";
+  html+="<div id='check_login'></div>";
+  html+="<div id='spade_test_main'>";
+    html+="<div id='resume_spade'></div>";
+    html+="<div class='alert alert-info'>";
+    html+='<div>'+cap_t('spade_test_before')+'</div>';
+    html+="<p/><div class='row'><div class=col-xs-4><img class='img-responsive' src='res/img/general/spade.jpg'/></div>";
+    html+="<div class=col-xs-4><img class='img-responsive' src='res/img/general/knife.jpg'/></div>";
+    html+="<div class=col-xs-4><img class='img-responsive' src='res/img/general/tray.jpg'/></div></div>";
+    html+="</div>";
+    html+='<div id="spade_test_insert"><a onClick="add_spade()" class="new_spade_test_button form-control btn btn-success">'+cap_t("Enter a new spade test")+'</a></div>';
+    html+="<div style='display:none' id='my_spade_tests'><h3>"+cap_t("My spade tests")+"</h3>"+tab+"</div>";
+    html+="<div class='row'><div id='save_spade_test_info'></div><button  style='display:none' class='btn btn-success btn-block' id='save_spade_test_online'>"+cap_t("Save the spade tests")+"</button></div>";
+    html+="<div style='display:none' id='public_spade_tests'><h3>"+cap_t("Public spade tests")+"</h3>"+tab+"</div>";
+    html+="<div style='' id='spade_test_welcome'><div class='alert alert-info'>"+cap_t("spade_test_welcome")+"</div></div>";
 
-  html+='<div id="spade_test_result"></div>';
+    html+='<div id="spade_test_result"></div>';
+  html+="</div>";
   jQuery('#capsella_info').html(html);
 
+  //check_user_login();
 
   jQuery('#save_spade_test_online').click(function(){
       save_spade_test_online();
   });
+}
+
+
+
+function check_user_login(){
+
+  if(global_opt.offline===true){
+  var my_spade_tests=jQuery.jStorage.get('my_spade_tests');
+  var ask_for_user=true;
+
+  if(my_spade_tests==null){
+    ask_for_user=false;
+  }
+
+  if(ask_for_user){
+    jQuery('#spade_test_main, #capsella_map').hide();
+
+    var html="<div id='check_login_ret'></div>";
+    html+="<div id='email_confirm'></div>";
+    jQuery('#check_login').html(html);//.hide();
+    manage_email(function(){
+      check_user_login();
+    });
+
+    var ret={'message':'', ok:false};
+    var settings=jQuery.jStorage.get('capsella_settings');
+    if(settings!==null){
+        if(typeof settings.user_id!=='undefined'){
+          if(typeof settings.email!=='undefined' && settings.email!==''){
+            if(typeof settings.password!=='undefined'){
+              if(settings.password.length>6){
+                ret.message+=cap_t("Hi")+" "+settings.email;
+                ret.message+="- <a id='check_logout'>"+cap_t("Logout")+"</a>";
+                jQuery('#spade_test_main, #capsella_map').show();
+                ret.ok=true;
+                if(typeof settings.confirmed!=='undefined'){
+
+                }
+                else{
+                  ret.message+="<br/>"+cap_t("You should confirm the registration");
+                  ret.message+="<button id='confirm_registration' class='btn btn-info btn-block'>"+cap_t("Confirm")+"</button>";
+                }
+              }
+              else{
+                ret.message=cap_t("The password is short");
+              }
+            }
+            else{
+              ret.message=cap_t("You should define a password");
+            }
+          }
+          else{
+            ret.message=cap_t("Please insert an email");
+          }
+        }
+        else{
+          ret.message=cap_t("There are no userID");
+        }
+    }
+    else{
+      ret.message="No settings";
+    }
+
+
+    if(ret.ok){
+      jQuery('#check_login_ret').html("<div class='alert alert-success'>"+(ret.message)+"</div>");
+      jQuery('#email_confirm').hide();
+    }
+    else{
+      jQuery('#check_login_ret').html("<div class='alert alert-danger'>"+(ret.message)+"</div>");
+    }
+
+
+    jQuery('#check_logout').click(function(){
+      var set=jQuery.jStorage.get('capsella_settings');
+      jQuery.jStorage.set('capsella_settings',{'user_id':set.user_id});
+      check_user_login();
+    });
+
+    //var to_translate=["The password provided is not correct."];
+    var to_translate=["The password provided is not correct.", "You should have received an email. Find it (it may be ended in the spam) and click on the link to confirm your email.","Confirm","Logout","Hi", "You should confirm the registration", "The password is short", "You should define a password","Please insert an email","There are no userID"];
+
+
+
+    jQuery('#confirm_registration').click(function(){
+        jQuery.ajax({
+          'url':global_opt.online_path+'api/check_login/?email='+settings.email+"&password="+settings.password+"&user_id="+settings.user_id,
+          'method': 'POST',
+          'dataType': 'JSON',
+          'success': function(d){
+            console.log(d);
+            if(d.ok || d.ok_send){
+              jQuery('#check_login_ret').html("");
+              if(d.ok){
+                var ss=jQuery.jStorage.get('capsella_settings');
+                ss.confirmed=true;
+                jQuery.jStorage.set('capsella_settings', ss);
+              }
+              else{
+                jQuery('#check_login_ret').html("<div class='alert alert-warming'>"+cap_t(d.message)+"</div>");
+              }
+              jQuery('#check_login_ret').append("<div class='alert alert-success'>"+cap_t("Hi")+" "+settings.email+"</div>");
+
+            }
+            else{
+              jQuery('#check_login_ret').html("<div class='alert alert-danger'>"+cap_t(d.message)+"</div>");
+              jQuery('#email_confirm').show();
+            }
+          }
+        });
+    });
+  }
+  }
+
 }
 
 function save_spade_test_online(reinit){
@@ -784,7 +983,7 @@ function renderSpadesList(spades_list){
       iconSize:     [25, 41],
       iconAnchor:   [12, 41],
     });
-    if(data.user_id===user_id){
+    if(v.flag<10){
       jQuery("#spade_test_welcome").hide();
       type='my';
       icon = new L.Icon({
@@ -802,6 +1001,9 @@ function renderSpadesList(spades_list){
       el+="<th>"+encodeHtml(data.name)+"</th><td>"+data.date+"</td>";
 
       el+="<td>";
+      if(typeof data.step_done=='undefined'){
+        data.step_done=0;
+      }
       if(data.step_done<24){
         jQuery('#resume_spade').html("<div style='text-align:center' class='alert alert-warning'>"+cap_t("unfinished job")+"<br/><button id='resume_unfinished' class='btn btn-sm btn-warning'>"+cap_t("Resume")+"</button></div>");
         el+="<button class='btn btn-sm btn-warning'>"+cap_t("Resume")+"</button>";
@@ -1011,6 +1213,22 @@ function spade_test1(){
   data.date=jQuery('#spade_date').val();
   data.name=jQuery('#spade_name').val();
   var settings=jQuery.jStorage.get('capsella_settings');
+
+  var source='generic';
+
+  if(is_cordova()){
+      source='mobile';
+  }
+  else{
+    if(global_opt.offline){
+      source='web_offline';
+    }
+    else{
+      source='web_online';
+    }
+  }
+  data.source=source;
+  data.version=global_opt.version;
   data.user_id=settings.user_id;
   data.email=settings.email;
   if(global_opt.offline===true){
@@ -1611,52 +1829,80 @@ function encodeHtml(rawStr){
 }
 
 function spade_save_email(data){
-  var settings=jQuery.jStorage.get('capsella_settings');
+
   var html='';
   html+="<h3>"+cap_t("Save")+"</h3><div class='alert alert-info'>"+cap_t("Thank you, you have finished the Spade test.")+"</div>";
-  var saved_email=settings.email;
-
-  html+='<label for="caps_email">'+cap_t("Please insert your email to see the spade test result and save the data.")+'</label><input class="form-control" id="caps_email" value="'+saved_email+'"></input>';
-  html+='<button id="save_email" class="btn btn-success">'+cap_t("Save")+'</button>';
+  html+="<div id='email_confirm'></div>";
   jQuery('#spade_test_insert').html(html);
+
+  manage_email(function(){
+
+    data.email=jQuery('#caps_email').val();
+    if(global_opt.offline===false){
+      jQuery.ajax({
+        'url':global_opt.base_path+'api/spade_test/',
+        'method': 'POST',
+        'data': JSON.stringify(data),
+        'dataType': 'JSON',
+        'success': function(d){
+            var html="";
+            html="<div id='spade_test_result'></div>";
+            html+="<div id='back_map'><button class='btn btn-success'>"+cap_t("Go back to the map")+"</button></div>";
+            jQuery('#spade_test_insert').html(html);
+            spade_test_result(data);
+
+            jQuery("#back_map").click(function(){
+              init_capsella('spade_test');
+            });
+         }
+      });
+    }
+    else{
+      save_spade_test_online(false);
+      html="<div id='spade_test_result'></div>";
+      html+="<div id='back_map'><button class='btn btn-success'>"+cap_t("Go back to the map")+"</button></div>";
+      jQuery('#spade_test_insert').html(html);
+      spade_test_result(data);
+
+      jQuery("#back_map").click(function(){
+        init_capsella('spade_test');
+      });
+    }
+  });
+
+}
+
+//The function ask for email and password and execute then the
+function manage_email(success_function){
+
+  var settings=jQuery.jStorage.get('capsella_settings');
+  var saved_email=settings.email;
+  if(typeof saved_email=='undefined'){
+    saved_email="";
+  }
+  var html='';
+  html+='<label for="caps_email">'+cap_t("Please insert your email to see the spade test result and save the data.")+'</label><input class="form-control" id="caps_email" value="'+saved_email+'"></input>';
+  //html+='<label for="caps_password">'+cap_t("please_insert_password")+'</label><input type="password"  id="caps_password" class="form-control" id="caps_email"></input>';
+  html+='<button id="save_email" class="btn btn-block btn-success">'+cap_t("Save")+'</button>';
+  jQuery('#email_confirm').html(html);
+
 
   jQuery("#save_email").click(function(){
     var email=jQuery('#caps_email').val();
+    var password=jQuery('#caps_password').val();
     if(validateEmail(email)){
 
-      data.email=email;
-      settings.email=email;
-      jQuery.jStorage.set('capsella_settings',settings);
-      if(global_opt.offline===false){
-        jQuery.ajax({
-          'url':global_opt.base_path+'api/spade_test/',
-          'method': 'POST',
-          'data': JSON.stringify(data),
-          'dataType': 'JSON',
-          'success': function(d){
-              var html="";
-              html="<div id='spade_test_result'></div>";
-              html+="<div id='back_map'><button class='btn btn-success'>"+cap_t("Go back to the map")+"</button></div>";
-              jQuery('#spade_test_insert').html(html);
-              spade_test_result(data);
-
-              jQuery("#back_map").click(function(){
-                init_capsella('spade_test');
-              });
-           }
-        });
-      }
-      else{
-        save_spade_test_online(false);
-        html="<div id='spade_test_result'></div>";
-        html+="<div id='back_map'><button class='btn btn-success'>"+cap_t("Go back to the map")+"</button></div>";
-        jQuery('#spade_test_insert').html(html);
-        spade_test_result(data);
-
-        jQuery("#back_map").click(function(){
-          init_capsella('spade_test');
-        });
-      }
+      
+        settings.email=email;
+        settings.password=password;
+        jQuery.jStorage.set('capsella_settings',settings);
+        success_function();
+      // if(password.length>6){}
+      // else{
+      //   alert(cap_t("Please the password should be long at least 7 character"));
+      //   settings.email=email;
+      //   jQuery.jStorage.set('capsella_settings',settings);
+      // }
     }
     else{
       alert(cap_t("Please insert a valid email"));
@@ -1759,7 +2005,12 @@ function drawTrapezio(svg, start, end){
 
 function spade_test_result(data){
 
-    var html="<h3>"+encodeHtml(data.name)+"</h3><h4>"+cap_t("Observation at a glance")+"</h4>";
+    var name=".";
+    if(typeof data.name!=='undefined'){
+      name=encodeHtml(data.name);
+    }
+
+    var html="<h3>"+name+"</h3><h4>"+cap_t("Observation at a glance")+"</h4>";
     if(typeof data.step_done =='undefined'){
       html+="<div class='alert alert-warning'>"+cap_t("the test has just started.")+'</div>';
 

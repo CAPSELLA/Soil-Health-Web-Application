@@ -1,6 +1,8 @@
 <?php
   require_once 'vendor/autoload.php';
   require_once 'settings.php';
+  require_once 'src/capsella.php';
+
 
     session_start();
     $db  = Dbmng\Db::createDb($aSetting['DB']['DB_DSN'], $aSetting['DB']['DB_USER'], $aSetting['DB']['DB_PASSWD'] );
@@ -57,17 +59,79 @@ order by max(time_ref) desc
     });
 
     $router->get('/api/spade_test/', function() use ($db, $user) {
-      $q="select * from caps_spade WHERE flag>0 ";
-      $a=array();
-      if(isset($_REQUEST['filter_user'])){
-        $q.=" OR user_id=:user_id";
-        $a=array(':user_id'=>$_REQUEST['filter_user']);
+
+      $ret=get_spade_test($db, $user);
+
+      foreach ($ret['data'] as $key => $r) {
+        $json=json_decode($r['json']);
+
+        $anonimize=true;
+        if(isset($_REQUEST['filter_user'])){
+          if($_REQUEST['filter_user']==$json->user_id){
+            $anonimize=false;
+          }
+        }
+        try{
+          if($user['uid']>0){
+            if($user['mail']=$json->email){
+              $anonimize=false;
+            }
+          }
+        }
+        catch(Exception $e){
+            ;
+        }
+        // if($uid>0){
+        //   #
+        // }
+
+        if($anonimize){
+          $json->email="###";
+          $json->user_id="###";
+        }
+        $ret['data'][$key]['json']=json_encode($json);
       }
-
-
-      $ret=$db->select($q,$a);
       $json_string=json_encode($ret);
       echo ($json_string);
+    });
+
+
+    $router->any('/api/check_login/', function() use ($app, $db, $user) {
+      $email=$_REQUEST['email'];
+      $password=$_REQUEST['password'];
+      $user_id=$_REQUEST['user_id'];
+
+      $login = new Dbmng\Login($app);
+      $log_ret=$login->check_authentication($email,$password);
+
+      $ok=false;
+      $message="";
+      $ok_send=false;
+
+
+      if($log_ret['user']['uid']>0){
+        $ok=true;
+        $ok_send=true;
+      }
+      else{
+        $ok=false;
+        $message=$log_ret['message'];
+        if($log_ret['error_code']==2){
+          $exist=$db->select("select mail from dbmng_users_register WHERE mail=:email", Array(":email"=>$email));
+          if(count($exist['data'])>0){
+            $message="You should have received an email. Find it (it may be ended in the spam) and click on the link to confirm your email.";
+            $ok_send=true;
+          }
+          else{
+            $email_opt=getEmailOpt();
+            $log_ret=$login->register($email,$password, $email_opt);
+          }
+        }
+      }
+
+      $ret=Array('ok'=>$ok,  'message'=>$message, 'login'=>$log_ret, 'ok_send'=>$ok_send);
+      echo json_encode($ret);
+
     });
 
     $router->post('/api/spade_test_batch/', function() use ($db, $user) {
@@ -88,6 +152,9 @@ order by max(time_ref) desc
       // $ret['obj']=$obj;
 
       echo(json_encode($ret));
+      $r=$db->update("insert into caps_log(input, output) VALUES (:input,:output)",Array(":input"=>$body, ':output'=>json_encode($ret)));
+
+
     });
 
     $router->get('/api/get_image/*', function($guid) use ($db, $user) {
@@ -170,7 +237,7 @@ order by max(time_ref) desc
           ":id_caps_spade"=>$id_caps_spade
         );
         $ins="update caps_spade set lat=:lat, lon=:lon, json=:json, flag=:flag  WHERE id_caps_spade=:id_caps_spade ";
-        if($user['isAdmin']){
+        if(!$user['isAdmin']){
           $ins.=" AND uid=:uid ";
           $array[':uid']=$user['uid'];
         }
@@ -186,12 +253,16 @@ order by max(time_ref) desc
       echo(json_encode($ret));
     });
 
+
+    /*
+    //Proobably is not used
     $router->get('/api/spade_test/*', function($guid) use ($db, $user) {
-      $q="select * from caps_spade WHERE guid=:guid;";
-      $ret=$db->select($q,array(":guid"=>$guid));
+
+      $ret=get_spade_test($db, $user, $guid);
       $json_string=json_encode($ret);
       echo ($json_string);
     });
+    */
 
     $router->get('/api/get_kb0/', function() use ($db, $user) {
       $q="select * from caps_topic order by topic_order;";
@@ -271,12 +342,16 @@ order by max(time_ref) desc
           $json=Array();
           $ret=$db->select($sel,Array());
           foreach ($ret['data'] as $key => $value) {
-            array_push($json, json_decode($value['json']));
+
+            $j=json_decode($value['json']);
+            $j->email="###";
+            $j->user_id="###";
+            array_push($json, $j);
             # code...
           }
 
           uploadfile($call2, $token, json_encode($json));
-          echo(json_encode(Array('ok'=>true,'msg'=>'Public data has been uploaded')));
+          echo(json_encode(Array('ok'=>true,'msg'=>'Public data has been uploaded','data'=>$json)));
           //echo fetchUrl($call2,'POST',array('Accept: */*','Content-Type:multipart/form-data','Authorization: Bearer '.$token, 'group:'.$id_group),false,'AAAA');
 
 
@@ -323,24 +398,43 @@ order by max(time_ref) desc
 
       $look = $db->select($q,array(":guid"=>$obj->guid));
 
-      $array=array(
-        ":guid"=>$obj->guid,
-        ":date_mon"=>$obj->date,
-        ":lat"=>$obj->lat,
-        ":lon"=>$obj->lon,
-        ":user_id"=>$obj->user_id,
-        ":email"=>$obj->email,
-        ":json"=>json_encode($obj),
-        ":uid"=>$user['uid']
-      );
-
       if(count($look['data'])==0){
+
+        $uid=0;
+        try{
+            $uid=$user['uid'];
+        }
+        catch(Exception $e){
+            ;
+        }
+
+        $array=array(
+          ":guid"=>$obj->guid,
+          ":date_mon"=>$obj->date,
+          ":lat"=>$obj->lat,
+          ":lon"=>$obj->lon,
+          ":user_id"=>$obj->user_id,
+          ":email"=>$obj->email,
+          ":json"=>json_encode($obj),
+          ":uid"=>$uid
+        );
 
         $ins="insert into caps_spade (guid, date_mon, lat, lon, json, user_id, email, uid) ";
         $ins.="VALUES (:guid, :date_mon, :lat, :lon, :json, :user_id, :email, :uid);";
         $ret=$db->update($ins,$array);
       }
       else{
+        $array=array(
+          ":guid"=>$obj->guid,
+          ":date_mon"=>$obj->date,
+          ":lat"=>$obj->lat,
+          ":lon"=>$obj->lon,
+          ":user_id"=>$obj->user_id,
+          ":email"=>$obj->email,
+          ":json"=>json_encode($obj),
+        );
+
+
         //TODO: update other user's spade test
         $ins="update caps_spade set date_mon=:date_mon, lat=:lat, lon=:lon, json=:json, user_id=:user_id, email=:email WHERE guid=:guid;";
         $ret=$db->update($ins,$array);
@@ -384,6 +478,45 @@ order by max(time_ref) desc
 
     }
 
+
+    //function to safely get the spade test
+    function get_spade_test($db, $user, $guid="0"){
+      $uid=0;
+      try{
+          $uid=$user['uid'];
+      }
+      catch(Exception $e){
+          ;
+      }
+
+      $q=" select ";
+      //$q.= "* ";
+      $q.=" guid, date_mon, flag, json, lat, lon, time_ref ";
+      $q.=" from caps_spade ";
+
+      $q.=" WHERE flag>=10 ";
+      $a=array();
+      if(isset($_REQUEST['filter_user'])){
+        $q.=" OR user_id=:user_id";
+        $a[':user_id']=$_REQUEST['filter_user'];
+      }
+      if($uid>0){
+        $q.=" OR uid=:uid";
+        $a[':uid']=$uid;
+      }
+
+      if($guid!=="0"){
+        $q="select * from (".$q.") q WHERE guid=:guid;";
+        $a[':guid'] =$guid;
+      }
+      else{
+        $q="select * from (".$q.") q WHERE flag>=0";
+      }
+
+
+      $ret=$db->select($q,$a);
+      return $ret;
+    }
 
     function fetchUrl($url, $method='POST',$h=null,$doEcho=true, $file=null){
 

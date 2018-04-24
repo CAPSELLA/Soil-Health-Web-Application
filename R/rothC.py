@@ -22,19 +22,21 @@ def rothc(input):
 temp=[3.4,3.6,5.1,7.3,11,13.9,16,16,13.5,10.2,6.1,4.6]
 precip=[74,59,62,51,52,57,34,55,58,56,75,71]
 evap=[8,10,27,49,83,99,103,91,69,34,18,8]
-#bare=[True,True,True,True,True,True,True,True,True,True,True,True]
-bare= [True,True,True,True,True,True,False,False,False,False,False,False]
+bare=[True,True,True,True,True,True,True,True,True,True,True,True]
+start_som=0.02
+CInputs=0;
+#bare= [True,True,True,True,True,True,False,False,False,False,False,False]
 
 
-for c in range(1,2,1):
+for c in range(1,12,1):
     #bulk=1+(c/10.);
     var={
         'clay':23.4,
         'soil_thick':23,
-        'SOM':0.02,
+        'SOM':start_som,
         'bulk_density': 1.5,
         'num_years':20,
-        'Cinputs':0,
+        'Cinputs':CInputs,
         'temp':temp,
         'precip':precip,
         'evap':evap,

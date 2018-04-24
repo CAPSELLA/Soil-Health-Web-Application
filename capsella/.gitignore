@@ -8,3 +8,4 @@ vendor/
 .htaccess
 /composer-setup.php
 js/external/
+mobile/
