@@ -1,9 +1,12 @@
 import rpy2.robjects as ro
 import rpy2.interactive as r
 import json
-# from rpy2.robjects.functions import SignatureTranslatedFunction
-# import rpy2.robjects.numpy2ri
-# rpy2.robjects.numpy2ri.activate()
+
+'''
+
+ In the R Library we use 1 as PET Coefficent
+
+'''
 
 print "ciao";
 
@@ -28,8 +31,8 @@ evap=[17, 26, 54, 90, 126, 150, 160, 140, 90, 56, 25,  16];
 # bare=[True,True,True,True,True,True,True,True,True,True,True,True]
 bare= [False,False,False,False,False,False,False,False,False,False,False,False]
 start_som=0.0353
-CInputs=0; #1.3;
-years=10;
+CInputs=8.66; #1.3;
+years=20;
 
 
 var={
@@ -37,7 +40,7 @@ var={
     'soil_thick':30,
     'SOM':start_som,
     'bulk_density': 1.027,
-    'num_years':20,
+    'num_years':years,
     'Cinputs':CInputs,
     'temp':temp,
     'precip':precip,

@@ -71,7 +71,7 @@ rothc <- function(obj){
   if(FALSE){
     fWAll=fW.RothC(P=(Precip[,2]), E=(Evp[,2]),
                   S.Thick = soil_thick, pClay = clay,
-                  pE = 0.75, bare = FALSE) #Moisture effects per month
+                  pE = 1, bare = FALSE) #Moisture effects per month
     print(fWAll)
 
 
@@ -79,9 +79,10 @@ rothc <- function(obj){
   }
   else{
     #print(Bare)
+    #We use 1 as PE associated to pet instead of lisimeter evaporation
     fWAll=rothCCaps(P=(Precip[,2]), E=(Evp[,2]),
                  S.Thick = soil_thick, pClay = clay,
-                 pE = 0.75, bare = (Bare[,2]) )##Moisture effects per month
+                 pE = 1, bare = (Bare[,2]) )##Moisture effects per month
      print(fWAll);
      fW=fWAll$b
   }#
