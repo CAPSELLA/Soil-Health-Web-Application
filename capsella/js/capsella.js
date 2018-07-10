@@ -570,7 +570,12 @@ function init_kb(topic){
 }
 
 function init_som_dyn(){
-  jQuery('#capsella_info').html("<div class='alert alert-info'><h3>"+cap_t("Soil Organic Matter - Dynamics")+"</h3>"+cap_t("In this section you will be able to run simple simulation to estimate the Soil Organic Matter dynamics of the next years in your soil. Please check again this website in the next weeks to see progress.")+"</div>");
+  var html="";//"<div class='alert alert-info'><h3>"+cap_t("Soil Organic Matter - Dynamics")+"</h3>"+cap_t("In this section you will be able to run simple simulation to estimate the Soil Organic Matter dynamics of the next years in your soil. Please check again this website in the next weeks to see progress.")+"</div>";
+  html+="<div id='som_tools'></div>";
+  html+="<div id='som_home'></div>";
+  jQuery('#capsella_container').html(html);
+
+  som_home();
 }
 
 function init_esdb(){
@@ -1892,7 +1897,7 @@ function manage_email(success_function){
     var password=jQuery('#caps_password').val();
     if(validateEmail(email)){
 
-      
+
         settings.email=email;
         settings.password=password;
         jQuery.jStorage.set('capsella_settings',settings);

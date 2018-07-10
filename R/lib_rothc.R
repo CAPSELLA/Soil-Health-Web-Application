@@ -72,7 +72,7 @@ rothc <- function(obj){
     fWAll=fW.RothC(P=(Precip[,2]), E=(Evp[,2]),
                   S.Thick = soil_thick, pClay = clay,
                   pE = 1, bare = FALSE) #Moisture effects per month
-    print(fWAll)
+    #print(fWAll)
 
 
     fW=fWAll$b
@@ -83,11 +83,11 @@ rothc <- function(obj){
     fWAll=rothCCaps(P=(Precip[,2]), E=(Evp[,2]),
                  S.Thick = soil_thick, pClay = clay,
                  pE = 1, bare = (Bare[,2]) )##Moisture effects per month
-     print(fWAll);
+     #print(fWAll);
      fW=fWAll$b
   }#
   cropRetainement = ifelse(Bare[,2] == TRUE, 1, 0.6)
-  print(cropRetainement);
+  #print(cropRetainement);
   xi.frame=data.frame(years,rep(fT*fW*cropRetainement,length.out=length(years)))
 
 

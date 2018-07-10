@@ -473,7 +473,7 @@ order by max(time_ref) desc
       fclose($handle);
 
 
-      exec("curl   -F 'uploadfile=@".$temp_file."'  -H 'Group: soil_app' -H 'Authorization: Bearer ".$token."'  '".$url."'");
+      exec("curl -X PUT   -F 'uploadfile=@".$temp_file."'  -H 'Group: soil_app' -H 'Authorization: Bearer ".$token."'  '".$url."'");
       unlink($temp_file);
 
     }
