@@ -5,6 +5,7 @@ import json
 # import rpy2.robjects.numpy2ri
 # rpy2.robjects.numpy2ri.activate()
 
+
 print "ciao";
 
 ro.r.source('lib_rothc.R')

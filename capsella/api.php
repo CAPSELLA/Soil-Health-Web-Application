@@ -134,6 +134,21 @@ order by max(time_ref) desc
 
     });
 
+
+
+  $router->post('/api/som_batch/', function() use ($db, $user) {
+    $body = file_get_contents("php://input");
+    $ret=Array('ok'=>true,'data'=>Array());
+    $obj=json_decode($body);
+
+    foreach ($obj as $key => $value) {
+      $ret['data'][$key]=saveSingleSOM($db, $user, $value);
+    }
+    echo(json_encode($ret));
+    $r=$db->update("insert into caps_log(input, output) VALUES (:input,:output)",Array(":input"=>$body, ':output'=>json_encode($ret)));
+  });
+
+
     $router->post('/api/spade_test_batch/', function() use ($db, $user) {
 
       $body = file_get_contents("php://input");
@@ -392,6 +407,43 @@ order by max(time_ref) desc
       $json_string=json_encode($ret);
       echo ($json_string);
     });
+
+
+    function saveSingleSOM($db, $user, $obj){
+      $q="select * from caps_som WHERE guid=:guid;";
+
+      $look = $db->select($q,array(":guid"=>$obj->guid));
+      $uid=0;
+      try{
+          $uid=$user['uid'];
+      }
+      catch(Exception $e){
+          ;
+      }
+
+      if(count($look['data'])==0){
+        $array=array(
+          ":guid"=>$obj->guid,
+          ":json"=>json_encode($obj),
+          ":uid"=>$uid
+        );
+
+        $ins="insert into caps_som (guid, json, uid) ";
+        $ins.="VALUES (:guid, :json, :uid);";
+        $ret=$db->update($ins,$array);
+      }
+      else{
+        $array=array(
+          ":guid"=>$obj->guid,
+          ":json"=>json_encode($obj),
+          ":uid"=>$uid
+        );
+        //TODO: update other user's spade test
+        $ins="update caps_som set json=:json WHERE guid=:guid AND uid=:uid;";
+        $ret=$db->update($ins,$array);
+      }
+      return $ret;
+    }
 
     function saveSingleSpadeTest($db, $user, $obj){
       $q="select * from caps_spade WHERE guid=:guid;";

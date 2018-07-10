@@ -250,9 +250,6 @@
     $aPage['nav'][1]['title'] = 'Spade test';
     $aPage['nav'][1]['link']  = $bp.'/?sect=spade_test';
 
-    $aPage['nav'][2]['title'] = 'SOM dynamics';
-    $aPage['nav'][2]['link']  = $bp.'/?sect=som_dyn';
-
     // $aPage['nav'][3]['title'] = 'Knowledge base';
     // $aPage['nav'][3]['link']  = $bp.'/kb/';
     //
@@ -261,6 +258,9 @@
 
 
     if(  $isAdmin ){
+      $aPage['nav'][2]['title'] = 'SOM dynamics';
+      $aPage['nav'][2]['link']  = $bp.'/?sect=som_dyn';
+
       $aPage['nav'][5]['title'] = 'Admin';
       $aPage['nav'][5]['link']  = $bp.'/?sect=admin';
 
