@@ -2,3 +2,5 @@ app/
 src/lib/
 icon/android/
 sign.sh
+.gradle
+tmp_icon/

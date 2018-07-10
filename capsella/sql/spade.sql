@@ -37,3 +37,24 @@ CREATE TABLE caps_image
   CONSTRAINT id_caps_image_pk PRIMARY KEY (id_caps_image),
   CONSTRAINT caps_image_guid_key UNIQUE (guid)
 );
+
+
+
+-- improve data management 2018-02-17
+
+CREATE TABLE dbmng_users_register
+(
+  mail character varying(254),
+  pass character varying(254),
+  token character varying(254),
+  time_ref timestamp without time zone DEFAULT now(),
+  used integer DEFAULT 0,
+  CONSTRAINT dbmng_users_register_mail UNIQUE (mail)
+);
+
+
+
+ALTER TABLE caps_spade ADD COLUMN uid integer;
+ALTER TABLE caps_spade ALTER COLUMN uid SET DEFAULT 0;
+ALTER TABLE dbmng_users_register ADD COLUMN op character varying(254);
+ALTER TABLE dbmng_users_register ALTER COLUMN op SET DEFAULT 'register'::character varying;

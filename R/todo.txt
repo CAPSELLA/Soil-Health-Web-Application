@@ -1,0 +1,10 @@
+
+==TODO list==
+
+R
+* Verificare il tipo di evapotraspirazione e cambiare pE
+* usare bare come vettore
+
+
+Python:
+* installare il web service
