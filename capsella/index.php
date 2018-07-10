@@ -90,11 +90,12 @@
     $aPage['footer'] = $footer;
 
 
+    $version="3.5";
 
-
-    $script="<script src='".$bp."/js/capsella.js?v=3.6'></script>";
-    $script.="<script src='".$bp."/js/som.js?v=3.6'></script>";
-    $script.="<script src='".$bp."/js/capsella_i18n.js?v=3.6'></script>";
+    $script="<script src='".$bp."/js/capsella.js?v=".$version."'></script>";
+    $script.="<script src='".$bp."/js/capsella_i18n.js?v=".$version."'></script>";
+    $script.="<script src='".$bp."/js/qbse.js?v=".$version."'></script>";
+    $script.="<script src='".$bp."/js/som.js?v=".$version."'></script>";
     $script.="<script src='".$bp."/js/external/jquery.datetimepicker.full.min.js'></script>";
     $aPage['script']  = $script;
 
