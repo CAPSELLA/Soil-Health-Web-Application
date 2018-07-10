@@ -17,4 +17,9 @@
   $aSetting['CAPSELLA_PASSWORD']="xxx_password";
 
 
+  $aSetting['EMAIL']="";
+  $aSetting['EMAIL_PASSWORD']="";
+
+  $aSetting['WEBSITE']='https://soilhealth.capsella.eu/'
+
 ?>

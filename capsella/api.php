@@ -1,21 +1,37 @@
 <?php
   require_once 'vendor/autoload.php';
   require_once 'settings.php';
+  require_once 'src/capsella.php';
+
 
     session_start();
     $db  = Dbmng\Db::createDb($aSetting['DB']['DB_DSN'], $aSetting['DB']['DB_USER'], $aSetting['DB']['DB_PASSWD'] );
     $app = new Dbmng\App($db, $aSetting);
 
     $db->setDebug($aSetting['DB']['DEBUG']);
-    $login = new Dbmng\Login($db);
-    $user = $login->auth();
+
+/*
+
+Query per utenti
+select u.email, count(*), min(time_ref), max(time_ref) from (
+select lower(trim(email)) as email, user_id, count(*) from caps_spade
+WHERE email is not null
+ GROUP BY lower(trim(email)), user_id
+
+) u RIGHT JOIN caps_spade c
+ON u.user_id=c.user_id
+group by  u.email
+order by max(time_ref) desc
+*/
 
     $base_path = $aSetting['BASE_PATH'];
     $router = new \Respect\Rest\Router($base_path);
 
-    $login = new Dbmng\Login($db);
+    $login = new Dbmng\Login($app);
     $login_res = $login->auth();
     $isAdmin = false;
+
+    $user=$login_res['user'];
 
     $interset = array_intersect(["administrator"], $login_res['user']['roles']);
     if( count($interset) > 0 )
@@ -43,18 +59,95 @@
     });
 
     $router->get('/api/spade_test/', function() use ($db, $user) {
-      $q="select * from caps_spade WHERE flag>0 ";
-      $a=array();
-      if(isset($_REQUEST['filter_user'])){
-        $q.=" OR user_id=:user_id";
-        $a=array(':user_id'=>$_REQUEST['filter_user']);
+
+      $ret=get_spade_test($db, $user);
+
+      foreach ($ret['data'] as $key => $r) {
+        $json=json_decode($r['json']);
+
+        $anonimize=true;
+        if(isset($_REQUEST['filter_user'])){
+          if($_REQUEST['filter_user']==$json->user_id){
+            $anonimize=false;
+          }
+        }
+        try{
+          if($user['uid']>0){
+            if($user['mail']=$json->email){
+              $anonimize=false;
+            }
+          }
+        }
+        catch(Exception $e){
+            ;
+        }
+        // if($uid>0){
+        //   #
+        // }
+
+        if($anonimize){
+          $json->email="###";
+          $json->user_id="###";
+        }
+        $ret['data'][$key]['json']=json_encode($json);
       }
-
-
-      $ret=$db->select($q,$a);
       $json_string=json_encode($ret);
       echo ($json_string);
     });
+
+
+    $router->any('/api/check_login/', function() use ($app, $db, $user) {
+      $email=$_REQUEST['email'];
+      $password=$_REQUEST['password'];
+      $user_id=$_REQUEST['user_id'];
+
+      $login = new Dbmng\Login($app);
+      $log_ret=$login->check_authentication($email,$password);
+
+      $ok=false;
+      $message="";
+      $ok_send=false;
+
+
+      if($log_ret['user']['uid']>0){
+        $ok=true;
+        $ok_send=true;
+      }
+      else{
+        $ok=false;
+        $message=$log_ret['message'];
+        if($log_ret['error_code']==2){
+          $exist=$db->select("select mail from dbmng_users_register WHERE mail=:email", Array(":email"=>$email));
+          if(count($exist['data'])>0){
+            $message="You should have received an email. Find it (it may be ended in the spam) and click on the link to confirm your email.";
+            $ok_send=true;
+          }
+          else{
+            $email_opt=getEmailOpt();
+            $log_ret=$login->register($email,$password, $email_opt);
+          }
+        }
+      }
+
+      $ret=Array('ok'=>$ok,  'message'=>$message, 'login'=>$log_ret, 'ok_send'=>$ok_send);
+      echo json_encode($ret);
+
+    });
+
+
+
+  $router->post('/api/som_batch/', function() use ($db, $user) {
+    $body = file_get_contents("php://input");
+    $ret=Array('ok'=>true,'data'=>Array());
+    $obj=json_decode($body);
+
+    foreach ($obj as $key => $value) {
+      $ret['data'][$key]=saveSingleSOM($db, $user, $value);
+    }
+    echo(json_encode($ret));
+    $r=$db->update("insert into caps_log(input, output) VALUES (:input,:output)",Array(":input"=>$body, ':output'=>json_encode($ret)));
+  });
+
 
     $router->post('/api/spade_test_batch/', function() use ($db, $user) {
 
@@ -74,6 +167,9 @@
       // $ret['obj']=$obj;
 
       echo(json_encode($ret));
+      $r=$db->update("insert into caps_log(input, output) VALUES (:input,:output)",Array(":input"=>$body, ':output'=>json_encode($ret)));
+
+
     });
 
     $router->get('/api/get_image/*', function($guid) use ($db, $user) {
@@ -114,10 +210,19 @@
     });
 
     $router->get('/api/spade_test_all/', function() use ($db, $user) {
-      // print_r($user);
-      if($user['isAdmin']){
-        $q="select * from caps_spade order by time_ref desc";
-        $ret=$db->select($q,array());
+
+      if($user['uid']>0){
+        $q="select s.*, u.name as user_name from caps_spade s LEFT JOIN dbmng_users u ON s.uid=u.uid  ";
+        $a=array();
+        if($user['isAdmin']){
+          ;//show all
+        }
+        else{
+          $q.=" WHERE s.uid=:uid ";
+          $a[':uid']=$user['uid'];
+        }
+        $q.=" order  by time_ref desc";
+        $ret=$db->select($q,$a);
         $json_string=json_encode($ret);
         echo ($json_string);
       }
@@ -129,10 +234,15 @@
   //$router->post('/api/spade_test_image/*', function($guid)     use ($db, $user) {
     $router->post('/api/spade_test_admin/*', function($id_caps_spade) use ($db, $user) {
 
-      if($user['isAdmin']){
+
+
+
+      if($user['uid']>0){
         $body = file_get_contents("php://input");
         $ret=Array('ok'=>false);
         $obj=json_decode($body);
+
+
 
         $array=array(
           ":lat"=>$obj->lat,
@@ -141,7 +251,15 @@
           ":json"=>json_encode($obj->json),
           ":id_caps_spade"=>$id_caps_spade
         );
-        $ins="update caps_spade set lat=:lat, lon=:lon, json=:json, flag=:flag  WHERE id_caps_spade=:id_caps_spade;";
+        $ins="update caps_spade set lat=:lat, lon=:lon, json=:json, flag=:flag  WHERE id_caps_spade=:id_caps_spade ";
+        if(!$user['isAdmin']){
+          $ins.=" AND uid=:uid ";
+          $array[':uid']=$user['uid'];
+        }
+        else{
+
+        }
+
         $ret=$db->update($ins,$array);
       }
       else{
@@ -150,12 +268,16 @@
       echo(json_encode($ret));
     });
 
+
+    /*
+    //Proobably is not used
     $router->get('/api/spade_test/*', function($guid) use ($db, $user) {
-      $q="select * from caps_spade WHERE guid=:guid;";
-      $ret=$db->select($q,array(":guid"=>$guid));
+
+      $ret=get_spade_test($db, $user, $guid);
       $json_string=json_encode($ret);
       echo ($json_string);
     });
+    */
 
     $router->get('/api/get_kb0/', function() use ($db, $user) {
       $q="select * from caps_topic order by topic_order;";
@@ -210,41 +332,52 @@
     });
 
     $router->any('/api/caps_login_and_save', function() use ($db, $user,$aSetting) {
-      $username=$aSetting['CAPSELLA_USERID'];//$_REQUEST['username'];
-      $password=$aSetting['CAPSELLA_PASSWORD'];
-      $call='https://capsella-services.madgik.di.uoa.gr:8443/capsella_authentication_service/authenticate?username='.$username.'&password='.$password;
-      $tok=json_decode(fetchUrl($call,'POST',null,false));
 
-      if(isset($tok->token)){
-        $token=($tok->token);
+      if($user['isAdmin']){
+
+        $username=$aSetting['CAPSELLA_USERID'];//$_REQUEST['username'];
+        $password=$aSetting['CAPSELLA_PASSWORD'];
+        $call='https://capsella-services.madgik.di.uoa.gr:8443/capsella_authentication_service/authenticate?username='.$username.'&password='.$password;
+        $tok=json_decode(fetchUrl($call,'POST',null,false));
+
+        if(isset($tok->token)){
+          $token=($tok->token);
 
 
 
 
-        $id_dataset=$aSetting['CAPSELLA_DATASET_PUBLIC'];#"70693a29-9b30-4fab-818a-64af1e043f43";
+          $id_dataset=$aSetting['CAPSELLA_DATASET_PUBLIC'];#"70693a29-9b30-4fab-818a-64af1e043f43";
 
-        $id_group="soil_app";
-        $call2="https://capsella-services.madgik.di.uoa.gr:8443/data-manager-service/datasets/".$id_dataset;
+          $id_group="soil_app";
+          $call2="https://capsella-services.madgik.di.uoa.gr:8443/data-manager-service/datasets/".$id_dataset;
 
-        //echo $call2."<br/>";
+          //echo $call2."<br/>";
 
-        $sel="select json from caps_spade WHERE flag=10;";
-        $json=Array();
-        $ret=$db->select($sel,Array());
-        foreach ($ret['data'] as $key => $value) {
-          array_push($json, json_decode($value['json']));
-          # code...
+          $sel="select json from caps_spade WHERE flag=10;";
+          $json=Array();
+          $ret=$db->select($sel,Array());
+          foreach ($ret['data'] as $key => $value) {
+
+            $j=json_decode($value['json']);
+            $j->email="###";
+            $j->user_id="###";
+            array_push($json, $j);
+            # code...
+          }
+
+          uploadfile($call2, $token, json_encode($json));
+          echo(json_encode(Array('ok'=>true,'msg'=>'Public data has been uploaded','data'=>$json)));
+          //echo fetchUrl($call2,'POST',array('Accept: */*','Content-Type:multipart/form-data','Authorization: Bearer '.$token, 'group:'.$id_group),false,'AAAA');
+
+
+          //https://capsella-services.madgik.di.uoa.gr:8443/data-manager-service/datasets/70693a29-9b30-4fab-818a-64af1e043f43
         }
-
-        uploadfile($call2, $token, json_encode($json));
-        echo(json_encode(Array('ok'=>true,'msg'=>'Public data has been uploaded')));
-        //echo fetchUrl($call2,'POST',array('Accept: */*','Content-Type:multipart/form-data','Authorization: Bearer '.$token, 'group:'.$id_group),false,'AAAA');
-
-
-        //https://capsella-services.madgik.di.uoa.gr:8443/data-manager-service/datasets/70693a29-9b30-4fab-818a-64af1e043f43
+        else{
+          echo(json_encode(Array('ok'=>false,'msg'=>'Wrong authentication')));
+        }
       }
       else{
-        echo(json_encode(Array('ok'=>false,'msg'=>'Wrong authentication')));
+        echo(json_encode(Array('ok'=>false,'msg'=>'You have not the right to do this.')));
       }
 
     });
@@ -275,27 +408,86 @@
       echo ($json_string);
     });
 
+
+    function saveSingleSOM($db, $user, $obj){
+      $q="select * from caps_som WHERE guid=:guid;";
+
+      $look = $db->select($q,array(":guid"=>$obj->guid));
+      $uid=0;
+      try{
+          $uid=$user['uid'];
+      }
+      catch(Exception $e){
+          ;
+      }
+
+      if(count($look['data'])==0){
+        $array=array(
+          ":guid"=>$obj->guid,
+          ":json"=>json_encode($obj),
+          ":uid"=>$uid
+        );
+
+        $ins="insert into caps_som (guid, json, uid) ";
+        $ins.="VALUES (:guid, :json, :uid);";
+        $ret=$db->update($ins,$array);
+      }
+      else{
+        $array=array(
+          ":guid"=>$obj->guid,
+          ":json"=>json_encode($obj),
+          ":uid"=>$uid
+        );
+        //TODO: update other user's spade test
+        $ins="update caps_som set json=:json WHERE guid=:guid AND uid=:uid;";
+        $ret=$db->update($ins,$array);
+      }
+      return $ret;
+    }
+
     function saveSingleSpadeTest($db, $user, $obj){
       $q="select * from caps_spade WHERE guid=:guid;";
 
       $look = $db->select($q,array(":guid"=>$obj->guid));
 
-      $array=array(
-        ":guid"=>$obj->guid,
-        ":date_mon"=>$obj->date,
-        ":lat"=>$obj->lat,
-        ":lon"=>$obj->lon,
-        ":user_id"=>$obj->user_id,
-        ":email"=>$obj->email,
-        ":json"=>json_encode($obj)
-      );
-
       if(count($look['data'])==0){
-        $ins="insert into caps_spade (guid, date_mon, lat, lon, json, user_id, email) ";
-        $ins.="VALUES (:guid, :date_mon, :lat, :lon, :json, :user_id, :email);";
+
+        $uid=0;
+        try{
+            $uid=$user['uid'];
+        }
+        catch(Exception $e){
+            ;
+        }
+
+        $array=array(
+          ":guid"=>$obj->guid,
+          ":date_mon"=>$obj->date,
+          ":lat"=>$obj->lat,
+          ":lon"=>$obj->lon,
+          ":user_id"=>$obj->user_id,
+          ":email"=>$obj->email,
+          ":json"=>json_encode($obj),
+          ":uid"=>$uid
+        );
+
+        $ins="insert into caps_spade (guid, date_mon, lat, lon, json, user_id, email, uid) ";
+        $ins.="VALUES (:guid, :date_mon, :lat, :lon, :json, :user_id, :email, :uid);";
         $ret=$db->update($ins,$array);
       }
       else{
+        $array=array(
+          ":guid"=>$obj->guid,
+          ":date_mon"=>$obj->date,
+          ":lat"=>$obj->lat,
+          ":lon"=>$obj->lon,
+          ":user_id"=>$obj->user_id,
+          ":email"=>$obj->email,
+          ":json"=>json_encode($obj),
+        );
+
+
+        //TODO: update other user's spade test
         $ins="update caps_spade set date_mon=:date_mon, lat=:lat, lon=:lon, json=:json, user_id=:user_id, email=:email WHERE guid=:guid;";
         $ret=$db->update($ins,$array);
       }
@@ -333,11 +525,50 @@
       fclose($handle);
 
 
-      exec("curl   -F 'uploadfile=@".$temp_file."'  -H 'Group: soil_app' -H 'Authorization: Bearer ".$token."'  '".$url."'");
+      exec("curl -X PUT   -F 'uploadfile=@".$temp_file."'  -H 'Group: soil_app' -H 'Authorization: Bearer ".$token."'  '".$url."'");
       unlink($temp_file);
 
     }
 
+
+    //function to safely get the spade test
+    function get_spade_test($db, $user, $guid="0"){
+      $uid=0;
+      try{
+          $uid=$user['uid'];
+      }
+      catch(Exception $e){
+          ;
+      }
+
+      $q=" select ";
+      //$q.= "* ";
+      $q.=" guid, date_mon, flag, json, lat, lon, time_ref ";
+      $q.=" from caps_spade ";
+
+      $q.=" WHERE flag>=10 ";
+      $a=array();
+      if(isset($_REQUEST['filter_user'])){
+        $q.=" OR user_id=:user_id";
+        $a[':user_id']=$_REQUEST['filter_user'];
+      }
+      if($uid>0){
+        $q.=" OR uid=:uid";
+        $a[':uid']=$uid;
+      }
+
+      if($guid!=="0"){
+        $q="select * from (".$q.") q WHERE guid=:guid;";
+        $a[':guid'] =$guid;
+      }
+      else{
+        $q="select * from (".$q.") q WHERE flag>=0";
+      }
+
+
+      $ret=$db->select($q,$a);
+      return $ret;
+    }
 
     function fetchUrl($url, $method='POST',$h=null,$doEcho=true, $file=null){
 
