@@ -66,13 +66,13 @@ order by max(time_ref) desc
         $json=json_decode($r['json']);
 
         $anonimize=true;
-        if(isset($_REQUEST['filter_user'])){
-          if($_REQUEST['filter_user']==$json->user_id){
-            $anonimize=false;
-          }
-        }
         try{
-          if($user['uid']>0){
+          if(isset($_REQUEST['filter_user'])&& isset($json->user_id)){
+            if($_REQUEST['filter_user']==$json->user_id){
+              $anonimize=false;
+            }
+          }
+          if($user['uid']>0 && isset($json->email)) {
             if($user['mail']=$json->email){
               $anonimize=false;
             }
