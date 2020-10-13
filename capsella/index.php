@@ -258,17 +258,16 @@
     // $aPage['nav'][4]['link']  = $bp.'/?sect=esdb';
 
 
-    if(  $isAdmin ){
+    if( $logged_in ){
       $aPage['nav'][2]['title'] = 'SOM dynamics';
       $aPage['nav'][2]['link']  = $bp.'/?sect=som_dyn';
 
+      $aPage['nav'][3]['title'] = 'My Data';
+      $aPage['nav'][3]['link']  = $bp.'/?sect=my_data';
+    }
+    if(  $isAdmin ){
       $aPage['nav'][5]['title'] = 'Admin';
       $aPage['nav'][5]['link']  = $bp.'/?sect=admin';
-
-    }
-    else if( $logged_in ){
-      $aPage['nav'][5]['title'] = 'My Data';
-      $aPage['nav'][5]['link']  = $bp.'/?sect=my_data';
     }
 
     // $aPage['nav'][2]['title'] = 'Capsella platform';

@@ -766,6 +766,8 @@ var i18n_glob={
   }
 };
 
+
+
 function cap_t(tr_up){
 
     tr='';

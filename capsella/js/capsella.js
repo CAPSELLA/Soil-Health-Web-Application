@@ -232,7 +232,8 @@ function init_admin(type){
   jQuery('#capsella_home').html(html);
 
   jQuery.ajax({
-    'url':global_opt.base_path+'api/spade_test_all',
+    'url':'https://soilhealth.capsella.eu/api/spade_test_all',
+    //'url':global_opt.base_path+'api/spade_test_all',
     'method': 'GET',
     'dataType': 'JSON',
     'success': function(d){
@@ -335,13 +336,16 @@ function init_admin(type){
                 if(typeof v.json.laynum!=='undefined'){
                   laynum=v.json.laynum;
                 }
+                if(laynum>10){
+                  laynum=10;
+                }
               }
               for(var lay=0; lay<laynum; lay++){
                 if(v.flag>=0){
                   csv+=v.id_caps_spade+sep_col+v.json.name+sep_col+v.date_mon+sep_col+v.lat+sep_col+v.lon+sep_col+jQuery(flaglabel).text()+sep_col+"Layer "+(lay+1);
                   jQuery.each(spade_question, function(k2,v2){
                     var code=v2.code.toLowerCase();
-                    console.log(code);
+                    //console.log(code);
                     var val="-";
                     if(typeof v.json!=='undefined'){
                       if(typeof v.json[code]!=='undefined'){
@@ -1374,6 +1378,9 @@ function spade_test_draw(data, move){
   if(question.how_many=='by_layer'){
     if(typeof data.laynum !=='undefined'){
       layers=data.laynum;
+      if(layers>10){
+        layers=10;
+      }
       multi_layers=true;
     }
   }
